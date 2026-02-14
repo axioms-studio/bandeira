@@ -6,6 +6,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
+	"path/filepath"
+
 	"github.com/felipekafuri/bandeira/config"
 	"github.com/felipekafuri/bandeira/pkg/context"
 	"github.com/felipekafuri/bandeira/pkg/middleware"
@@ -17,6 +19,11 @@ func BuildRouter(c *services.Container) error {
 	// Static files with proper cache control.
 	c.Web.Group("", middleware.CacheControl(c.Config.Cache.Expiration.StaticFile)).
 		Static(config.StaticPrefix, config.StaticDir)
+
+	// Vite build assets (JS/CSS).
+	buildDir := filepath.Join(services.ProjectRoot(), "public", "build")
+	c.Web.Group("", middleware.CacheControl(c.Config.Cache.Expiration.StaticFile)).
+		Static("/build", buildDir)
 
 	// Non-static file route group.
 	g := c.Web.Group("")
