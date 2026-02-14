@@ -1,5 +1,8 @@
 # Bandeira
 
+<img width="1720" height="945" alt="image" src="https://github.com/user-attachments/assets/9d1b5c15-43c5-4343-a4f6-7354ddeb3301" />
+
+
 Self-hosted, open-source feature flag service built with Go. Ships as a single binary + SQLite.
 
 **Bandeira** — Portuguese for "flag."
