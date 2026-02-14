@@ -11,9 +11,9 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
   useFlashToasts(flash);
 
   return (
-    <div className="min-h-screen text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Toaster />
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border">
+      <header className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
             <Flag className="w-4 h-4 text-primary-foreground" />
@@ -42,7 +42,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
         </nav>
       </header>
 
-      <main className="flex-grow flex items-center justify-center flex-col">
+      <main className="flex-1 flex flex-col">
         {children}
       </main>
     </div>
