@@ -3,7 +3,7 @@ package msg
 import (
 	"testing"
 
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

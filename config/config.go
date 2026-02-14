@@ -42,7 +42,7 @@ const (
 // currently running in.
 // This must be called prior to loading the configuration in order for it to take effect.
 func SwitchEnvironment(env environment) {
-	if err := os.Setenv("PAGODE_APP_ENVIRONMENT", string(env)); err != nil {
+	if err := os.Setenv("BANDEIRA_APP_ENVIRONMENT", string(env)); err != nil {
 		panic(err)
 	}
 }
@@ -54,11 +54,7 @@ type (
 		App      AppConfig
 		Cache    CacheConfig
 		Database DatabaseConfig
-		Files    FilesConfig
-		Tasks    TasksConfig
-		Mail     MailConfig
-		Payment  PaymentConfig
-		Chat     ChatConfig
+		Auth     AuthConfig
 	}
 
 	// HTTPConfig stores HTTP configuration.
@@ -83,11 +79,6 @@ type (
 		Environment   environment
 		EncryptionKey string
 		Timeout       time.Duration
-		PasswordToken struct {
-			Expiration time.Duration
-			Length     int
-		}
-		EmailVerificationTokenExpiration time.Duration
 	}
 
 	// CacheConfig stores the cache configuration.
@@ -105,54 +96,9 @@ type (
 		TestConnection string
 	}
 
-	// FilesConfig stores the file system configuration.
-	FilesConfig struct {
-		Directory string
-	}
-
-	// TasksConfig stores the tasks configuration.
-	TasksConfig struct {
-		Goroutines      int
-		ReleaseAfter    time.Duration
-		CleanupInterval time.Duration
-		ShutdownTimeout time.Duration
-	}
-
-	// MailConfig stores the mail configuration.
-	MailConfig struct {
-		Hostname     string
-		Port         uint16
-		User         string
-		Password     string
-		FromAddress  string
-		ResendApiKey string
-	}
-
-	// PaymentConfig stores the payment configuration.
-	PaymentConfig struct {
-		Provider string
-		Stripe   StripeConfig
-	}
-
-	// StripeConfig stores the Stripe-specific configuration.
-	StripeConfig struct {
-		SecretKey      string
-		PublishableKey string
-		WebhookSecret  string
-		Currency       string
-	}
-
-	// ChatConfig stores the chat configuration.
-	ChatConfig struct {
-		Enabled                bool
-		DefaultRoom            string
-		MaxMessageLength       int
-		MaxRoomsPerUser        int
-		HistorySize            int
-		MaxConnectionsPerRoom  int
-		MaxConnectionsPerIP    int
-		RateLimitMessages      int
-		RateLimitWindowSeconds int
+	// AuthConfig stores the authentication configuration.
+	AuthConfig struct {
+		AdminPassword string
 	}
 )
 
@@ -169,7 +115,7 @@ func GetConfig() (Config, error) {
 	viper.AddConfigPath("../../config")
 
 	// Load env variables.
-	viper.SetEnvPrefix("pagode")
+	viper.SetEnvPrefix("bandeira")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 

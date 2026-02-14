@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 )

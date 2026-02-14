@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/occult/pagode/ent"
+	"github.com/felipekafuri/bandeira/ent"
 	// required by schema hooks.
-	_ "github.com/occult/pagode/ent/runtime"
+	_ "github.com/felipekafuri/bandeira/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/occult/pagode/ent/migrate"
+	"github.com/felipekafuri/bandeira/ent/migrate"
 )
 
 type (

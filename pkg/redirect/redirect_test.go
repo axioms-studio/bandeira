@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/pkg/htmx"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/htmx"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

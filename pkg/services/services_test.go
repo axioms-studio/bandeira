@@ -4,9 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/occult/pagode/config"
-	"github.com/occult/pagode/ent"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 
 	"github.com/labstack/echo/v4"
 )
@@ -14,7 +13,6 @@ import (
 var (
 	c   *Container
 	ctx echo.Context
-	usr *ent.User
 )
 
 func TestMain(m *testing.M) {
@@ -28,17 +26,11 @@ func TestMain(m *testing.M) {
 	ctx, _ = tests.NewContext(c.Web, "/")
 	tests.InitSession(ctx)
 
-	// Create a test user
-	var err error
-	if usr, err = tests.CreateUser(c.ORM); err != nil {
-		panic(err)
-	}
-
 	// Run tests
 	exitVal := m.Run()
 
 	// Shutdown the container
-	if err = c.Shutdown(); err != nil {
+	if err := c.Shutdown(); err != nil {
 		panic(err)
 	}
 

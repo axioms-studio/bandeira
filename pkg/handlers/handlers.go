@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/pkg/msg"
-	"github.com/occult/pagode/pkg/services"
+	"github.com/felipekafuri/bandeira/pkg/msg"
+	"github.com/felipekafuri/bandeira/pkg/services"
 )
 
 var handlers []Handler
@@ -18,6 +18,12 @@ type Handler interface {
 
 	// Init provides the service container to initialize
 	Init(*services.Container) error
+}
+
+// APIHandler is implemented by handlers that register routes on the /api group.
+// The API group intentionally skips session, CSRF, and Inertia middleware.
+type APIHandler interface {
+	APIRoutes(g *echo.Group)
 }
 
 // InertiaBacker abstracts the Back method from gonertia.Inertia

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 )

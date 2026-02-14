@@ -1,84 +1,63 @@
 package routenames
 
-import (
-	"fmt"
-)
-
 const (
-	Home                  = "home"
-	Welcome               = "welcome"
-	Dashboard             = "dashboard"
-	AdminDashboard        = "admin_dashboard"
-	AdminUserAdd          = "admin_user_add"
-	AdminUserEdit         = "admin_user_edit"
-	AdminUserDelete       = "admin_user_delete"
-	About                 = "about"
-	Contact               = "contact"
-	ContactSubmit         = "contact.submit"
-	Login                 = "login"
-	LoginSubmit           = "login.submit"
-	Register              = "register"
-	RegisterSubmit        = "register.submit"
-	ForgotPassword        = "forgot_password"
-	ForgotPasswordSubmit  = "forgot_password.submit"
-	Logout                = "logout"
-	VerifyEmail           = "verify_email"
-	ResetPassword         = "reset_password"
-	ResetPasswordSubmit   = "reset_password.submit"
-	Search                = "search"
-	Task                  = "task"
-	TaskSubmit            = "task.submit"
-	Cache                 = "cache"
-	CacheSubmit           = "cache.submit"
-	Files                 = "files"
-	FilesSubmit           = "files.submit"
-	AdminTasks            = "admin:tasks"
-	ProfileEdit           = "profile.edit"
-	ProfileUpdate         = "profile.update"
-	ProfileDestroy        = "profile.destroy"
-	ProfileAppearance     = "profile.appearance"
-	ProfilePassword       = "profile.password"
-	ProfileUpdatePassword = "profile.update_password"
-	Plans                 = "plans"
-	PlansSubscribe        = "plans.subscribe"
-	Products              = "products"
-	ProductsPurchase      = "products.purchase"
-	Premium               = "premium"
-	Billing               = "billing"
-	BillingCancel         = "billing.cancel"
-	ChatRooms             = "chat.rooms"
-	ChatRoomCreate        = "chat.rooms.create"
-	ChatRoom              = "chat.room"
-	ChatWebSocket         = "chat.websocket"
-	ChatBanUser           = "chat.ban"
-	ChatUnbanUser         = "chat.unban"
-	ChatDeleteRoom        = "chat.room.delete"
+	Welcome    = "welcome"
+	About      = "about"
+	UserLogin  = "user.login"
+	UserLogout = "user.logout"
+	Dashboard  = "dashboard"
+	Docs       = "docs"
+
+	ProjectIndex  = "projects.index"
+	ProjectCreate = "projects.create"
+	ProjectStore  = "projects.store"
+	ProjectShow   = "projects.show"
+	ProjectEdit   = "projects.edit"
+	ProjectUpdate = "projects.update"
+	ProjectDelete = "projects.delete"
+
+	EnvironmentCreate = "environments.create"
+	EnvironmentStore  = "environments.store"
+	EnvironmentEdit   = "environments.edit"
+	EnvironmentUpdate = "environments.update"
+	EnvironmentDelete = "environments.delete"
+
+	FlagCreate = "flags.create"
+	FlagStore  = "flags.store"
+	FlagEdit   = "flags.edit"
+	FlagUpdate = "flags.update"
+	FlagDelete = "flags.delete"
+	FlagToggle = "flags.toggle"
+
+	StrategyList   = "flags.strategies"
+	StrategyStore  = "flags.strategies.store"
+	StrategyUpdate = "flags.strategies.update"
+	StrategyDelete = "flags.strategies.delete"
+
+	APIGetFlags = "api.flags"
+
+	ApiTokenIndex  = "api_tokens.index"
+	ApiTokenCreate = "api_tokens.create"
+	ApiTokenStore  = "api_tokens.store"
+	ApiTokenDelete = "api_tokens.delete"
+
+	// Admin API
+	AdminProjectList       = "api.admin.projects"
+	AdminProjectCreate     = "api.admin.projects.create"
+	AdminProjectGet        = "api.admin.projects.get"
+	AdminProjectUpdate     = "api.admin.projects.update"
+	AdminProjectDelete     = "api.admin.projects.delete"
+	AdminEnvironmentList   = "api.admin.environments"
+	AdminEnvironmentCreate = "api.admin.environments.create"
+	AdminEnvironmentUpdate = "api.admin.environments.update"
+	AdminEnvironmentDelete = "api.admin.environments.delete"
+	AdminFlagList          = "api.admin.flags"
+	AdminFlagCreate        = "api.admin.flags.create"
+	AdminFlagGet           = "api.admin.flags.get"
+	AdminFlagUpdate        = "api.admin.flags.update"
+	AdminFlagDelete        = "api.admin.flags.delete"
+	AdminFlagEnvPatch      = "api.admin.flags.env.patch"
+	AdminTokenList         = "api.admin.tokens"
+	AdminTokenCreate       = "api.admin.tokens.create"
+	AdminTokenDelete       = "api.admin.tokens.delete"
 )
-
-func AdminEntityList(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_list", entityTypeName)
-}
-
-func AdminEntityAdd(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_add", entityTypeName)
-}
-
-func AdminEntityEdit(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_edit", entityTypeName)
-}
-
-func AdminEntityDelete(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_delete", entityTypeName)
-}
-
-func AdminEntityAddSubmit(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_add.submit", entityTypeName)
-}
-
-func AdminEntityEditSubmit(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_edit.submit", entityTypeName)
-}
-
-func AdminEntityDeleteSubmit(entityTypeName string) string {
-	return fmt.Sprintf("admin:%s_delete.submit", entityTypeName)
-}

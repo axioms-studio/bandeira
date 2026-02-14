@@ -5,9 +5,9 @@ export default function Home() {
   return (
     <PublicLayout>
       <HeroGeometric
-        badge="Pagode"
-        title1="Elevate Your"
-        title2="Fullstack Game"
+        badge="Bandeira"
+        title1="Feature Flags"
+        title2="Made Simple"
       />
     </PublicLayout>
   );

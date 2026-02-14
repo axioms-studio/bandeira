@@ -8,17 +8,8 @@ import (
 )
 
 const (
-	// AuthenticatedUserKey is the key used to store the authenticated user in context.
-	AuthenticatedUserKey = "auth_user"
-
-	// UserKey is the key used to store a user in context.
-	UserKey = "user"
-
 	// FormKey is the key used to store a form in context.
 	FormKey = "form"
-
-	// PasswordTokenKey is the key used to store a password token in context.
-	PasswordTokenKey = "password_token"
 
 	// LoggerKey is the key used to store a structured logger in context.
 	LoggerKey = "logger"
@@ -35,11 +26,11 @@ const (
 	// ConfigKey is the key used to store the configuration in context.
 	ConfigKey = "config"
 
-	// AdminEntityKey is the key used to store the entity being operated on in the admin panel.
-	AdminEntityKey = "admin:entity"
+	// AuthKey is the key used to store auth state in context.
+	AuthKey = "auth"
 
-	// AdminEntityIDKey is the key used to store the ID of the entity being operated on in the admin panel.
-	AdminEntityIDKey = "admin:entity_id"
+	// APITokenKey is the key used to store a resolved API token in context.
+	APITokenKey = "api_token"
 )
 
 // IsCanceledError determines if an error is due to a context cancellation.
@@ -48,8 +39,7 @@ func IsCanceledError(err error) bool {
 }
 
 // Cache checks if a value of a given type exists in the Echo context for a given key and returns that, otherwise
-// it will use a callback to generate a value, which is stored in the context then returned. This allows you to
-// only generate items only once for a given request.
+// it will use a callback to generate a value, which is stored in the context then returned.
 func Cache[T any](ctx echo.Context, key string, gen func(echo.Context) T) T {
 	if val := ctx.Get(key); val != nil {
 		if v, ok := val.(T); ok {

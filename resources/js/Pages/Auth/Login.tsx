@@ -1,129 +1,140 @@
-import { Head, useForm } from "@inertiajs/react";
-import { LoaderCircle } from "lucide-react";
-import { FormEventHandler } from "react";
-
+import { useForm, Link } from "@inertiajs/react";
+import { FormEventHandler, useRef, useEffect } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { SharedProps } from "@/types/global";
+import { usePage } from "@inertiajs/react";
+import { useFlashToasts } from "@/hooks/useFlashToast";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AuthLayout from "@/Layouts/AuthLayout";
-import TextLink from "@/components/TextLink";
 import InputError from "@/components/InputError";
+import { Flag, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useState } from "react";
 
-type LoginForm = {
-  email: string;
-  password: string;
-  remember: boolean;
-};
+export default function Login() {
+  const { flash } = usePage<SharedProps>().props;
+  const errors = usePage().props.errors as Record<string, string[]> | undefined;
+  useFlashToasts(flash);
 
-interface LoginProps {
-  status?: string;
-  canResetPassword: boolean;
-}
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
-export default function Login({ status, canResetPassword }: LoginProps) {
-  const { data, setData, post, processing, errors, reset } = useForm<
-    Required<LoginForm>
-  >({
-    email: "",
+  const { data, setData, post, processing } = useForm({
     password: "",
-    remember: false,
   });
+
+  useEffect(() => {
+    passwordRef.current?.focus();
+  }, []);
+
+  // Clear password and re-focus on validation error
+  useEffect(() => {
+    if (errors?.Password) {
+      setData("password", "");
+      passwordRef.current?.focus();
+    }
+  }, [errors]);
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
-    post("/user/login", {
-      onFinish: () => reset("password"),
-    });
+    post("/user/login");
   };
 
   return (
-    <AuthLayout
-      title="Log in to your account"
-      description="Enter your email and password below to log in"
-      logo="Pagode"
-    >
-      <Head title="Log in" />
+    <div className="min-h-screen flex flex-col bg-background">
+      <Toaster />
 
-      <form className="flex flex-col gap-6" onSubmit={submit}>
-        <div className="grid gap-6">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email address</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              autoFocus
-              tabIndex={1}
-              autoComplete="email"
-              value={data.email}
-              onChange={(e) => setData("email", e.target.value)}
-              placeholder="email@example.com"
-            />
-            <InputError message={errors.email} />
+      {/* Header */}
+      <header className="flex items-center justify-between px-6 py-4">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
+            <Flag className="w-4 h-4 text-primary-foreground" />
           </div>
+          <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            Bandeira
+          </span>
+        </Link>
+      </header>
 
-          <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              {canResetPassword && (
-                <TextLink
-                  href="/user/password"
-                  className="ml-auto text-sm"
-                  tabIndex={5}
-                >
-                  Forgot password?
-                </TextLink>
-              )}
+      {/* Main */}
+      <main className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          {/* Logo & heading */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-primary/10 rounded-2xl mb-6">
+              <Flag className="w-7 h-7 text-primary" />
             </div>
-            <Input
-              id="password"
-              type="password"
-              required
-              tabIndex={2}
-              autoComplete="current-password"
-              value={data.password}
-              onChange={(e) => setData("password", e.target.value)}
-              placeholder="Password"
-            />
-            <InputError message={errors.password} />
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Welcome back
+            </h1>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Enter your admin password to continue
+            </p>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="remember"
-              name="remember"
-              checked={data.remember}
-              onClick={() => setData("remember", !data.remember)}
-              tabIndex={3}
-            />
-            <Label htmlFor="remember">Remember me</Label>
+          {/* Form card */}
+          <div className="bg-card border border-border rounded-xl shadow-md p-6">
+            <form onSubmit={submit} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    ref={passwordRef}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter your password"
+                    value={data.password}
+                    onChange={(e) => setData("password", e.target.value)}
+                    aria-invalid={!!errors?.Password}
+                    className="pr-10 h-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                {errors?.Password?.map((msg, i) => (
+                  <InputError key={i} message={msg} />
+                ))}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 font-medium"
+                disabled={processing}
+              >
+                {processing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
+            </form>
           </div>
 
-          <Button
-            type="submit"
-            className="mt-4 w-full"
-            tabIndex={4}
-            disabled={processing}
-          >
-            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-            Log in
-          </Button>
+          {/* Footer link */}
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            <Link
+              href="/"
+              className="hover:text-foreground transition-colors underline underline-offset-4"
+            >
+              Back to home
+            </Link>
+          </p>
         </div>
-
-        <div className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <TextLink href="/user/register" tabIndex={5}>
-            Sign up
-          </TextLink>
-        </div>
-      </form>
-
-      {status && (
-        <div className="mb-4 text-center text-sm font-medium text-green-600">
-          {status}
-        </div>
-      )}
-    </AuthLayout>
+      </main>
+    </div>
   );
 }

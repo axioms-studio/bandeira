@@ -9,21 +9,19 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/occult/pagode/ent/migrate"
+	"github.com/felipekafuri/bandeira/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/occult/pagode/ent/chatban"
-	"github.com/occult/pagode/ent/chatmessage"
-	"github.com/occult/pagode/ent/chatroom"
-	"github.com/occult/pagode/ent/passwordtoken"
-	"github.com/occult/pagode/ent/paymentcustomer"
-	"github.com/occult/pagode/ent/paymentintent"
-	"github.com/occult/pagode/ent/paymentmethod"
-	"github.com/occult/pagode/ent/subscription"
-	"github.com/occult/pagode/ent/user"
+	"github.com/felipekafuri/bandeira/ent/apitoken"
+	"github.com/felipekafuri/bandeira/ent/constraint"
+	"github.com/felipekafuri/bandeira/ent/environment"
+	"github.com/felipekafuri/bandeira/ent/flag"
+	"github.com/felipekafuri/bandeira/ent/flagenvironment"
+	"github.com/felipekafuri/bandeira/ent/project"
+	"github.com/felipekafuri/bandeira/ent/strategy"
 )
 
 // Client is the client that holds all ent builders.
@@ -31,24 +29,20 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// ChatBan is the client for interacting with the ChatBan builders.
-	ChatBan *ChatBanClient
-	// ChatMessage is the client for interacting with the ChatMessage builders.
-	ChatMessage *ChatMessageClient
-	// ChatRoom is the client for interacting with the ChatRoom builders.
-	ChatRoom *ChatRoomClient
-	// PasswordToken is the client for interacting with the PasswordToken builders.
-	PasswordToken *PasswordTokenClient
-	// PaymentCustomer is the client for interacting with the PaymentCustomer builders.
-	PaymentCustomer *PaymentCustomerClient
-	// PaymentIntent is the client for interacting with the PaymentIntent builders.
-	PaymentIntent *PaymentIntentClient
-	// PaymentMethod is the client for interacting with the PaymentMethod builders.
-	PaymentMethod *PaymentMethodClient
-	// Subscription is the client for interacting with the Subscription builders.
-	Subscription *SubscriptionClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// ApiToken is the client for interacting with the ApiToken builders.
+	ApiToken *ApiTokenClient
+	// Constraint is the client for interacting with the Constraint builders.
+	Constraint *ConstraintClient
+	// Environment is the client for interacting with the Environment builders.
+	Environment *EnvironmentClient
+	// Flag is the client for interacting with the Flag builders.
+	Flag *FlagClient
+	// FlagEnvironment is the client for interacting with the FlagEnvironment builders.
+	FlagEnvironment *FlagEnvironmentClient
+	// Project is the client for interacting with the Project builders.
+	Project *ProjectClient
+	// Strategy is the client for interacting with the Strategy builders.
+	Strategy *StrategyClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -60,15 +54,13 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.ChatBan = NewChatBanClient(c.config)
-	c.ChatMessage = NewChatMessageClient(c.config)
-	c.ChatRoom = NewChatRoomClient(c.config)
-	c.PasswordToken = NewPasswordTokenClient(c.config)
-	c.PaymentCustomer = NewPaymentCustomerClient(c.config)
-	c.PaymentIntent = NewPaymentIntentClient(c.config)
-	c.PaymentMethod = NewPaymentMethodClient(c.config)
-	c.Subscription = NewSubscriptionClient(c.config)
-	c.User = NewUserClient(c.config)
+	c.ApiToken = NewApiTokenClient(c.config)
+	c.Constraint = NewConstraintClient(c.config)
+	c.Environment = NewEnvironmentClient(c.config)
+	c.Flag = NewFlagClient(c.config)
+	c.FlagEnvironment = NewFlagEnvironmentClient(c.config)
+	c.Project = NewProjectClient(c.config)
+	c.Strategy = NewStrategyClient(c.config)
 }
 
 type (
@@ -161,15 +153,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:             ctx,
 		config:          cfg,
-		ChatBan:         NewChatBanClient(cfg),
-		ChatMessage:     NewChatMessageClient(cfg),
-		ChatRoom:        NewChatRoomClient(cfg),
-		PasswordToken:   NewPasswordTokenClient(cfg),
-		PaymentCustomer: NewPaymentCustomerClient(cfg),
-		PaymentIntent:   NewPaymentIntentClient(cfg),
-		PaymentMethod:   NewPaymentMethodClient(cfg),
-		Subscription:    NewSubscriptionClient(cfg),
-		User:            NewUserClient(cfg),
+		ApiToken:        NewApiTokenClient(cfg),
+		Constraint:      NewConstraintClient(cfg),
+		Environment:     NewEnvironmentClient(cfg),
+		Flag:            NewFlagClient(cfg),
+		FlagEnvironment: NewFlagEnvironmentClient(cfg),
+		Project:         NewProjectClient(cfg),
+		Strategy:        NewStrategyClient(cfg),
 	}, nil
 }
 
@@ -189,22 +179,20 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:             ctx,
 		config:          cfg,
-		ChatBan:         NewChatBanClient(cfg),
-		ChatMessage:     NewChatMessageClient(cfg),
-		ChatRoom:        NewChatRoomClient(cfg),
-		PasswordToken:   NewPasswordTokenClient(cfg),
-		PaymentCustomer: NewPaymentCustomerClient(cfg),
-		PaymentIntent:   NewPaymentIntentClient(cfg),
-		PaymentMethod:   NewPaymentMethodClient(cfg),
-		Subscription:    NewSubscriptionClient(cfg),
-		User:            NewUserClient(cfg),
+		ApiToken:        NewApiTokenClient(cfg),
+		Constraint:      NewConstraintClient(cfg),
+		Environment:     NewEnvironmentClient(cfg),
+		Flag:            NewFlagClient(cfg),
+		FlagEnvironment: NewFlagEnvironmentClient(cfg),
+		Project:         NewProjectClient(cfg),
+		Strategy:        NewStrategyClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		ChatBan.
+//		ApiToken.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -227,8 +215,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.ChatBan, c.ChatMessage, c.ChatRoom, c.PasswordToken, c.PaymentCustomer,
-		c.PaymentIntent, c.PaymentMethod, c.Subscription, c.User,
+		c.ApiToken, c.Constraint, c.Environment, c.Flag, c.FlagEnvironment, c.Project,
+		c.Strategy,
 	} {
 		n.Use(hooks...)
 	}
@@ -238,8 +226,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.ChatBan, c.ChatMessage, c.ChatRoom, c.PasswordToken, c.PaymentCustomer,
-		c.PaymentIntent, c.PaymentMethod, c.Subscription, c.User,
+		c.ApiToken, c.Constraint, c.Environment, c.Flag, c.FlagEnvironment, c.Project,
+		c.Strategy,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -248,130 +236,126 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *ChatBanMutation:
-		return c.ChatBan.mutate(ctx, m)
-	case *ChatMessageMutation:
-		return c.ChatMessage.mutate(ctx, m)
-	case *ChatRoomMutation:
-		return c.ChatRoom.mutate(ctx, m)
-	case *PasswordTokenMutation:
-		return c.PasswordToken.mutate(ctx, m)
-	case *PaymentCustomerMutation:
-		return c.PaymentCustomer.mutate(ctx, m)
-	case *PaymentIntentMutation:
-		return c.PaymentIntent.mutate(ctx, m)
-	case *PaymentMethodMutation:
-		return c.PaymentMethod.mutate(ctx, m)
-	case *SubscriptionMutation:
-		return c.Subscription.mutate(ctx, m)
-	case *UserMutation:
-		return c.User.mutate(ctx, m)
+	case *ApiTokenMutation:
+		return c.ApiToken.mutate(ctx, m)
+	case *ConstraintMutation:
+		return c.Constraint.mutate(ctx, m)
+	case *EnvironmentMutation:
+		return c.Environment.mutate(ctx, m)
+	case *FlagMutation:
+		return c.Flag.mutate(ctx, m)
+	case *FlagEnvironmentMutation:
+		return c.FlagEnvironment.mutate(ctx, m)
+	case *ProjectMutation:
+		return c.Project.mutate(ctx, m)
+	case *StrategyMutation:
+		return c.Strategy.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// ChatBanClient is a client for the ChatBan schema.
-type ChatBanClient struct {
+// ApiTokenClient is a client for the ApiToken schema.
+type ApiTokenClient struct {
 	config
 }
 
-// NewChatBanClient returns a client for the ChatBan from the given config.
-func NewChatBanClient(c config) *ChatBanClient {
-	return &ChatBanClient{config: c}
+// NewApiTokenClient returns a client for the ApiToken from the given config.
+func NewApiTokenClient(c config) *ApiTokenClient {
+	return &ApiTokenClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `chatban.Hooks(f(g(h())))`.
-func (c *ChatBanClient) Use(hooks ...Hook) {
-	c.hooks.ChatBan = append(c.hooks.ChatBan, hooks...)
+// A call to `Use(f, g, h)` equals to `apitoken.Hooks(f(g(h())))`.
+func (c *ApiTokenClient) Use(hooks ...Hook) {
+	c.hooks.ApiToken = append(c.hooks.ApiToken, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `chatban.Intercept(f(g(h())))`.
-func (c *ChatBanClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ChatBan = append(c.inters.ChatBan, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `apitoken.Intercept(f(g(h())))`.
+func (c *ApiTokenClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ApiToken = append(c.inters.ApiToken, interceptors...)
 }
 
-// Create returns a builder for creating a ChatBan entity.
-func (c *ChatBanClient) Create() *ChatBanCreate {
-	mutation := newChatBanMutation(c.config, OpCreate)
-	return &ChatBanCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a ApiToken entity.
+func (c *ApiTokenClient) Create() *ApiTokenCreate {
+	mutation := newApiTokenMutation(c.config, OpCreate)
+	return &ApiTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of ChatBan entities.
-func (c *ChatBanClient) CreateBulk(builders ...*ChatBanCreate) *ChatBanCreateBulk {
-	return &ChatBanCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of ApiToken entities.
+func (c *ApiTokenClient) CreateBulk(builders ...*ApiTokenCreate) *ApiTokenCreateBulk {
+	return &ApiTokenCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *ChatBanClient) MapCreateBulk(slice any, setFunc func(*ChatBanCreate, int)) *ChatBanCreateBulk {
+func (c *ApiTokenClient) MapCreateBulk(slice any, setFunc func(*ApiTokenCreate, int)) *ApiTokenCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &ChatBanCreateBulk{err: fmt.Errorf("calling to ChatBanClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &ApiTokenCreateBulk{err: fmt.Errorf("calling to ApiTokenClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*ChatBanCreate, rv.Len())
+	builders := make([]*ApiTokenCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &ChatBanCreateBulk{config: c.config, builders: builders}
+	return &ApiTokenCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for ChatBan.
-func (c *ChatBanClient) Update() *ChatBanUpdate {
-	mutation := newChatBanMutation(c.config, OpUpdate)
-	return &ChatBanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for ApiToken.
+func (c *ApiTokenClient) Update() *ApiTokenUpdate {
+	mutation := newApiTokenMutation(c.config, OpUpdate)
+	return &ApiTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ChatBanClient) UpdateOne(_m *ChatBan) *ChatBanUpdateOne {
-	mutation := newChatBanMutation(c.config, OpUpdateOne, withChatBan(_m))
-	return &ChatBanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ApiTokenClient) UpdateOne(_m *ApiToken) *ApiTokenUpdateOne {
+	mutation := newApiTokenMutation(c.config, OpUpdateOne, withApiToken(_m))
+	return &ApiTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ChatBanClient) UpdateOneID(id int) *ChatBanUpdateOne {
-	mutation := newChatBanMutation(c.config, OpUpdateOne, withChatBanID(id))
-	return &ChatBanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ApiTokenClient) UpdateOneID(id int) *ApiTokenUpdateOne {
+	mutation := newApiTokenMutation(c.config, OpUpdateOne, withApiTokenID(id))
+	return &ApiTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for ChatBan.
-func (c *ChatBanClient) Delete() *ChatBanDelete {
-	mutation := newChatBanMutation(c.config, OpDelete)
-	return &ChatBanDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for ApiToken.
+func (c *ApiTokenClient) Delete() *ApiTokenDelete {
+	mutation := newApiTokenMutation(c.config, OpDelete)
+	return &ApiTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ChatBanClient) DeleteOne(_m *ChatBan) *ChatBanDeleteOne {
+func (c *ApiTokenClient) DeleteOne(_m *ApiToken) *ApiTokenDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ChatBanClient) DeleteOneID(id int) *ChatBanDeleteOne {
-	builder := c.Delete().Where(chatban.ID(id))
+func (c *ApiTokenClient) DeleteOneID(id int) *ApiTokenDeleteOne {
+	builder := c.Delete().Where(apitoken.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ChatBanDeleteOne{builder}
+	return &ApiTokenDeleteOne{builder}
 }
 
-// Query returns a query builder for ChatBan.
-func (c *ChatBanClient) Query() *ChatBanQuery {
-	return &ChatBanQuery{
+// Query returns a query builder for ApiToken.
+func (c *ApiTokenClient) Query() *ApiTokenQuery {
+	return &ApiTokenQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeChatBan},
+		ctx:    &QueryContext{Type: TypeApiToken},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a ChatBan entity by its id.
-func (c *ChatBanClient) Get(ctx context.Context, id int) (*ChatBan, error) {
-	return c.Query().Where(chatban.ID(id)).Only(ctx)
+// Get returns a ApiToken entity by its id.
+func (c *ApiTokenClient) Get(ctx context.Context, id int) (*ApiToken, error) {
+	return c.Query().Where(apitoken.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ChatBanClient) GetX(ctx context.Context, id int) *ChatBan {
+func (c *ApiTokenClient) GetX(ctx context.Context, id int) *ApiToken {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -379,47 +363,15 @@ func (c *ChatBanClient) GetX(ctx context.Context, id int) *ChatBan {
 	return obj
 }
 
-// QueryRoom queries the room edge of a ChatBan.
-func (c *ChatBanClient) QueryRoom(_m *ChatBan) *ChatRoomQuery {
-	query := (&ChatRoomClient{config: c.config}).Query()
+// QueryProject queries the project edge of a ApiToken.
+func (c *ApiTokenClient) QueryProject(_m *ApiToken) *ProjectQuery {
+	query := (&ProjectClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(chatban.Table, chatban.FieldID, id),
-			sqlgraph.To(chatroom.Table, chatroom.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatban.RoomTable, chatban.RoomColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryUser queries the user edge of a ChatBan.
-func (c *ChatBanClient) QueryUser(_m *ChatBan) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatban.Table, chatban.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatban.UserTable, chatban.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryBannedByUser queries the banned_by_user edge of a ChatBan.
-func (c *ChatBanClient) QueryBannedByUser(_m *ChatBan) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatban.Table, chatban.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatban.BannedByUserTable, chatban.BannedByUserColumn),
+			sqlgraph.From(apitoken.Table, apitoken.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, apitoken.ProjectTable, apitoken.ProjectColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -428,131 +380,131 @@ func (c *ChatBanClient) QueryBannedByUser(_m *ChatBan) *UserQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *ChatBanClient) Hooks() []Hook {
-	return c.hooks.ChatBan
+func (c *ApiTokenClient) Hooks() []Hook {
+	return c.hooks.ApiToken
 }
 
 // Interceptors returns the client interceptors.
-func (c *ChatBanClient) Interceptors() []Interceptor {
-	return c.inters.ChatBan
+func (c *ApiTokenClient) Interceptors() []Interceptor {
+	return c.inters.ApiToken
 }
 
-func (c *ChatBanClient) mutate(ctx context.Context, m *ChatBanMutation) (Value, error) {
+func (c *ApiTokenClient) mutate(ctx context.Context, m *ApiTokenMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&ChatBanCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ApiTokenCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&ChatBanUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ApiTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&ChatBanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ApiTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&ChatBanDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&ApiTokenDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown ChatBan mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown ApiToken mutation op: %q", m.Op())
 	}
 }
 
-// ChatMessageClient is a client for the ChatMessage schema.
-type ChatMessageClient struct {
+// ConstraintClient is a client for the Constraint schema.
+type ConstraintClient struct {
 	config
 }
 
-// NewChatMessageClient returns a client for the ChatMessage from the given config.
-func NewChatMessageClient(c config) *ChatMessageClient {
-	return &ChatMessageClient{config: c}
+// NewConstraintClient returns a client for the Constraint from the given config.
+func NewConstraintClient(c config) *ConstraintClient {
+	return &ConstraintClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `chatmessage.Hooks(f(g(h())))`.
-func (c *ChatMessageClient) Use(hooks ...Hook) {
-	c.hooks.ChatMessage = append(c.hooks.ChatMessage, hooks...)
+// A call to `Use(f, g, h)` equals to `constraint.Hooks(f(g(h())))`.
+func (c *ConstraintClient) Use(hooks ...Hook) {
+	c.hooks.Constraint = append(c.hooks.Constraint, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `chatmessage.Intercept(f(g(h())))`.
-func (c *ChatMessageClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ChatMessage = append(c.inters.ChatMessage, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `constraint.Intercept(f(g(h())))`.
+func (c *ConstraintClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Constraint = append(c.inters.Constraint, interceptors...)
 }
 
-// Create returns a builder for creating a ChatMessage entity.
-func (c *ChatMessageClient) Create() *ChatMessageCreate {
-	mutation := newChatMessageMutation(c.config, OpCreate)
-	return &ChatMessageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Constraint entity.
+func (c *ConstraintClient) Create() *ConstraintCreate {
+	mutation := newConstraintMutation(c.config, OpCreate)
+	return &ConstraintCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of ChatMessage entities.
-func (c *ChatMessageClient) CreateBulk(builders ...*ChatMessageCreate) *ChatMessageCreateBulk {
-	return &ChatMessageCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Constraint entities.
+func (c *ConstraintClient) CreateBulk(builders ...*ConstraintCreate) *ConstraintCreateBulk {
+	return &ConstraintCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *ChatMessageClient) MapCreateBulk(slice any, setFunc func(*ChatMessageCreate, int)) *ChatMessageCreateBulk {
+func (c *ConstraintClient) MapCreateBulk(slice any, setFunc func(*ConstraintCreate, int)) *ConstraintCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &ChatMessageCreateBulk{err: fmt.Errorf("calling to ChatMessageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &ConstraintCreateBulk{err: fmt.Errorf("calling to ConstraintClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*ChatMessageCreate, rv.Len())
+	builders := make([]*ConstraintCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &ChatMessageCreateBulk{config: c.config, builders: builders}
+	return &ConstraintCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for ChatMessage.
-func (c *ChatMessageClient) Update() *ChatMessageUpdate {
-	mutation := newChatMessageMutation(c.config, OpUpdate)
-	return &ChatMessageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Constraint.
+func (c *ConstraintClient) Update() *ConstraintUpdate {
+	mutation := newConstraintMutation(c.config, OpUpdate)
+	return &ConstraintUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ChatMessageClient) UpdateOne(_m *ChatMessage) *ChatMessageUpdateOne {
-	mutation := newChatMessageMutation(c.config, OpUpdateOne, withChatMessage(_m))
-	return &ChatMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ConstraintClient) UpdateOne(_m *Constraint) *ConstraintUpdateOne {
+	mutation := newConstraintMutation(c.config, OpUpdateOne, withConstraint(_m))
+	return &ConstraintUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ChatMessageClient) UpdateOneID(id int) *ChatMessageUpdateOne {
-	mutation := newChatMessageMutation(c.config, OpUpdateOne, withChatMessageID(id))
-	return &ChatMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ConstraintClient) UpdateOneID(id int) *ConstraintUpdateOne {
+	mutation := newConstraintMutation(c.config, OpUpdateOne, withConstraintID(id))
+	return &ConstraintUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for ChatMessage.
-func (c *ChatMessageClient) Delete() *ChatMessageDelete {
-	mutation := newChatMessageMutation(c.config, OpDelete)
-	return &ChatMessageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Constraint.
+func (c *ConstraintClient) Delete() *ConstraintDelete {
+	mutation := newConstraintMutation(c.config, OpDelete)
+	return &ConstraintDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ChatMessageClient) DeleteOne(_m *ChatMessage) *ChatMessageDeleteOne {
+func (c *ConstraintClient) DeleteOne(_m *Constraint) *ConstraintDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ChatMessageClient) DeleteOneID(id int) *ChatMessageDeleteOne {
-	builder := c.Delete().Where(chatmessage.ID(id))
+func (c *ConstraintClient) DeleteOneID(id int) *ConstraintDeleteOne {
+	builder := c.Delete().Where(constraint.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ChatMessageDeleteOne{builder}
+	return &ConstraintDeleteOne{builder}
 }
 
-// Query returns a query builder for ChatMessage.
-func (c *ChatMessageClient) Query() *ChatMessageQuery {
-	return &ChatMessageQuery{
+// Query returns a query builder for Constraint.
+func (c *ConstraintClient) Query() *ConstraintQuery {
+	return &ConstraintQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeChatMessage},
+		ctx:    &QueryContext{Type: TypeConstraint},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a ChatMessage entity by its id.
-func (c *ChatMessageClient) Get(ctx context.Context, id int) (*ChatMessage, error) {
-	return c.Query().Where(chatmessage.ID(id)).Only(ctx)
+// Get returns a Constraint entity by its id.
+func (c *ConstraintClient) Get(ctx context.Context, id int) (*Constraint, error) {
+	return c.Query().Where(constraint.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ChatMessageClient) GetX(ctx context.Context, id int) *ChatMessage {
+func (c *ConstraintClient) GetX(ctx context.Context, id int) *Constraint {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -560,31 +512,15 @@ func (c *ChatMessageClient) GetX(ctx context.Context, id int) *ChatMessage {
 	return obj
 }
 
-// QueryRoom queries the room edge of a ChatMessage.
-func (c *ChatMessageClient) QueryRoom(_m *ChatMessage) *ChatRoomQuery {
-	query := (&ChatRoomClient{config: c.config}).Query()
+// QueryStrategy queries the strategy edge of a Constraint.
+func (c *ConstraintClient) QueryStrategy(_m *Constraint) *StrategyQuery {
+	query := (&StrategyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(chatmessage.Table, chatmessage.FieldID, id),
-			sqlgraph.To(chatroom.Table, chatroom.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatmessage.RoomTable, chatmessage.RoomColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QuerySender queries the sender edge of a ChatMessage.
-func (c *ChatMessageClient) QuerySender(_m *ChatMessage) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatmessage.Table, chatmessage.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatmessage.SenderTable, chatmessage.SenderColumn),
+			sqlgraph.From(constraint.Table, constraint.FieldID, id),
+			sqlgraph.To(strategy.Table, strategy.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, constraint.StrategyTable, constraint.StrategyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -593,131 +529,131 @@ func (c *ChatMessageClient) QuerySender(_m *ChatMessage) *UserQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *ChatMessageClient) Hooks() []Hook {
-	return c.hooks.ChatMessage
+func (c *ConstraintClient) Hooks() []Hook {
+	return c.hooks.Constraint
 }
 
 // Interceptors returns the client interceptors.
-func (c *ChatMessageClient) Interceptors() []Interceptor {
-	return c.inters.ChatMessage
+func (c *ConstraintClient) Interceptors() []Interceptor {
+	return c.inters.Constraint
 }
 
-func (c *ChatMessageClient) mutate(ctx context.Context, m *ChatMessageMutation) (Value, error) {
+func (c *ConstraintClient) mutate(ctx context.Context, m *ConstraintMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&ChatMessageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ConstraintCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&ChatMessageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ConstraintUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&ChatMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ConstraintUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&ChatMessageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&ConstraintDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown ChatMessage mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Constraint mutation op: %q", m.Op())
 	}
 }
 
-// ChatRoomClient is a client for the ChatRoom schema.
-type ChatRoomClient struct {
+// EnvironmentClient is a client for the Environment schema.
+type EnvironmentClient struct {
 	config
 }
 
-// NewChatRoomClient returns a client for the ChatRoom from the given config.
-func NewChatRoomClient(c config) *ChatRoomClient {
-	return &ChatRoomClient{config: c}
+// NewEnvironmentClient returns a client for the Environment from the given config.
+func NewEnvironmentClient(c config) *EnvironmentClient {
+	return &EnvironmentClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `chatroom.Hooks(f(g(h())))`.
-func (c *ChatRoomClient) Use(hooks ...Hook) {
-	c.hooks.ChatRoom = append(c.hooks.ChatRoom, hooks...)
+// A call to `Use(f, g, h)` equals to `environment.Hooks(f(g(h())))`.
+func (c *EnvironmentClient) Use(hooks ...Hook) {
+	c.hooks.Environment = append(c.hooks.Environment, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `chatroom.Intercept(f(g(h())))`.
-func (c *ChatRoomClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ChatRoom = append(c.inters.ChatRoom, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `environment.Intercept(f(g(h())))`.
+func (c *EnvironmentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Environment = append(c.inters.Environment, interceptors...)
 }
 
-// Create returns a builder for creating a ChatRoom entity.
-func (c *ChatRoomClient) Create() *ChatRoomCreate {
-	mutation := newChatRoomMutation(c.config, OpCreate)
-	return &ChatRoomCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Environment entity.
+func (c *EnvironmentClient) Create() *EnvironmentCreate {
+	mutation := newEnvironmentMutation(c.config, OpCreate)
+	return &EnvironmentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of ChatRoom entities.
-func (c *ChatRoomClient) CreateBulk(builders ...*ChatRoomCreate) *ChatRoomCreateBulk {
-	return &ChatRoomCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Environment entities.
+func (c *EnvironmentClient) CreateBulk(builders ...*EnvironmentCreate) *EnvironmentCreateBulk {
+	return &EnvironmentCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *ChatRoomClient) MapCreateBulk(slice any, setFunc func(*ChatRoomCreate, int)) *ChatRoomCreateBulk {
+func (c *EnvironmentClient) MapCreateBulk(slice any, setFunc func(*EnvironmentCreate, int)) *EnvironmentCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &ChatRoomCreateBulk{err: fmt.Errorf("calling to ChatRoomClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &EnvironmentCreateBulk{err: fmt.Errorf("calling to EnvironmentClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*ChatRoomCreate, rv.Len())
+	builders := make([]*EnvironmentCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &ChatRoomCreateBulk{config: c.config, builders: builders}
+	return &EnvironmentCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for ChatRoom.
-func (c *ChatRoomClient) Update() *ChatRoomUpdate {
-	mutation := newChatRoomMutation(c.config, OpUpdate)
-	return &ChatRoomUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Environment.
+func (c *EnvironmentClient) Update() *EnvironmentUpdate {
+	mutation := newEnvironmentMutation(c.config, OpUpdate)
+	return &EnvironmentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ChatRoomClient) UpdateOne(_m *ChatRoom) *ChatRoomUpdateOne {
-	mutation := newChatRoomMutation(c.config, OpUpdateOne, withChatRoom(_m))
-	return &ChatRoomUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *EnvironmentClient) UpdateOne(_m *Environment) *EnvironmentUpdateOne {
+	mutation := newEnvironmentMutation(c.config, OpUpdateOne, withEnvironment(_m))
+	return &EnvironmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ChatRoomClient) UpdateOneID(id int) *ChatRoomUpdateOne {
-	mutation := newChatRoomMutation(c.config, OpUpdateOne, withChatRoomID(id))
-	return &ChatRoomUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *EnvironmentClient) UpdateOneID(id int) *EnvironmentUpdateOne {
+	mutation := newEnvironmentMutation(c.config, OpUpdateOne, withEnvironmentID(id))
+	return &EnvironmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for ChatRoom.
-func (c *ChatRoomClient) Delete() *ChatRoomDelete {
-	mutation := newChatRoomMutation(c.config, OpDelete)
-	return &ChatRoomDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Environment.
+func (c *EnvironmentClient) Delete() *EnvironmentDelete {
+	mutation := newEnvironmentMutation(c.config, OpDelete)
+	return &EnvironmentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ChatRoomClient) DeleteOne(_m *ChatRoom) *ChatRoomDeleteOne {
+func (c *EnvironmentClient) DeleteOne(_m *Environment) *EnvironmentDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ChatRoomClient) DeleteOneID(id int) *ChatRoomDeleteOne {
-	builder := c.Delete().Where(chatroom.ID(id))
+func (c *EnvironmentClient) DeleteOneID(id int) *EnvironmentDeleteOne {
+	builder := c.Delete().Where(environment.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ChatRoomDeleteOne{builder}
+	return &EnvironmentDeleteOne{builder}
 }
 
-// Query returns a query builder for ChatRoom.
-func (c *ChatRoomClient) Query() *ChatRoomQuery {
-	return &ChatRoomQuery{
+// Query returns a query builder for Environment.
+func (c *EnvironmentClient) Query() *EnvironmentQuery {
+	return &EnvironmentQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeChatRoom},
+		ctx:    &QueryContext{Type: TypeEnvironment},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a ChatRoom entity by its id.
-func (c *ChatRoomClient) Get(ctx context.Context, id int) (*ChatRoom, error) {
-	return c.Query().Where(chatroom.ID(id)).Only(ctx)
+// Get returns a Environment entity by its id.
+func (c *EnvironmentClient) Get(ctx context.Context, id int) (*Environment, error) {
+	return c.Query().Where(environment.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ChatRoomClient) GetX(ctx context.Context, id int) *ChatRoom {
+func (c *EnvironmentClient) GetX(ctx context.Context, id int) *Environment {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -725,15 +661,15 @@ func (c *ChatRoomClient) GetX(ctx context.Context, id int) *ChatRoom {
 	return obj
 }
 
-// QueryOwner queries the owner edge of a ChatRoom.
-func (c *ChatRoomClient) QueryOwner(_m *ChatRoom) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
+// QueryProject queries the project edge of a Environment.
+func (c *EnvironmentClient) QueryProject(_m *Environment) *ProjectQuery {
+	query := (&ProjectClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(chatroom.Table, chatroom.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatroom.OwnerTable, chatroom.OwnerColumn),
+			sqlgraph.From(environment.Table, environment.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, environment.ProjectTable, environment.ProjectColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -741,31 +677,15 @@ func (c *ChatRoomClient) QueryOwner(_m *ChatRoom) *UserQuery {
 	return query
 }
 
-// QueryMessages queries the messages edge of a ChatRoom.
-func (c *ChatRoomClient) QueryMessages(_m *ChatRoom) *ChatMessageQuery {
-	query := (&ChatMessageClient{config: c.config}).Query()
+// QueryFlagEnvironments queries the flag_environments edge of a Environment.
+func (c *EnvironmentClient) QueryFlagEnvironments(_m *Environment) *FlagEnvironmentQuery {
+	query := (&FlagEnvironmentClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(chatroom.Table, chatroom.FieldID, id),
-			sqlgraph.To(chatmessage.Table, chatmessage.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, chatroom.MessagesTable, chatroom.MessagesColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryBans queries the bans edge of a ChatRoom.
-func (c *ChatRoomClient) QueryBans(_m *ChatRoom) *ChatBanQuery {
-	query := (&ChatBanClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatroom.Table, chatroom.FieldID, id),
-			sqlgraph.To(chatban.Table, chatban.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, chatroom.BansTable, chatroom.BansColumn),
+			sqlgraph.From(environment.Table, environment.FieldID, id),
+			sqlgraph.To(flagenvironment.Table, flagenvironment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, environment.FlagEnvironmentsTable, environment.FlagEnvironmentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -774,131 +694,131 @@ func (c *ChatRoomClient) QueryBans(_m *ChatRoom) *ChatBanQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *ChatRoomClient) Hooks() []Hook {
-	return c.hooks.ChatRoom
+func (c *EnvironmentClient) Hooks() []Hook {
+	return c.hooks.Environment
 }
 
 // Interceptors returns the client interceptors.
-func (c *ChatRoomClient) Interceptors() []Interceptor {
-	return c.inters.ChatRoom
+func (c *EnvironmentClient) Interceptors() []Interceptor {
+	return c.inters.Environment
 }
 
-func (c *ChatRoomClient) mutate(ctx context.Context, m *ChatRoomMutation) (Value, error) {
+func (c *EnvironmentClient) mutate(ctx context.Context, m *EnvironmentMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&ChatRoomCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&EnvironmentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&ChatRoomUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&EnvironmentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&ChatRoomUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&EnvironmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&ChatRoomDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&EnvironmentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown ChatRoom mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Environment mutation op: %q", m.Op())
 	}
 }
 
-// PasswordTokenClient is a client for the PasswordToken schema.
-type PasswordTokenClient struct {
+// FlagClient is a client for the Flag schema.
+type FlagClient struct {
 	config
 }
 
-// NewPasswordTokenClient returns a client for the PasswordToken from the given config.
-func NewPasswordTokenClient(c config) *PasswordTokenClient {
-	return &PasswordTokenClient{config: c}
+// NewFlagClient returns a client for the Flag from the given config.
+func NewFlagClient(c config) *FlagClient {
+	return &FlagClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `passwordtoken.Hooks(f(g(h())))`.
-func (c *PasswordTokenClient) Use(hooks ...Hook) {
-	c.hooks.PasswordToken = append(c.hooks.PasswordToken, hooks...)
+// A call to `Use(f, g, h)` equals to `flag.Hooks(f(g(h())))`.
+func (c *FlagClient) Use(hooks ...Hook) {
+	c.hooks.Flag = append(c.hooks.Flag, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `passwordtoken.Intercept(f(g(h())))`.
-func (c *PasswordTokenClient) Intercept(interceptors ...Interceptor) {
-	c.inters.PasswordToken = append(c.inters.PasswordToken, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `flag.Intercept(f(g(h())))`.
+func (c *FlagClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Flag = append(c.inters.Flag, interceptors...)
 }
 
-// Create returns a builder for creating a PasswordToken entity.
-func (c *PasswordTokenClient) Create() *PasswordTokenCreate {
-	mutation := newPasswordTokenMutation(c.config, OpCreate)
-	return &PasswordTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Flag entity.
+func (c *FlagClient) Create() *FlagCreate {
+	mutation := newFlagMutation(c.config, OpCreate)
+	return &FlagCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of PasswordToken entities.
-func (c *PasswordTokenClient) CreateBulk(builders ...*PasswordTokenCreate) *PasswordTokenCreateBulk {
-	return &PasswordTokenCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Flag entities.
+func (c *FlagClient) CreateBulk(builders ...*FlagCreate) *FlagCreateBulk {
+	return &FlagCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *PasswordTokenClient) MapCreateBulk(slice any, setFunc func(*PasswordTokenCreate, int)) *PasswordTokenCreateBulk {
+func (c *FlagClient) MapCreateBulk(slice any, setFunc func(*FlagCreate, int)) *FlagCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &PasswordTokenCreateBulk{err: fmt.Errorf("calling to PasswordTokenClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &FlagCreateBulk{err: fmt.Errorf("calling to FlagClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*PasswordTokenCreate, rv.Len())
+	builders := make([]*FlagCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &PasswordTokenCreateBulk{config: c.config, builders: builders}
+	return &FlagCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for PasswordToken.
-func (c *PasswordTokenClient) Update() *PasswordTokenUpdate {
-	mutation := newPasswordTokenMutation(c.config, OpUpdate)
-	return &PasswordTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Flag.
+func (c *FlagClient) Update() *FlagUpdate {
+	mutation := newFlagMutation(c.config, OpUpdate)
+	return &FlagUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *PasswordTokenClient) UpdateOne(_m *PasswordToken) *PasswordTokenUpdateOne {
-	mutation := newPasswordTokenMutation(c.config, OpUpdateOne, withPasswordToken(_m))
-	return &PasswordTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *FlagClient) UpdateOne(_m *Flag) *FlagUpdateOne {
+	mutation := newFlagMutation(c.config, OpUpdateOne, withFlag(_m))
+	return &FlagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PasswordTokenClient) UpdateOneID(id int) *PasswordTokenUpdateOne {
-	mutation := newPasswordTokenMutation(c.config, OpUpdateOne, withPasswordTokenID(id))
-	return &PasswordTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *FlagClient) UpdateOneID(id int) *FlagUpdateOne {
+	mutation := newFlagMutation(c.config, OpUpdateOne, withFlagID(id))
+	return &FlagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for PasswordToken.
-func (c *PasswordTokenClient) Delete() *PasswordTokenDelete {
-	mutation := newPasswordTokenMutation(c.config, OpDelete)
-	return &PasswordTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Flag.
+func (c *FlagClient) Delete() *FlagDelete {
+	mutation := newFlagMutation(c.config, OpDelete)
+	return &FlagDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *PasswordTokenClient) DeleteOne(_m *PasswordToken) *PasswordTokenDeleteOne {
+func (c *FlagClient) DeleteOne(_m *Flag) *FlagDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PasswordTokenClient) DeleteOneID(id int) *PasswordTokenDeleteOne {
-	builder := c.Delete().Where(passwordtoken.ID(id))
+func (c *FlagClient) DeleteOneID(id int) *FlagDeleteOne {
+	builder := c.Delete().Where(flag.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &PasswordTokenDeleteOne{builder}
+	return &FlagDeleteOne{builder}
 }
 
-// Query returns a query builder for PasswordToken.
-func (c *PasswordTokenClient) Query() *PasswordTokenQuery {
-	return &PasswordTokenQuery{
+// Query returns a query builder for Flag.
+func (c *FlagClient) Query() *FlagQuery {
+	return &FlagQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypePasswordToken},
+		ctx:    &QueryContext{Type: TypeFlag},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a PasswordToken entity by its id.
-func (c *PasswordTokenClient) Get(ctx context.Context, id int) (*PasswordToken, error) {
-	return c.Query().Where(passwordtoken.ID(id)).Only(ctx)
+// Get returns a Flag entity by its id.
+func (c *FlagClient) Get(ctx context.Context, id int) (*Flag, error) {
+	return c.Query().Where(flag.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PasswordTokenClient) GetX(ctx context.Context, id int) *PasswordToken {
+func (c *FlagClient) GetX(ctx context.Context, id int) *Flag {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -906,15 +826,31 @@ func (c *PasswordTokenClient) GetX(ctx context.Context, id int) *PasswordToken {
 	return obj
 }
 
-// QueryUser queries the user edge of a PasswordToken.
-func (c *PasswordTokenClient) QueryUser(_m *PasswordToken) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
+// QueryProject queries the project edge of a Flag.
+func (c *FlagClient) QueryProject(_m *Flag) *ProjectQuery {
+	query := (&ProjectClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(passwordtoken.Table, passwordtoken.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, passwordtoken.UserTable, passwordtoken.UserColumn),
+			sqlgraph.From(flag.Table, flag.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, flag.ProjectTable, flag.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFlagEnvironments queries the flag_environments edge of a Flag.
+func (c *FlagClient) QueryFlagEnvironments(_m *Flag) *FlagEnvironmentQuery {
+	query := (&FlagEnvironmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(flag.Table, flag.FieldID, id),
+			sqlgraph.To(flagenvironment.Table, flagenvironment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, flag.FlagEnvironmentsTable, flag.FlagEnvironmentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -923,132 +859,131 @@ func (c *PasswordTokenClient) QueryUser(_m *PasswordToken) *UserQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *PasswordTokenClient) Hooks() []Hook {
-	hooks := c.hooks.PasswordToken
-	return append(hooks[:len(hooks):len(hooks)], passwordtoken.Hooks[:]...)
+func (c *FlagClient) Hooks() []Hook {
+	return c.hooks.Flag
 }
 
 // Interceptors returns the client interceptors.
-func (c *PasswordTokenClient) Interceptors() []Interceptor {
-	return c.inters.PasswordToken
+func (c *FlagClient) Interceptors() []Interceptor {
+	return c.inters.Flag
 }
 
-func (c *PasswordTokenClient) mutate(ctx context.Context, m *PasswordTokenMutation) (Value, error) {
+func (c *FlagClient) mutate(ctx context.Context, m *FlagMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&PasswordTokenCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&FlagCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&PasswordTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&FlagUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&PasswordTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&FlagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&PasswordTokenDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&FlagDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown PasswordToken mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Flag mutation op: %q", m.Op())
 	}
 }
 
-// PaymentCustomerClient is a client for the PaymentCustomer schema.
-type PaymentCustomerClient struct {
+// FlagEnvironmentClient is a client for the FlagEnvironment schema.
+type FlagEnvironmentClient struct {
 	config
 }
 
-// NewPaymentCustomerClient returns a client for the PaymentCustomer from the given config.
-func NewPaymentCustomerClient(c config) *PaymentCustomerClient {
-	return &PaymentCustomerClient{config: c}
+// NewFlagEnvironmentClient returns a client for the FlagEnvironment from the given config.
+func NewFlagEnvironmentClient(c config) *FlagEnvironmentClient {
+	return &FlagEnvironmentClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `paymentcustomer.Hooks(f(g(h())))`.
-func (c *PaymentCustomerClient) Use(hooks ...Hook) {
-	c.hooks.PaymentCustomer = append(c.hooks.PaymentCustomer, hooks...)
+// A call to `Use(f, g, h)` equals to `flagenvironment.Hooks(f(g(h())))`.
+func (c *FlagEnvironmentClient) Use(hooks ...Hook) {
+	c.hooks.FlagEnvironment = append(c.hooks.FlagEnvironment, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `paymentcustomer.Intercept(f(g(h())))`.
-func (c *PaymentCustomerClient) Intercept(interceptors ...Interceptor) {
-	c.inters.PaymentCustomer = append(c.inters.PaymentCustomer, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `flagenvironment.Intercept(f(g(h())))`.
+func (c *FlagEnvironmentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.FlagEnvironment = append(c.inters.FlagEnvironment, interceptors...)
 }
 
-// Create returns a builder for creating a PaymentCustomer entity.
-func (c *PaymentCustomerClient) Create() *PaymentCustomerCreate {
-	mutation := newPaymentCustomerMutation(c.config, OpCreate)
-	return &PaymentCustomerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a FlagEnvironment entity.
+func (c *FlagEnvironmentClient) Create() *FlagEnvironmentCreate {
+	mutation := newFlagEnvironmentMutation(c.config, OpCreate)
+	return &FlagEnvironmentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of PaymentCustomer entities.
-func (c *PaymentCustomerClient) CreateBulk(builders ...*PaymentCustomerCreate) *PaymentCustomerCreateBulk {
-	return &PaymentCustomerCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of FlagEnvironment entities.
+func (c *FlagEnvironmentClient) CreateBulk(builders ...*FlagEnvironmentCreate) *FlagEnvironmentCreateBulk {
+	return &FlagEnvironmentCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *PaymentCustomerClient) MapCreateBulk(slice any, setFunc func(*PaymentCustomerCreate, int)) *PaymentCustomerCreateBulk {
+func (c *FlagEnvironmentClient) MapCreateBulk(slice any, setFunc func(*FlagEnvironmentCreate, int)) *FlagEnvironmentCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &PaymentCustomerCreateBulk{err: fmt.Errorf("calling to PaymentCustomerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &FlagEnvironmentCreateBulk{err: fmt.Errorf("calling to FlagEnvironmentClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*PaymentCustomerCreate, rv.Len())
+	builders := make([]*FlagEnvironmentCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &PaymentCustomerCreateBulk{config: c.config, builders: builders}
+	return &FlagEnvironmentCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for PaymentCustomer.
-func (c *PaymentCustomerClient) Update() *PaymentCustomerUpdate {
-	mutation := newPaymentCustomerMutation(c.config, OpUpdate)
-	return &PaymentCustomerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for FlagEnvironment.
+func (c *FlagEnvironmentClient) Update() *FlagEnvironmentUpdate {
+	mutation := newFlagEnvironmentMutation(c.config, OpUpdate)
+	return &FlagEnvironmentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *PaymentCustomerClient) UpdateOne(_m *PaymentCustomer) *PaymentCustomerUpdateOne {
-	mutation := newPaymentCustomerMutation(c.config, OpUpdateOne, withPaymentCustomer(_m))
-	return &PaymentCustomerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *FlagEnvironmentClient) UpdateOne(_m *FlagEnvironment) *FlagEnvironmentUpdateOne {
+	mutation := newFlagEnvironmentMutation(c.config, OpUpdateOne, withFlagEnvironment(_m))
+	return &FlagEnvironmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PaymentCustomerClient) UpdateOneID(id int) *PaymentCustomerUpdateOne {
-	mutation := newPaymentCustomerMutation(c.config, OpUpdateOne, withPaymentCustomerID(id))
-	return &PaymentCustomerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *FlagEnvironmentClient) UpdateOneID(id int) *FlagEnvironmentUpdateOne {
+	mutation := newFlagEnvironmentMutation(c.config, OpUpdateOne, withFlagEnvironmentID(id))
+	return &FlagEnvironmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for PaymentCustomer.
-func (c *PaymentCustomerClient) Delete() *PaymentCustomerDelete {
-	mutation := newPaymentCustomerMutation(c.config, OpDelete)
-	return &PaymentCustomerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for FlagEnvironment.
+func (c *FlagEnvironmentClient) Delete() *FlagEnvironmentDelete {
+	mutation := newFlagEnvironmentMutation(c.config, OpDelete)
+	return &FlagEnvironmentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *PaymentCustomerClient) DeleteOne(_m *PaymentCustomer) *PaymentCustomerDeleteOne {
+func (c *FlagEnvironmentClient) DeleteOne(_m *FlagEnvironment) *FlagEnvironmentDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PaymentCustomerClient) DeleteOneID(id int) *PaymentCustomerDeleteOne {
-	builder := c.Delete().Where(paymentcustomer.ID(id))
+func (c *FlagEnvironmentClient) DeleteOneID(id int) *FlagEnvironmentDeleteOne {
+	builder := c.Delete().Where(flagenvironment.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &PaymentCustomerDeleteOne{builder}
+	return &FlagEnvironmentDeleteOne{builder}
 }
 
-// Query returns a query builder for PaymentCustomer.
-func (c *PaymentCustomerClient) Query() *PaymentCustomerQuery {
-	return &PaymentCustomerQuery{
+// Query returns a query builder for FlagEnvironment.
+func (c *FlagEnvironmentClient) Query() *FlagEnvironmentQuery {
+	return &FlagEnvironmentQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypePaymentCustomer},
+		ctx:    &QueryContext{Type: TypeFlagEnvironment},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a PaymentCustomer entity by its id.
-func (c *PaymentCustomerClient) Get(ctx context.Context, id int) (*PaymentCustomer, error) {
-	return c.Query().Where(paymentcustomer.ID(id)).Only(ctx)
+// Get returns a FlagEnvironment entity by its id.
+func (c *FlagEnvironmentClient) Get(ctx context.Context, id int) (*FlagEnvironment, error) {
+	return c.Query().Where(flagenvironment.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PaymentCustomerClient) GetX(ctx context.Context, id int) *PaymentCustomer {
+func (c *FlagEnvironmentClient) GetX(ctx context.Context, id int) *FlagEnvironment {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1056,15 +991,15 @@ func (c *PaymentCustomerClient) GetX(ctx context.Context, id int) *PaymentCustom
 	return obj
 }
 
-// QueryUser queries the user edge of a PaymentCustomer.
-func (c *PaymentCustomerClient) QueryUser(_m *PaymentCustomer) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
+// QueryFlag queries the flag edge of a FlagEnvironment.
+func (c *FlagEnvironmentClient) QueryFlag(_m *FlagEnvironment) *FlagQuery {
+	query := (&FlagClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(paymentcustomer.Table, paymentcustomer.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, paymentcustomer.UserTable, paymentcustomer.UserColumn),
+			sqlgraph.From(flagenvironment.Table, flagenvironment.FieldID, id),
+			sqlgraph.To(flag.Table, flag.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, flagenvironment.FlagTable, flagenvironment.FlagColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1072,15 +1007,15 @@ func (c *PaymentCustomerClient) QueryUser(_m *PaymentCustomer) *UserQuery {
 	return query
 }
 
-// QueryPaymentIntents queries the payment_intents edge of a PaymentCustomer.
-func (c *PaymentCustomerClient) QueryPaymentIntents(_m *PaymentCustomer) *PaymentIntentQuery {
-	query := (&PaymentIntentClient{config: c.config}).Query()
+// QueryEnvironment queries the environment edge of a FlagEnvironment.
+func (c *FlagEnvironmentClient) QueryEnvironment(_m *FlagEnvironment) *EnvironmentQuery {
+	query := (&EnvironmentClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(paymentcustomer.Table, paymentcustomer.FieldID, id),
-			sqlgraph.To(paymentintent.Table, paymentintent.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, paymentcustomer.PaymentIntentsTable, paymentcustomer.PaymentIntentsColumn),
+			sqlgraph.From(flagenvironment.Table, flagenvironment.FieldID, id),
+			sqlgraph.To(environment.Table, environment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, flagenvironment.EnvironmentTable, flagenvironment.EnvironmentColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1088,31 +1023,15 @@ func (c *PaymentCustomerClient) QueryPaymentIntents(_m *PaymentCustomer) *Paymen
 	return query
 }
 
-// QuerySubscriptions queries the subscriptions edge of a PaymentCustomer.
-func (c *PaymentCustomerClient) QuerySubscriptions(_m *PaymentCustomer) *SubscriptionQuery {
-	query := (&SubscriptionClient{config: c.config}).Query()
+// QueryStrategies queries the strategies edge of a FlagEnvironment.
+func (c *FlagEnvironmentClient) QueryStrategies(_m *FlagEnvironment) *StrategyQuery {
+	query := (&StrategyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(paymentcustomer.Table, paymentcustomer.FieldID, id),
-			sqlgraph.To(subscription.Table, subscription.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, paymentcustomer.SubscriptionsTable, paymentcustomer.SubscriptionsColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPaymentMethods queries the payment_methods edge of a PaymentCustomer.
-func (c *PaymentCustomerClient) QueryPaymentMethods(_m *PaymentCustomer) *PaymentMethodQuery {
-	query := (&PaymentMethodClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(paymentcustomer.Table, paymentcustomer.FieldID, id),
-			sqlgraph.To(paymentmethod.Table, paymentmethod.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, paymentcustomer.PaymentMethodsTable, paymentcustomer.PaymentMethodsColumn),
+			sqlgraph.From(flagenvironment.Table, flagenvironment.FieldID, id),
+			sqlgraph.To(strategy.Table, strategy.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, flagenvironment.StrategiesTable, flagenvironment.StrategiesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1121,131 +1040,131 @@ func (c *PaymentCustomerClient) QueryPaymentMethods(_m *PaymentCustomer) *Paymen
 }
 
 // Hooks returns the client hooks.
-func (c *PaymentCustomerClient) Hooks() []Hook {
-	return c.hooks.PaymentCustomer
+func (c *FlagEnvironmentClient) Hooks() []Hook {
+	return c.hooks.FlagEnvironment
 }
 
 // Interceptors returns the client interceptors.
-func (c *PaymentCustomerClient) Interceptors() []Interceptor {
-	return c.inters.PaymentCustomer
+func (c *FlagEnvironmentClient) Interceptors() []Interceptor {
+	return c.inters.FlagEnvironment
 }
 
-func (c *PaymentCustomerClient) mutate(ctx context.Context, m *PaymentCustomerMutation) (Value, error) {
+func (c *FlagEnvironmentClient) mutate(ctx context.Context, m *FlagEnvironmentMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&PaymentCustomerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&FlagEnvironmentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&PaymentCustomerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&FlagEnvironmentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&PaymentCustomerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&FlagEnvironmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&PaymentCustomerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&FlagEnvironmentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown PaymentCustomer mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown FlagEnvironment mutation op: %q", m.Op())
 	}
 }
 
-// PaymentIntentClient is a client for the PaymentIntent schema.
-type PaymentIntentClient struct {
+// ProjectClient is a client for the Project schema.
+type ProjectClient struct {
 	config
 }
 
-// NewPaymentIntentClient returns a client for the PaymentIntent from the given config.
-func NewPaymentIntentClient(c config) *PaymentIntentClient {
-	return &PaymentIntentClient{config: c}
+// NewProjectClient returns a client for the Project from the given config.
+func NewProjectClient(c config) *ProjectClient {
+	return &ProjectClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `paymentintent.Hooks(f(g(h())))`.
-func (c *PaymentIntentClient) Use(hooks ...Hook) {
-	c.hooks.PaymentIntent = append(c.hooks.PaymentIntent, hooks...)
+// A call to `Use(f, g, h)` equals to `project.Hooks(f(g(h())))`.
+func (c *ProjectClient) Use(hooks ...Hook) {
+	c.hooks.Project = append(c.hooks.Project, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `paymentintent.Intercept(f(g(h())))`.
-func (c *PaymentIntentClient) Intercept(interceptors ...Interceptor) {
-	c.inters.PaymentIntent = append(c.inters.PaymentIntent, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `project.Intercept(f(g(h())))`.
+func (c *ProjectClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Project = append(c.inters.Project, interceptors...)
 }
 
-// Create returns a builder for creating a PaymentIntent entity.
-func (c *PaymentIntentClient) Create() *PaymentIntentCreate {
-	mutation := newPaymentIntentMutation(c.config, OpCreate)
-	return &PaymentIntentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Project entity.
+func (c *ProjectClient) Create() *ProjectCreate {
+	mutation := newProjectMutation(c.config, OpCreate)
+	return &ProjectCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of PaymentIntent entities.
-func (c *PaymentIntentClient) CreateBulk(builders ...*PaymentIntentCreate) *PaymentIntentCreateBulk {
-	return &PaymentIntentCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Project entities.
+func (c *ProjectClient) CreateBulk(builders ...*ProjectCreate) *ProjectCreateBulk {
+	return &ProjectCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *PaymentIntentClient) MapCreateBulk(slice any, setFunc func(*PaymentIntentCreate, int)) *PaymentIntentCreateBulk {
+func (c *ProjectClient) MapCreateBulk(slice any, setFunc func(*ProjectCreate, int)) *ProjectCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &PaymentIntentCreateBulk{err: fmt.Errorf("calling to PaymentIntentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &ProjectCreateBulk{err: fmt.Errorf("calling to ProjectClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*PaymentIntentCreate, rv.Len())
+	builders := make([]*ProjectCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &PaymentIntentCreateBulk{config: c.config, builders: builders}
+	return &ProjectCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for PaymentIntent.
-func (c *PaymentIntentClient) Update() *PaymentIntentUpdate {
-	mutation := newPaymentIntentMutation(c.config, OpUpdate)
-	return &PaymentIntentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Project.
+func (c *ProjectClient) Update() *ProjectUpdate {
+	mutation := newProjectMutation(c.config, OpUpdate)
+	return &ProjectUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *PaymentIntentClient) UpdateOne(_m *PaymentIntent) *PaymentIntentUpdateOne {
-	mutation := newPaymentIntentMutation(c.config, OpUpdateOne, withPaymentIntent(_m))
-	return &PaymentIntentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ProjectClient) UpdateOne(_m *Project) *ProjectUpdateOne {
+	mutation := newProjectMutation(c.config, OpUpdateOne, withProject(_m))
+	return &ProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PaymentIntentClient) UpdateOneID(id int) *PaymentIntentUpdateOne {
-	mutation := newPaymentIntentMutation(c.config, OpUpdateOne, withPaymentIntentID(id))
-	return &PaymentIntentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ProjectClient) UpdateOneID(id int) *ProjectUpdateOne {
+	mutation := newProjectMutation(c.config, OpUpdateOne, withProjectID(id))
+	return &ProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for PaymentIntent.
-func (c *PaymentIntentClient) Delete() *PaymentIntentDelete {
-	mutation := newPaymentIntentMutation(c.config, OpDelete)
-	return &PaymentIntentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Project.
+func (c *ProjectClient) Delete() *ProjectDelete {
+	mutation := newProjectMutation(c.config, OpDelete)
+	return &ProjectDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *PaymentIntentClient) DeleteOne(_m *PaymentIntent) *PaymentIntentDeleteOne {
+func (c *ProjectClient) DeleteOne(_m *Project) *ProjectDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PaymentIntentClient) DeleteOneID(id int) *PaymentIntentDeleteOne {
-	builder := c.Delete().Where(paymentintent.ID(id))
+func (c *ProjectClient) DeleteOneID(id int) *ProjectDeleteOne {
+	builder := c.Delete().Where(project.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &PaymentIntentDeleteOne{builder}
+	return &ProjectDeleteOne{builder}
 }
 
-// Query returns a query builder for PaymentIntent.
-func (c *PaymentIntentClient) Query() *PaymentIntentQuery {
-	return &PaymentIntentQuery{
+// Query returns a query builder for Project.
+func (c *ProjectClient) Query() *ProjectQuery {
+	return &ProjectQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypePaymentIntent},
+		ctx:    &QueryContext{Type: TypeProject},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a PaymentIntent entity by its id.
-func (c *PaymentIntentClient) Get(ctx context.Context, id int) (*PaymentIntent, error) {
-	return c.Query().Where(paymentintent.ID(id)).Only(ctx)
+// Get returns a Project entity by its id.
+func (c *ProjectClient) Get(ctx context.Context, id int) (*Project, error) {
+	return c.Query().Where(project.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PaymentIntentClient) GetX(ctx context.Context, id int) *PaymentIntent {
+func (c *ProjectClient) GetX(ctx context.Context, id int) *Project {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1253,15 +1172,47 @@ func (c *PaymentIntentClient) GetX(ctx context.Context, id int) *PaymentIntent {
 	return obj
 }
 
-// QueryCustomer queries the customer edge of a PaymentIntent.
-func (c *PaymentIntentClient) QueryCustomer(_m *PaymentIntent) *PaymentCustomerQuery {
-	query := (&PaymentCustomerClient{config: c.config}).Query()
+// QueryEnvironments queries the environments edge of a Project.
+func (c *ProjectClient) QueryEnvironments(_m *Project) *EnvironmentQuery {
+	query := (&EnvironmentClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(paymentintent.Table, paymentintent.FieldID, id),
-			sqlgraph.To(paymentcustomer.Table, paymentcustomer.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, paymentintent.CustomerTable, paymentintent.CustomerColumn),
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(environment.Table, environment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.EnvironmentsTable, project.EnvironmentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFlags queries the flags edge of a Project.
+func (c *ProjectClient) QueryFlags(_m *Project) *FlagQuery {
+	query := (&FlagClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(flag.Table, flag.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.FlagsTable, project.FlagsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAPITokens queries the api_tokens edge of a Project.
+func (c *ProjectClient) QueryAPITokens(_m *Project) *ApiTokenQuery {
+	query := (&ApiTokenClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(apitoken.Table, apitoken.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.APITokensTable, project.APITokensColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1270,131 +1221,131 @@ func (c *PaymentIntentClient) QueryCustomer(_m *PaymentIntent) *PaymentCustomerQ
 }
 
 // Hooks returns the client hooks.
-func (c *PaymentIntentClient) Hooks() []Hook {
-	return c.hooks.PaymentIntent
+func (c *ProjectClient) Hooks() []Hook {
+	return c.hooks.Project
 }
 
 // Interceptors returns the client interceptors.
-func (c *PaymentIntentClient) Interceptors() []Interceptor {
-	return c.inters.PaymentIntent
+func (c *ProjectClient) Interceptors() []Interceptor {
+	return c.inters.Project
 }
 
-func (c *PaymentIntentClient) mutate(ctx context.Context, m *PaymentIntentMutation) (Value, error) {
+func (c *ProjectClient) mutate(ctx context.Context, m *ProjectMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&PaymentIntentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ProjectCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&PaymentIntentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ProjectUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&PaymentIntentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&ProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&PaymentIntentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&ProjectDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown PaymentIntent mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Project mutation op: %q", m.Op())
 	}
 }
 
-// PaymentMethodClient is a client for the PaymentMethod schema.
-type PaymentMethodClient struct {
+// StrategyClient is a client for the Strategy schema.
+type StrategyClient struct {
 	config
 }
 
-// NewPaymentMethodClient returns a client for the PaymentMethod from the given config.
-func NewPaymentMethodClient(c config) *PaymentMethodClient {
-	return &PaymentMethodClient{config: c}
+// NewStrategyClient returns a client for the Strategy from the given config.
+func NewStrategyClient(c config) *StrategyClient {
+	return &StrategyClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `paymentmethod.Hooks(f(g(h())))`.
-func (c *PaymentMethodClient) Use(hooks ...Hook) {
-	c.hooks.PaymentMethod = append(c.hooks.PaymentMethod, hooks...)
+// A call to `Use(f, g, h)` equals to `strategy.Hooks(f(g(h())))`.
+func (c *StrategyClient) Use(hooks ...Hook) {
+	c.hooks.Strategy = append(c.hooks.Strategy, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `paymentmethod.Intercept(f(g(h())))`.
-func (c *PaymentMethodClient) Intercept(interceptors ...Interceptor) {
-	c.inters.PaymentMethod = append(c.inters.PaymentMethod, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `strategy.Intercept(f(g(h())))`.
+func (c *StrategyClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Strategy = append(c.inters.Strategy, interceptors...)
 }
 
-// Create returns a builder for creating a PaymentMethod entity.
-func (c *PaymentMethodClient) Create() *PaymentMethodCreate {
-	mutation := newPaymentMethodMutation(c.config, OpCreate)
-	return &PaymentMethodCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Strategy entity.
+func (c *StrategyClient) Create() *StrategyCreate {
+	mutation := newStrategyMutation(c.config, OpCreate)
+	return &StrategyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of PaymentMethod entities.
-func (c *PaymentMethodClient) CreateBulk(builders ...*PaymentMethodCreate) *PaymentMethodCreateBulk {
-	return &PaymentMethodCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Strategy entities.
+func (c *StrategyClient) CreateBulk(builders ...*StrategyCreate) *StrategyCreateBulk {
+	return &StrategyCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *PaymentMethodClient) MapCreateBulk(slice any, setFunc func(*PaymentMethodCreate, int)) *PaymentMethodCreateBulk {
+func (c *StrategyClient) MapCreateBulk(slice any, setFunc func(*StrategyCreate, int)) *StrategyCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &PaymentMethodCreateBulk{err: fmt.Errorf("calling to PaymentMethodClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &StrategyCreateBulk{err: fmt.Errorf("calling to StrategyClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*PaymentMethodCreate, rv.Len())
+	builders := make([]*StrategyCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &PaymentMethodCreateBulk{config: c.config, builders: builders}
+	return &StrategyCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for PaymentMethod.
-func (c *PaymentMethodClient) Update() *PaymentMethodUpdate {
-	mutation := newPaymentMethodMutation(c.config, OpUpdate)
-	return &PaymentMethodUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Strategy.
+func (c *StrategyClient) Update() *StrategyUpdate {
+	mutation := newStrategyMutation(c.config, OpUpdate)
+	return &StrategyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *PaymentMethodClient) UpdateOne(_m *PaymentMethod) *PaymentMethodUpdateOne {
-	mutation := newPaymentMethodMutation(c.config, OpUpdateOne, withPaymentMethod(_m))
-	return &PaymentMethodUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *StrategyClient) UpdateOne(_m *Strategy) *StrategyUpdateOne {
+	mutation := newStrategyMutation(c.config, OpUpdateOne, withStrategy(_m))
+	return &StrategyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PaymentMethodClient) UpdateOneID(id int) *PaymentMethodUpdateOne {
-	mutation := newPaymentMethodMutation(c.config, OpUpdateOne, withPaymentMethodID(id))
-	return &PaymentMethodUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *StrategyClient) UpdateOneID(id int) *StrategyUpdateOne {
+	mutation := newStrategyMutation(c.config, OpUpdateOne, withStrategyID(id))
+	return &StrategyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for PaymentMethod.
-func (c *PaymentMethodClient) Delete() *PaymentMethodDelete {
-	mutation := newPaymentMethodMutation(c.config, OpDelete)
-	return &PaymentMethodDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Strategy.
+func (c *StrategyClient) Delete() *StrategyDelete {
+	mutation := newStrategyMutation(c.config, OpDelete)
+	return &StrategyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *PaymentMethodClient) DeleteOne(_m *PaymentMethod) *PaymentMethodDeleteOne {
+func (c *StrategyClient) DeleteOne(_m *Strategy) *StrategyDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PaymentMethodClient) DeleteOneID(id int) *PaymentMethodDeleteOne {
-	builder := c.Delete().Where(paymentmethod.ID(id))
+func (c *StrategyClient) DeleteOneID(id int) *StrategyDeleteOne {
+	builder := c.Delete().Where(strategy.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &PaymentMethodDeleteOne{builder}
+	return &StrategyDeleteOne{builder}
 }
 
-// Query returns a query builder for PaymentMethod.
-func (c *PaymentMethodClient) Query() *PaymentMethodQuery {
-	return &PaymentMethodQuery{
+// Query returns a query builder for Strategy.
+func (c *StrategyClient) Query() *StrategyQuery {
+	return &StrategyQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypePaymentMethod},
+		ctx:    &QueryContext{Type: TypeStrategy},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a PaymentMethod entity by its id.
-func (c *PaymentMethodClient) Get(ctx context.Context, id int) (*PaymentMethod, error) {
-	return c.Query().Where(paymentmethod.ID(id)).Only(ctx)
+// Get returns a Strategy entity by its id.
+func (c *StrategyClient) Get(ctx context.Context, id int) (*Strategy, error) {
+	return c.Query().Where(strategy.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PaymentMethodClient) GetX(ctx context.Context, id int) *PaymentMethod {
+func (c *StrategyClient) GetX(ctx context.Context, id int) *Strategy {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1402,15 +1353,31 @@ func (c *PaymentMethodClient) GetX(ctx context.Context, id int) *PaymentMethod {
 	return obj
 }
 
-// QueryCustomer queries the customer edge of a PaymentMethod.
-func (c *PaymentMethodClient) QueryCustomer(_m *PaymentMethod) *PaymentCustomerQuery {
-	query := (&PaymentCustomerClient{config: c.config}).Query()
+// QueryFlagEnvironment queries the flag_environment edge of a Strategy.
+func (c *StrategyClient) QueryFlagEnvironment(_m *Strategy) *FlagEnvironmentQuery {
+	query := (&FlagEnvironmentClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(paymentmethod.Table, paymentmethod.FieldID, id),
-			sqlgraph.To(paymentcustomer.Table, paymentcustomer.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, paymentmethod.CustomerTable, paymentmethod.CustomerColumn),
+			sqlgraph.From(strategy.Table, strategy.FieldID, id),
+			sqlgraph.To(flagenvironment.Table, flagenvironment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, strategy.FlagEnvironmentTable, strategy.FlagEnvironmentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryConstraints queries the constraints edge of a Strategy.
+func (c *StrategyClient) QueryConstraints(_m *Strategy) *ConstraintQuery {
+	query := (&ConstraintClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(strategy.Table, strategy.FieldID, id),
+			sqlgraph.To(constraint.Table, constraint.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, strategy.ConstraintsTable, strategy.ConstraintsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1419,417 +1386,38 @@ func (c *PaymentMethodClient) QueryCustomer(_m *PaymentMethod) *PaymentCustomerQ
 }
 
 // Hooks returns the client hooks.
-func (c *PaymentMethodClient) Hooks() []Hook {
-	return c.hooks.PaymentMethod
+func (c *StrategyClient) Hooks() []Hook {
+	return c.hooks.Strategy
 }
 
 // Interceptors returns the client interceptors.
-func (c *PaymentMethodClient) Interceptors() []Interceptor {
-	return c.inters.PaymentMethod
+func (c *StrategyClient) Interceptors() []Interceptor {
+	return c.inters.Strategy
 }
 
-func (c *PaymentMethodClient) mutate(ctx context.Context, m *PaymentMethodMutation) (Value, error) {
+func (c *StrategyClient) mutate(ctx context.Context, m *StrategyMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&PaymentMethodCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&StrategyCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&PaymentMethodUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&StrategyUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&PaymentMethodUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&StrategyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&PaymentMethodDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&StrategyDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown PaymentMethod mutation op: %q", m.Op())
-	}
-}
-
-// SubscriptionClient is a client for the Subscription schema.
-type SubscriptionClient struct {
-	config
-}
-
-// NewSubscriptionClient returns a client for the Subscription from the given config.
-func NewSubscriptionClient(c config) *SubscriptionClient {
-	return &SubscriptionClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `subscription.Hooks(f(g(h())))`.
-func (c *SubscriptionClient) Use(hooks ...Hook) {
-	c.hooks.Subscription = append(c.hooks.Subscription, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `subscription.Intercept(f(g(h())))`.
-func (c *SubscriptionClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Subscription = append(c.inters.Subscription, interceptors...)
-}
-
-// Create returns a builder for creating a Subscription entity.
-func (c *SubscriptionClient) Create() *SubscriptionCreate {
-	mutation := newSubscriptionMutation(c.config, OpCreate)
-	return &SubscriptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Subscription entities.
-func (c *SubscriptionClient) CreateBulk(builders ...*SubscriptionCreate) *SubscriptionCreateBulk {
-	return &SubscriptionCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *SubscriptionClient) MapCreateBulk(slice any, setFunc func(*SubscriptionCreate, int)) *SubscriptionCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &SubscriptionCreateBulk{err: fmt.Errorf("calling to SubscriptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*SubscriptionCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &SubscriptionCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Subscription.
-func (c *SubscriptionClient) Update() *SubscriptionUpdate {
-	mutation := newSubscriptionMutation(c.config, OpUpdate)
-	return &SubscriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *SubscriptionClient) UpdateOne(_m *Subscription) *SubscriptionUpdateOne {
-	mutation := newSubscriptionMutation(c.config, OpUpdateOne, withSubscription(_m))
-	return &SubscriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *SubscriptionClient) UpdateOneID(id int) *SubscriptionUpdateOne {
-	mutation := newSubscriptionMutation(c.config, OpUpdateOne, withSubscriptionID(id))
-	return &SubscriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Subscription.
-func (c *SubscriptionClient) Delete() *SubscriptionDelete {
-	mutation := newSubscriptionMutation(c.config, OpDelete)
-	return &SubscriptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *SubscriptionClient) DeleteOne(_m *Subscription) *SubscriptionDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *SubscriptionClient) DeleteOneID(id int) *SubscriptionDeleteOne {
-	builder := c.Delete().Where(subscription.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &SubscriptionDeleteOne{builder}
-}
-
-// Query returns a query builder for Subscription.
-func (c *SubscriptionClient) Query() *SubscriptionQuery {
-	return &SubscriptionQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeSubscription},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Subscription entity by its id.
-func (c *SubscriptionClient) Get(ctx context.Context, id int) (*Subscription, error) {
-	return c.Query().Where(subscription.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *SubscriptionClient) GetX(ctx context.Context, id int) *Subscription {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryCustomer queries the customer edge of a Subscription.
-func (c *SubscriptionClient) QueryCustomer(_m *Subscription) *PaymentCustomerQuery {
-	query := (&PaymentCustomerClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(subscription.Table, subscription.FieldID, id),
-			sqlgraph.To(paymentcustomer.Table, paymentcustomer.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, subscription.CustomerTable, subscription.CustomerColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *SubscriptionClient) Hooks() []Hook {
-	return c.hooks.Subscription
-}
-
-// Interceptors returns the client interceptors.
-func (c *SubscriptionClient) Interceptors() []Interceptor {
-	return c.inters.Subscription
-}
-
-func (c *SubscriptionClient) mutate(ctx context.Context, m *SubscriptionMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&SubscriptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&SubscriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&SubscriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&SubscriptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Subscription mutation op: %q", m.Op())
-	}
-}
-
-// UserClient is a client for the User schema.
-type UserClient struct {
-	config
-}
-
-// NewUserClient returns a client for the User from the given config.
-func NewUserClient(c config) *UserClient {
-	return &UserClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
-func (c *UserClient) Use(hooks ...Hook) {
-	c.hooks.User = append(c.hooks.User, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
-func (c *UserClient) Intercept(interceptors ...Interceptor) {
-	c.inters.User = append(c.inters.User, interceptors...)
-}
-
-// Create returns a builder for creating a User entity.
-func (c *UserClient) Create() *UserCreate {
-	mutation := newUserMutation(c.config, OpCreate)
-	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of User entities.
-func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
-	return &UserCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*UserCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &UserCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for User.
-func (c *UserClient) Update() *UserUpdate {
-	mutation := newUserMutation(c.config, OpUpdate)
-	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *UserClient) UpdateOne(_m *User) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUser(_m))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for User.
-func (c *UserClient) Delete() *UserDelete {
-	mutation := newUserMutation(c.config, OpDelete)
-	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *UserClient) DeleteOne(_m *User) *UserDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
-	builder := c.Delete().Where(user.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &UserDeleteOne{builder}
-}
-
-// Query returns a query builder for User.
-func (c *UserClient) Query() *UserQuery {
-	return &UserQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeUser},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
-	return c.Query().Where(user.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryOwner queries the owner edge of a User.
-func (c *UserClient) QueryOwner(_m *User) *PasswordTokenQuery {
-	query := (&PasswordTokenClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(passwordtoken.Table, passwordtoken.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, user.OwnerTable, user.OwnerColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPaymentCustomer queries the payment_customer edge of a User.
-func (c *UserClient) QueryPaymentCustomer(_m *User) *PaymentCustomerQuery {
-	query := (&PaymentCustomerClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(paymentcustomer.Table, paymentcustomer.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, user.PaymentCustomerTable, user.PaymentCustomerColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOwnedChatRooms queries the owned_chat_rooms edge of a User.
-func (c *UserClient) QueryOwnedChatRooms(_m *User) *ChatRoomQuery {
-	query := (&ChatRoomClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(chatroom.Table, chatroom.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.OwnedChatRoomsTable, user.OwnedChatRoomsColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryChatMessages queries the chat_messages edge of a User.
-func (c *UserClient) QueryChatMessages(_m *User) *ChatMessageQuery {
-	query := (&ChatMessageClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(chatmessage.Table, chatmessage.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ChatMessagesTable, user.ChatMessagesColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryChatBans queries the chat_bans edge of a User.
-func (c *UserClient) QueryChatBans(_m *User) *ChatBanQuery {
-	query := (&ChatBanClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(chatban.Table, chatban.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ChatBansTable, user.ChatBansColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryChatBansIssued queries the chat_bans_issued edge of a User.
-func (c *UserClient) QueryChatBansIssued(_m *User) *ChatBanQuery {
-	query := (&ChatBanClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(chatban.Table, chatban.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ChatBansIssuedTable, user.ChatBansIssuedColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *UserClient) Hooks() []Hook {
-	hooks := c.hooks.User
-	return append(hooks[:len(hooks):len(hooks)], user.Hooks[:]...)
-}
-
-// Interceptors returns the client interceptors.
-func (c *UserClient) Interceptors() []Interceptor {
-	return c.inters.User
-}
-
-func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Strategy mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		ChatBan, ChatMessage, ChatRoom, PasswordToken, PaymentCustomer, PaymentIntent,
-		PaymentMethod, Subscription, User []ent.Hook
+		ApiToken, Constraint, Environment, Flag, FlagEnvironment, Project,
+		Strategy []ent.Hook
 	}
 	inters struct {
-		ChatBan, ChatMessage, ChatRoom, PasswordToken, PaymentCustomer, PaymentIntent,
-		PaymentMethod, Subscription, User []ent.Interceptor
+		ApiToken, Constraint, Environment, Flag, FlagEnvironment, Project,
+		Strategy []ent.Interceptor
 	}
 )

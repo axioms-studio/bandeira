@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/occult/pagode/config"
-	"github.com/occult/pagode/pkg/services"
+	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/pkg/services"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/stretchr/testify/assert"

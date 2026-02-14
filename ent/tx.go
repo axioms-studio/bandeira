@@ -12,24 +12,20 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// ChatBan is the client for interacting with the ChatBan builders.
-	ChatBan *ChatBanClient
-	// ChatMessage is the client for interacting with the ChatMessage builders.
-	ChatMessage *ChatMessageClient
-	// ChatRoom is the client for interacting with the ChatRoom builders.
-	ChatRoom *ChatRoomClient
-	// PasswordToken is the client for interacting with the PasswordToken builders.
-	PasswordToken *PasswordTokenClient
-	// PaymentCustomer is the client for interacting with the PaymentCustomer builders.
-	PaymentCustomer *PaymentCustomerClient
-	// PaymentIntent is the client for interacting with the PaymentIntent builders.
-	PaymentIntent *PaymentIntentClient
-	// PaymentMethod is the client for interacting with the PaymentMethod builders.
-	PaymentMethod *PaymentMethodClient
-	// Subscription is the client for interacting with the Subscription builders.
-	Subscription *SubscriptionClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// ApiToken is the client for interacting with the ApiToken builders.
+	ApiToken *ApiTokenClient
+	// Constraint is the client for interacting with the Constraint builders.
+	Constraint *ConstraintClient
+	// Environment is the client for interacting with the Environment builders.
+	Environment *EnvironmentClient
+	// Flag is the client for interacting with the Flag builders.
+	Flag *FlagClient
+	// FlagEnvironment is the client for interacting with the FlagEnvironment builders.
+	FlagEnvironment *FlagEnvironmentClient
+	// Project is the client for interacting with the Project builders.
+	Project *ProjectClient
+	// Strategy is the client for interacting with the Strategy builders.
+	Strategy *StrategyClient
 
 	// lazily loaded.
 	client     *Client
@@ -161,15 +157,13 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.ChatBan = NewChatBanClient(tx.config)
-	tx.ChatMessage = NewChatMessageClient(tx.config)
-	tx.ChatRoom = NewChatRoomClient(tx.config)
-	tx.PasswordToken = NewPasswordTokenClient(tx.config)
-	tx.PaymentCustomer = NewPaymentCustomerClient(tx.config)
-	tx.PaymentIntent = NewPaymentIntentClient(tx.config)
-	tx.PaymentMethod = NewPaymentMethodClient(tx.config)
-	tx.Subscription = NewSubscriptionClient(tx.config)
-	tx.User = NewUserClient(tx.config)
+	tx.ApiToken = NewApiTokenClient(tx.config)
+	tx.Constraint = NewConstraintClient(tx.config)
+	tx.Environment = NewEnvironmentClient(tx.config)
+	tx.Flag = NewFlagClient(tx.config)
+	tx.FlagEnvironment = NewFlagEnvironmentClient(tx.config)
+	tx.Project = NewProjectClient(tx.config)
+	tx.Strategy = NewStrategyClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -179,7 +173,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: ChatBan.QueryXXX(), the query will be executed
+// applies a query, for example: ApiToken.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

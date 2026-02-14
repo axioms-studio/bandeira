@@ -18,10 +18,6 @@ ent-gen: ## Generate Ent code
 ent-new: ## Create a new Ent entity (ie, make ent-new name=MyEntity)
 	go run entgo.io/ent/cmd/ent new $(name)
 
-.PHONY: admin
-admin: ## Create a new admin user (ie, make admin email=myemail@web.com)
-	go run cmd/admin/main.go --email=$(email)
-
 .PHONY: run
 run: ## Run the application
 	clear
@@ -40,14 +36,10 @@ test: ## Run all tests
 check-updates: ## Check for direct dependency updates
 	go list -u -m -f '{{if not .Indirect}}{{.}}{{end}}' all | grep "\["
 
-.PHONY: chat-clear
-chat-clear: ## Clear all chat messages, rooms, bans, and uploaded files
-	@echo "Clearing chat uploads..."
-	rm -rf static/chat-uploads/*
-	@echo "Clearing chat tables..."
-	sqlite3 dbs/main.db "DELETE FROM chat_bans; DELETE FROM chat_messages; DELETE FROM chat_rooms;"
-	@echo "Chat data cleared."
+.PHONY: seed
+seed: ## Print the default admin password from config
+	@echo "Admin password: $$(grep 'adminPassword' config/config.yaml | awk '{print $$2}' | tr -d '\"')"
 
 .PHONY: docker-build
-docker-build: ## Build the application
-	nixpacks build . --name pagode
+docker-build: ## Build the Docker image
+	nixpacks build . --name bandeira

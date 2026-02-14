@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/occult/pagode/pkg/context"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/context"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 

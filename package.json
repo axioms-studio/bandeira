@@ -1,7 +1,7 @@
 {
-  "name": "pagode",
-  "version": "1.0.0",
-  "description": "[![Go Report Card](https://goreportcard.com/badge/github.com/mikestefanello/pagoda)](https://goreportcard.com/report/github.com/mikestefanello/pagoda) [![Test](https://github.com/mikestefanello/pagoda/actions/workflows/test.yml/badge.svg)](https://github.com/mikestefanello/pagoda/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Go Reference](https://pkg.go.dev/badge/github.com/mikestefanello/pagoda.svg)](https://pkg.go.dev/github.com/mikestefanello/pagoda) [![GoT](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev) [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)",
+  "name": "bandeira",
+  "version": "0.1.0",
+  "description": "Self-hosted feature flag service",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/occult/pagode.git"
+    "url": "git+https://github.com/felipekafuri/bandeira.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/occult/pagode/issues"
+    "url": "https://github.com/felipekafuri/bandeira/issues"
   },
-  "homepage": "https://github.com/occult/pagode#readme",
+  "homepage": "https://github.com/felipekafuri/bandeira#readme",
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@inertiajs/react": "^2.0.11",
@@ -41,6 +41,7 @@
     "laravel-vite-plugin": "^1.3.0",
     "lucide-react": "^0.513.0",
     "next-themes": "^0.4.6",
+    "radix-ui": "^1.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "sonner": "^2.0.5",

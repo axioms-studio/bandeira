@@ -12,15 +12,13 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/occult/pagode/ent/chatban"
-	"github.com/occult/pagode/ent/chatmessage"
-	"github.com/occult/pagode/ent/chatroom"
-	"github.com/occult/pagode/ent/passwordtoken"
-	"github.com/occult/pagode/ent/paymentcustomer"
-	"github.com/occult/pagode/ent/paymentintent"
-	"github.com/occult/pagode/ent/paymentmethod"
-	"github.com/occult/pagode/ent/subscription"
-	"github.com/occult/pagode/ent/user"
+	"github.com/felipekafuri/bandeira/ent/apitoken"
+	"github.com/felipekafuri/bandeira/ent/constraint"
+	"github.com/felipekafuri/bandeira/ent/environment"
+	"github.com/felipekafuri/bandeira/ent/flag"
+	"github.com/felipekafuri/bandeira/ent/flagenvironment"
+	"github.com/felipekafuri/bandeira/ent/project"
+	"github.com/felipekafuri/bandeira/ent/strategy"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -81,15 +79,13 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			chatban.Table:         chatban.ValidColumn,
-			chatmessage.Table:     chatmessage.ValidColumn,
-			chatroom.Table:        chatroom.ValidColumn,
-			passwordtoken.Table:   passwordtoken.ValidColumn,
-			paymentcustomer.Table: paymentcustomer.ValidColumn,
-			paymentintent.Table:   paymentintent.ValidColumn,
-			paymentmethod.Table:   paymentmethod.ValidColumn,
-			subscription.Table:    subscription.ValidColumn,
-			user.Table:            user.ValidColumn,
+			apitoken.Table:        apitoken.ValidColumn,
+			constraint.Table:      constraint.ValidColumn,
+			environment.Table:     environment.ValidColumn,
+			flag.Table:            flag.ValidColumn,
+			flagenvironment.Table: flagenvironment.ValidColumn,
+			project.Table:         project.ValidColumn,
+			strategy.Table:        strategy.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

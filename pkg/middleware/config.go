@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/config"
-	"github.com/occult/pagode/pkg/context"
+	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/pkg/context"
 )
 
 // Config stores the configuration in the request so it can be accessed by the ui.

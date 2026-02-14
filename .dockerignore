@@ -1,0 +1,9 @@
+node_modules
+dbs
+tmp
+.git
+.idea
+.aider*
+.DS_Store
+public/build
+public/hot

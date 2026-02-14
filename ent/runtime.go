@@ -2,4 +2,129 @@
 
 package ent
 
-// The schema-stitching logic is generated in github.com/occult/pagode/ent/runtime/runtime.go
+import (
+	"time"
+
+	"github.com/felipekafuri/bandeira/ent/apitoken"
+	"github.com/felipekafuri/bandeira/ent/constraint"
+	"github.com/felipekafuri/bandeira/ent/environment"
+	"github.com/felipekafuri/bandeira/ent/flag"
+	"github.com/felipekafuri/bandeira/ent/flagenvironment"
+	"github.com/felipekafuri/bandeira/ent/project"
+	"github.com/felipekafuri/bandeira/ent/schema"
+	"github.com/felipekafuri/bandeira/ent/strategy"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	apitokenFields := schema.ApiToken{}.Fields()
+	_ = apitokenFields
+	// apitokenDescPlainToken is the schema descriptor for plain_token field.
+	apitokenDescPlainToken := apitokenFields[1].Descriptor()
+	// apitoken.DefaultPlainToken holds the default value on creation for the plain_token field.
+	apitoken.DefaultPlainToken = apitokenDescPlainToken.Default.(string)
+	// apitokenDescCreatedAt is the schema descriptor for created_at field.
+	apitokenDescCreatedAt := apitokenFields[6].Descriptor()
+	// apitoken.DefaultCreatedAt holds the default value on creation for the created_at field.
+	apitoken.DefaultCreatedAt = apitokenDescCreatedAt.Default.(func() time.Time)
+	// apitokenDescUpdatedAt is the schema descriptor for updated_at field.
+	apitokenDescUpdatedAt := apitokenFields[7].Descriptor()
+	// apitoken.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	apitoken.DefaultUpdatedAt = apitokenDescUpdatedAt.Default.(func() time.Time)
+	// apitoken.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	apitoken.UpdateDefaultUpdatedAt = apitokenDescUpdatedAt.UpdateDefault.(func() time.Time)
+	constraintFields := schema.Constraint{}.Fields()
+	_ = constraintFields
+	// constraintDescInverted is the schema descriptor for inverted field.
+	constraintDescInverted := constraintFields[3].Descriptor()
+	// constraint.DefaultInverted holds the default value on creation for the inverted field.
+	constraint.DefaultInverted = constraintDescInverted.Default.(bool)
+	// constraintDescCaseInsensitive is the schema descriptor for case_insensitive field.
+	constraintDescCaseInsensitive := constraintFields[4].Descriptor()
+	// constraint.DefaultCaseInsensitive holds the default value on creation for the case_insensitive field.
+	constraint.DefaultCaseInsensitive = constraintDescCaseInsensitive.Default.(bool)
+	// constraintDescCreatedAt is the schema descriptor for created_at field.
+	constraintDescCreatedAt := constraintFields[6].Descriptor()
+	// constraint.DefaultCreatedAt holds the default value on creation for the created_at field.
+	constraint.DefaultCreatedAt = constraintDescCreatedAt.Default.(func() time.Time)
+	// constraintDescUpdatedAt is the schema descriptor for updated_at field.
+	constraintDescUpdatedAt := constraintFields[7].Descriptor()
+	// constraint.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	constraint.DefaultUpdatedAt = constraintDescUpdatedAt.Default.(func() time.Time)
+	// constraint.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	constraint.UpdateDefaultUpdatedAt = constraintDescUpdatedAt.UpdateDefault.(func() time.Time)
+	environmentFields := schema.Environment{}.Fields()
+	_ = environmentFields
+	// environmentDescSortOrder is the schema descriptor for sort_order field.
+	environmentDescSortOrder := environmentFields[2].Descriptor()
+	// environment.DefaultSortOrder holds the default value on creation for the sort_order field.
+	environment.DefaultSortOrder = environmentDescSortOrder.Default.(int)
+	// environmentDescCreatedAt is the schema descriptor for created_at field.
+	environmentDescCreatedAt := environmentFields[4].Descriptor()
+	// environment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	environment.DefaultCreatedAt = environmentDescCreatedAt.Default.(func() time.Time)
+	// environmentDescUpdatedAt is the schema descriptor for updated_at field.
+	environmentDescUpdatedAt := environmentFields[5].Descriptor()
+	// environment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	environment.DefaultUpdatedAt = environmentDescUpdatedAt.Default.(func() time.Time)
+	// environment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	environment.UpdateDefaultUpdatedAt = environmentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	flagFields := schema.Flag{}.Fields()
+	_ = flagFields
+	// flagDescCreatedAt is the schema descriptor for created_at field.
+	flagDescCreatedAt := flagFields[4].Descriptor()
+	// flag.DefaultCreatedAt holds the default value on creation for the created_at field.
+	flag.DefaultCreatedAt = flagDescCreatedAt.Default.(func() time.Time)
+	// flagDescUpdatedAt is the schema descriptor for updated_at field.
+	flagDescUpdatedAt := flagFields[5].Descriptor()
+	// flag.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	flag.DefaultUpdatedAt = flagDescUpdatedAt.Default.(func() time.Time)
+	// flag.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	flag.UpdateDefaultUpdatedAt = flagDescUpdatedAt.UpdateDefault.(func() time.Time)
+	flagenvironmentFields := schema.FlagEnvironment{}.Fields()
+	_ = flagenvironmentFields
+	// flagenvironmentDescEnabled is the schema descriptor for enabled field.
+	flagenvironmentDescEnabled := flagenvironmentFields[0].Descriptor()
+	// flagenvironment.DefaultEnabled holds the default value on creation for the enabled field.
+	flagenvironment.DefaultEnabled = flagenvironmentDescEnabled.Default.(bool)
+	// flagenvironmentDescCreatedAt is the schema descriptor for created_at field.
+	flagenvironmentDescCreatedAt := flagenvironmentFields[3].Descriptor()
+	// flagenvironment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	flagenvironment.DefaultCreatedAt = flagenvironmentDescCreatedAt.Default.(func() time.Time)
+	// flagenvironmentDescUpdatedAt is the schema descriptor for updated_at field.
+	flagenvironmentDescUpdatedAt := flagenvironmentFields[4].Descriptor()
+	// flagenvironment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	flagenvironment.DefaultUpdatedAt = flagenvironmentDescUpdatedAt.Default.(func() time.Time)
+	// flagenvironment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	flagenvironment.UpdateDefaultUpdatedAt = flagenvironmentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	projectFields := schema.Project{}.Fields()
+	_ = projectFields
+	// projectDescCreatedAt is the schema descriptor for created_at field.
+	projectDescCreatedAt := projectFields[2].Descriptor()
+	// project.DefaultCreatedAt holds the default value on creation for the created_at field.
+	project.DefaultCreatedAt = projectDescCreatedAt.Default.(func() time.Time)
+	// projectDescUpdatedAt is the schema descriptor for updated_at field.
+	projectDescUpdatedAt := projectFields[3].Descriptor()
+	// project.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	project.DefaultUpdatedAt = projectDescUpdatedAt.Default.(func() time.Time)
+	// project.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	project.UpdateDefaultUpdatedAt = projectDescUpdatedAt.UpdateDefault.(func() time.Time)
+	strategyFields := schema.Strategy{}.Fields()
+	_ = strategyFields
+	// strategyDescSortOrder is the schema descriptor for sort_order field.
+	strategyDescSortOrder := strategyFields[2].Descriptor()
+	// strategy.DefaultSortOrder holds the default value on creation for the sort_order field.
+	strategy.DefaultSortOrder = strategyDescSortOrder.Default.(int)
+	// strategyDescCreatedAt is the schema descriptor for created_at field.
+	strategyDescCreatedAt := strategyFields[4].Descriptor()
+	// strategy.DefaultCreatedAt holds the default value on creation for the created_at field.
+	strategy.DefaultCreatedAt = strategyDescCreatedAt.Default.(func() time.Time)
+	// strategyDescUpdatedAt is the schema descriptor for updated_at field.
+	strategyDescUpdatedAt := strategyFields[5].Descriptor()
+	// strategy.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	strategy.DefaultUpdatedAt = strategyDescUpdatedAt.Default.(func() time.Time)
+	// strategy.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	strategy.UpdateDefaultUpdatedAt = strategyDescUpdatedAt.UpdateDefault.(func() time.Time)
+}

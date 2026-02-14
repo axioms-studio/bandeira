@@ -1,0 +1,15 @@
+services:
+  bandeira:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      BANDEIRA_APP_ENVIRONMENT: "prod"
+      BANDEIRA_APP_ENCRYPTIONKEY: "change-this-to-a-random-32-char!"
+      BANDEIRA_AUTH_ADMINPASSWORD: "admin"
+    volumes:
+      - bandeira-data:/app/dbs
+    restart: unless-stopped
+
+volumes:
+  bandeira-data:

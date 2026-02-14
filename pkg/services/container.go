@@ -9,26 +9,16 @@ import (
 	"log/slog"
 	"math/rand"
 	"os"
-	"path"
 	"path/filepath"
-	"runtime"
 	"strings"
 
-	entsql "entgo.io/ent/dialect/sql"
-	"entgo.io/ent/entc"
-	"entgo.io/ent/entc/gen"
-	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/mikestefanello/backlite"
-	"github.com/occult/pagode/config"
-	"github.com/occult/pagode/ent"
-	"github.com/occult/pagode/pkg/chat"
-	"github.com/occult/pagode/pkg/log"
+	"github.com/labstack/echo/v4"
+	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/ent"
 	inertia "github.com/romsar/gonertia/v2"
-	"github.com/spf13/afero"
 
-	// Required by ent.
-	_ "github.com/occult/pagode/ent/runtime"
+	entsql "entgo.io/ent/dialect/sql"
 )
 
 // Container contains all services used by the application and provides an easy way to handle dependency
@@ -49,35 +39,11 @@ type Container struct {
 	// Database stores the connection to the database.
 	Database *sql.DB
 
-	// Files stores the file system.
-	Files afero.Fs
-
-	// ORM stores a client to the ORM.
+	// ORM stores the Ent ORM client.
 	ORM *ent.Client
-
-	// Graph is the entity graph defined by your Ent schema.
-	Graph *gen.Graph
-
-	// Mail stores an email sending client.
-	Mail *MailClient
-
-	// Auth stores an authentication client.
-	Auth *AuthClient
-
-	// Tasks stores the task client.
-	Tasks *backlite.Client
-
-	// Payment stores the payment client.
-	Payment *PaymentClient
-
-	// Chat stores the chat room manager.
-	Chat *chat.RoomManager
 
 	// Inertia for React
 	Inertia *inertia.Inertia
-
-	// WebSocketGroup is a route group for WebSocket connections (no CSRF, gzip, timeout).
-	WebSocketGroup *echo.Group
 }
 
 // NewContainer creates and initializes a new Container.
@@ -88,13 +54,7 @@ func NewContainer() *Container {
 	c.initWeb()
 	c.initCache()
 	c.initDatabase()
-	c.initFiles()
 	c.initORM()
-	c.initAuth()
-	c.initMail()
-	c.initTasks()
-	c.initPayment()
-	c.initChat()
 	c.initInertia()
 	return c
 }
@@ -108,23 +68,8 @@ func (c *Container) Shutdown() error {
 		return err
 	}
 
-	// Shutdown the task runner.
-	taskCtx, taskCancel := context.WithTimeout(context.Background(), c.Config.Tasks.ShutdownTimeout)
-	defer taskCancel()
-	c.Tasks.Stop(taskCtx)
-
-	// Shutdown the chat manager.
-	if c.Chat != nil {
-		c.Chat.Shutdown()
-	}
-
-	// Shutdown the ORM.
+	// Shutdown the ORM (also closes the underlying database connection).
 	if err := c.ORM.Close(); err != nil {
-		return err
-	}
-
-	// Shutdown the database.
-	if err := c.Database.Close(); err != nil {
 		return err
 	}
 
@@ -180,7 +125,6 @@ func (c *Container) initDatabase() {
 
 	switch c.Config.App.Environment {
 	case config.EnvTest:
-		// TODO: Drop/recreate the DB, if this isn't in memory?
 		connection = c.Config.Database.TestConnection
 	default:
 		connection = c.Config.Database.Connection
@@ -192,101 +136,14 @@ func (c *Container) initDatabase() {
 	}
 }
 
-// initFiles initializes the file system.
-func (c *Container) initFiles() {
-	// Use in-memory storage for tests.
-	if c.Config.App.Environment == config.EnvTest {
-		c.Files = afero.NewMemMapFs()
-		return
-	}
-
-	fs := afero.NewOsFs()
-	if err := fs.MkdirAll(c.Config.Files.Directory, 0755); err != nil {
-		panic(err)
-	}
-	c.Files = afero.NewBasePathFs(fs, c.Config.Files.Directory)
-}
-
-// initORM initializes the ORM.
+// initORM initializes the Ent ORM client and runs auto-migration.
 func (c *Container) initORM() {
 	drv := entsql.OpenDB(c.Config.Database.Driver, c.Database)
 	c.ORM = ent.NewClient(ent.Driver(drv))
 
-	// Run the auto migration tool.
 	if err := c.ORM.Schema.Create(context.Background()); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to create schema resources: %v", err))
 	}
-
-	// Load the graph.
-	_, b, _, _ := runtime.Caller(0)
-	d := path.Join(path.Dir(b))
-	p := filepath.Join(filepath.Dir(d), "../ent/schema")
-	g, err := entc.LoadGraph(p, &gen.Config{})
-	if err != nil {
-		panic(err)
-	}
-	c.Graph = g
-}
-
-// initAuth initializes the authentication client.
-func (c *Container) initAuth() {
-	c.Auth = NewAuthClient(c.Config, c.ORM)
-}
-
-// initMail initialize the mail client.
-func (c *Container) initMail() {
-	var err error
-	c.Mail, err = NewMailClient(c.Config)
-	if err != nil {
-		panic(fmt.Sprintf("failed to create mail client: %v", err))
-	}
-}
-
-// initTasks initializes the task client.
-func (c *Container) initTasks() {
-	var err error
-	// You could use a separate database for tasks, if you'd like. but using one
-	// makes transaction support easier.
-	c.Tasks, err = backlite.NewClient(backlite.ClientConfig{
-		DB:              c.Database,
-		Logger:          log.Default(),
-		NumWorkers:      c.Config.Tasks.Goroutines,
-		ReleaseAfter:    c.Config.Tasks.ReleaseAfter,
-		CleanupInterval: c.Config.Tasks.CleanupInterval,
-	})
-	if err != nil {
-		panic(fmt.Sprintf("failed to create task client: %v", err))
-	}
-
-	if err = c.Tasks.Install(); err != nil {
-		panic(fmt.Sprintf("failed to install task schema: %v", err))
-	}
-}
-
-// initChat initializes the chat room manager.
-func (c *Container) initChat() {
-	if !c.Config.Chat.Enabled {
-		return
-	}
-
-	c.Chat = chat.NewRoomManager(c.ORM, &c.Config.Chat)
-	if err := c.Chat.Init(context.Background()); err != nil {
-		panic(fmt.Sprintf("failed to initialize chat: %v", err))
-	}
-}
-
-// initPayment initializes the payment client.
-func (c *Container) initPayment() {
-	var provider PaymentProvider
-
-	switch c.Config.Payment.Provider {
-	case "stripe":
-		provider = NewStripeProvider(c.Config)
-	default:
-		panic(fmt.Sprintf("unsupported payment provider: %s", c.Config.Payment.Provider))
-	}
-
-	c.Payment = NewPaymentClient(c.Config, c.ORM, provider)
 }
 
 func ProjectRoot() string {
@@ -318,15 +175,12 @@ func (c *Container) getInertia() *inertia.Inertia {
 	manifestPath := filepath.Join(rootDir, "public", "build", "manifest.json")
 	viteManifestPath := filepath.Join(rootDir, "public", "build", ".vite", "manifest.json")
 
-	// check if laravel-vite-plugin is running in dev mode (it puts a "hot" file in the public folder)
 	url, err := viteHotFileUrl(viteHotFile)
 	if err != nil {
 		panic(err)
 	}
 	if url != "" {
-		i, err := inertia.NewFromFile(
-			rootViewFile,
-		)
+		i, err := inertia.NewFromFile(rootViewFile)
 		if err != nil {
 			panic(err)
 		}
@@ -343,9 +197,6 @@ func (c *Container) getInertia() *inertia.Inertia {
 		return i
 	}
 
-	// laravel-vite-plugin not running in dev mode, use build manifest file
-	// Vite 6+ places the manifest at .vite/manifest.json; support both paths
-	// without renaming to avoid race conditions when tests run in parallel.
 	actualManifestPath := manifestPath
 	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
 		if _, err := os.Stat(viteManifestPath); err == nil {
@@ -411,18 +262,14 @@ func vite(manifestPath, buildDir string) func(path string) (template.HTML, error
 // openDB opens a database connection.
 func openDB(driver, connection string) (*sql.DB, error) {
 	if driver == "sqlite3" {
-		// Helper to automatically create the directories that the specified sqlite file
-		// should reside in, if one.
 		d := strings.Split(connection, "/")
 		if len(d) > 1 {
 			dirpath := strings.Join(d[:len(d)-1], "/")
-
 			if err := os.MkdirAll(dirpath, 0755); err != nil {
 				return nil, err
 			}
 		}
 
-		// Check if a random value is required, which is often used for in-memory test databases.
 		if strings.Contains(connection, "$RAND") {
 			connection = strings.Replace(connection, "$RAND", fmt.Sprint(rand.Int()), 1)
 		}
@@ -431,7 +278,6 @@ func openDB(driver, connection string) (*sql.DB, error) {
 	return sql.Open(driver, connection)
 }
 
-// viteHotFileUrl Get the vite hot file url
 func viteHotFileUrl(viteHotFile string) (string, error) {
 	_, err := os.Stat(viteHotFile)
 	if err != nil {
@@ -450,7 +296,6 @@ func viteHotFileUrl(viteHotFile string) (string, error) {
 	return url, nil
 }
 
-// viteReactRefresh Generate React refresh runtime script
 func viteReactRefresh(url string) func() (template.HTML, error) {
 	return func() (template.HTML, error) {
 		if url == "" {

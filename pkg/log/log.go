@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/lmittmann/tint"
-	"github.com/occult/pagode/pkg/context"
+	"github.com/felipekafuri/bandeira/pkg/context"
 )
 
 var defaultLogger *slog.Logger

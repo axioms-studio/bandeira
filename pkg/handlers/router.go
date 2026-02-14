@@ -6,22 +6,15 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
-	"github.com/occult/pagode/config"
-	"github.com/occult/pagode/pkg/context"
-	"github.com/occult/pagode/pkg/middleware"
-	"github.com/occult/pagode/pkg/services"
+	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/pkg/context"
+	"github.com/felipekafuri/bandeira/pkg/middleware"
+	"github.com/felipekafuri/bandeira/pkg/services"
 )
-
-// WebSocketHandler is an optional interface for handlers that register WebSocket routes.
-type WebSocketHandler interface {
-	RoutesWS(wsG *echo.Group)
-}
 
 // BuildRouter builds the router.
 func BuildRouter(c *services.Container) error {
 	// Static files with proper cache control.
-	// ui.File() should be used in ui components to append a cache key to the URL in order to break cache
-	// after each server restart.
 	c.Web.Group("", middleware.CacheControl(c.Config.Cache.Expiration.StaticFile)).
 		Static(config.StaticPrefix, config.StaticDir)
 
@@ -53,28 +46,31 @@ func BuildRouter(c *services.Container) error {
 		}),
 		middleware.Config(c.Config),
 		middleware.Session(cookieStore),
-		middleware.LoadAuthenticatedUser(c.Auth),
 		echomw.CSRFWithConfig(echomw.CSRFConfig{
-			TokenLookup:    "header:X-XSRF-TOKEN", // where to look for token
-			CookieName:     "XSRF-TOKEN",          // this sets the cookie
-			CookiePath:     "/",                   // make it accessible app-wide
-			CookieHTTPOnly: false,                 // must be false so JS (Axios) can read it
+			TokenLookup:    "header:X-XSRF-TOKEN",
+			CookieName:     "XSRF-TOKEN",
+			CookiePath:     "/",
+			CookieHTTPOnly: false,
 			CookieSameSite: http.SameSiteStrictMode,
 			ContextKey:     context.CSRFKey,
 		}),
 		echo.WrapMiddleware(c.Inertia.Middleware),
-		middleware.InertiaProps(), // leave this as the last one
+		middleware.InertiaProps(),
 	)
 
-	// WebSocket group: skip timeout, gzip, and CSRF which interfere with WebSocket connections.
-	wsG := c.Web.Group("")
-	wsG.Use(
+	// API route group — no session, CSRF, or Inertia middleware.
+	api := c.Web.Group("/api")
+	api.Use(
 		echomw.Recover(),
+		echomw.Secure(),
+		echomw.RequestID(),
 		middleware.SetLogger(),
-		middleware.Session(cookieStore),
-		middleware.LoadAuthenticatedUser(c.Auth),
+		middleware.LogRequest(),
+		echomw.Gzip(),
+		echomw.TimeoutWithConfig(echomw.TimeoutConfig{
+			Timeout: c.Config.App.Timeout,
+		}),
 	)
-	c.WebSocketGroup = wsG
 
 	// Error handler.
 	errHandler := &Error{}
@@ -92,9 +88,8 @@ func BuildRouter(c *services.Container) error {
 
 		h.Routes(g)
 
-		// Register WebSocket routes if the handler implements them.
-		if wsh, ok := h.(WebSocketHandler); ok {
-			wsh.RoutesWS(wsG)
+		if apiH, ok := h.(APIHandler); ok {
+			apiH.APIRoutes(api)
 		}
 	}
 

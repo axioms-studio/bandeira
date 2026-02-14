@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/pkg/context"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/context"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 	"github.com/romsar/gonertia/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

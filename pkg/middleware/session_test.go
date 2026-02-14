@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/gorilla/sessions"
-	"github.com/occult/pagode/pkg/session"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/pkg/session"
+	"github.com/felipekafuri/bandeira/pkg/tests"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -4,15 +4,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/occult/pagode/config"
-	"github.com/occult/pagode/ent"
-	"github.com/occult/pagode/pkg/services"
-	"github.com/occult/pagode/pkg/tests"
+	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/pkg/services"
 )
 
 var (
-	c   *services.Container
-	usr *ent.User
+	c *services.Container
 )
 
 func TestMain(m *testing.M) {
@@ -22,17 +19,11 @@ func TestMain(m *testing.M) {
 	// Create a new container
 	c = services.NewContainer()
 
-	// Create a user
-	var err error
-	if usr, err = tests.CreateUser(c.ORM); err != nil {
-		panic(err)
-	}
-
 	// Run tests
 	exitVal := m.Run()
 
 	// Shutdown the container
-	if err = c.Shutdown(); err != nil {
+	if err := c.Shutdown(); err != nil {
 		panic(err)
 	}
 

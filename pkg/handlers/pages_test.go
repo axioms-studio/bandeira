@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/occult/pagode/pkg/routenames"
+	"github.com/felipekafuri/bandeira/pkg/routenames"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -6,115 +6,91 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/occult/pagode/ent"
+	"github.com/felipekafuri/bandeira/ent"
 )
 
-// The ChatBanFunc type is an adapter to allow the use of ordinary
-// function as ChatBan mutator.
-type ChatBanFunc func(context.Context, *ent.ChatBanMutation) (ent.Value, error)
+// The ApiTokenFunc type is an adapter to allow the use of ordinary
+// function as ApiToken mutator.
+type ApiTokenFunc func(context.Context, *ent.ApiTokenMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ChatBanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ChatBanMutation); ok {
+func (f ApiTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ApiTokenMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChatBanMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ApiTokenMutation", m)
 }
 
-// The ChatMessageFunc type is an adapter to allow the use of ordinary
-// function as ChatMessage mutator.
-type ChatMessageFunc func(context.Context, *ent.ChatMessageMutation) (ent.Value, error)
+// The ConstraintFunc type is an adapter to allow the use of ordinary
+// function as Constraint mutator.
+type ConstraintFunc func(context.Context, *ent.ConstraintMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ChatMessageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ChatMessageMutation); ok {
+func (f ConstraintFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConstraintMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChatMessageMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConstraintMutation", m)
 }
 
-// The ChatRoomFunc type is an adapter to allow the use of ordinary
-// function as ChatRoom mutator.
-type ChatRoomFunc func(context.Context, *ent.ChatRoomMutation) (ent.Value, error)
+// The EnvironmentFunc type is an adapter to allow the use of ordinary
+// function as Environment mutator.
+type EnvironmentFunc func(context.Context, *ent.EnvironmentMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ChatRoomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ChatRoomMutation); ok {
+func (f EnvironmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EnvironmentMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChatRoomMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnvironmentMutation", m)
 }
 
-// The PasswordTokenFunc type is an adapter to allow the use of ordinary
-// function as PasswordToken mutator.
-type PasswordTokenFunc func(context.Context, *ent.PasswordTokenMutation) (ent.Value, error)
+// The FlagFunc type is an adapter to allow the use of ordinary
+// function as Flag mutator.
+type FlagFunc func(context.Context, *ent.FlagMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PasswordTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PasswordTokenMutation); ok {
+func (f FlagFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FlagMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PasswordTokenMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FlagMutation", m)
 }
 
-// The PaymentCustomerFunc type is an adapter to allow the use of ordinary
-// function as PaymentCustomer mutator.
-type PaymentCustomerFunc func(context.Context, *ent.PaymentCustomerMutation) (ent.Value, error)
+// The FlagEnvironmentFunc type is an adapter to allow the use of ordinary
+// function as FlagEnvironment mutator.
+type FlagEnvironmentFunc func(context.Context, *ent.FlagEnvironmentMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PaymentCustomerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PaymentCustomerMutation); ok {
+func (f FlagEnvironmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FlagEnvironmentMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentCustomerMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FlagEnvironmentMutation", m)
 }
 
-// The PaymentIntentFunc type is an adapter to allow the use of ordinary
-// function as PaymentIntent mutator.
-type PaymentIntentFunc func(context.Context, *ent.PaymentIntentMutation) (ent.Value, error)
+// The ProjectFunc type is an adapter to allow the use of ordinary
+// function as Project mutator.
+type ProjectFunc func(context.Context, *ent.ProjectMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PaymentIntentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PaymentIntentMutation); ok {
+func (f ProjectFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProjectMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentIntentMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectMutation", m)
 }
 
-// The PaymentMethodFunc type is an adapter to allow the use of ordinary
-// function as PaymentMethod mutator.
-type PaymentMethodFunc func(context.Context, *ent.PaymentMethodMutation) (ent.Value, error)
+// The StrategyFunc type is an adapter to allow the use of ordinary
+// function as Strategy mutator.
+type StrategyFunc func(context.Context, *ent.StrategyMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PaymentMethodFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PaymentMethodMutation); ok {
+func (f StrategyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.StrategyMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentMethodMutation", m)
-}
-
-// The SubscriptionFunc type is an adapter to allow the use of ordinary
-// function as Subscription mutator.
-type SubscriptionFunc func(context.Context, *ent.SubscriptionMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f SubscriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.SubscriptionMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscriptionMutation", m)
-}
-
-// The UserFunc type is an adapter to allow the use of ordinary
-// function as User mutator.
-type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StrategyMutation", m)
 }
 
 // Condition is a hook condition function.

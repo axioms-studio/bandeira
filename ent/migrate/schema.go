@@ -8,276 +8,212 @@ import (
 )
 
 var (
-	// ChatBansColumns holds the columns for the "chat_bans" table.
-	ChatBansColumns = []*schema.Column{
+	// APITokensColumns holds the columns for the "api_tokens" table.
+	APITokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "ip_hash", Type: field.TypeString, Nullable: true, Size: 64},
-		{Name: "reason", Type: field.TypeString, Nullable: true, Size: 500},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "chat_room_bans", Type: field.TypeInt},
-		{Name: "user_chat_bans", Type: field.TypeInt, Nullable: true},
-		{Name: "user_chat_bans_issued", Type: field.TypeInt},
-	}
-	// ChatBansTable holds the schema information for the "chat_bans" table.
-	ChatBansTable = &schema.Table{
-		Name:       "chat_bans",
-		Columns:    ChatBansColumns,
-		PrimaryKey: []*schema.Column{ChatBansColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "chat_bans_chat_rooms_bans",
-				Columns:    []*schema.Column{ChatBansColumns[4]},
-				RefColumns: []*schema.Column{ChatRoomsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "chat_bans_users_chat_bans",
-				Columns:    []*schema.Column{ChatBansColumns[5]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "chat_bans_users_chat_bans_issued",
-				Columns:    []*schema.Column{ChatBansColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-	}
-	// ChatMessagesColumns holds the columns for the "chat_messages" table.
-	ChatMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "body", Type: field.TypeString, Size: 2000},
-		{Name: "sender_name", Type: field.TypeString, Size: 30},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "chat_room_messages", Type: field.TypeInt},
-		{Name: "user_chat_messages", Type: field.TypeInt, Nullable: true},
-	}
-	// ChatMessagesTable holds the schema information for the "chat_messages" table.
-	ChatMessagesTable = &schema.Table{
-		Name:       "chat_messages",
-		Columns:    ChatMessagesColumns,
-		PrimaryKey: []*schema.Column{ChatMessagesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "chat_messages_chat_rooms_messages",
-				Columns:    []*schema.Column{ChatMessagesColumns[4]},
-				RefColumns: []*schema.Column{ChatRoomsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "chat_messages_users_chat_messages",
-				Columns:    []*schema.Column{ChatMessagesColumns[5]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
-	// ChatRoomsColumns holds the columns for the "chat_rooms" table.
-	ChatRoomsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString, Unique: true, Size: 50},
-		{Name: "is_public", Type: field.TypeBool, Default: true},
-		{Name: "password_hash", Type: field.TypeString, Nullable: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "user_owned_chat_rooms", Type: field.TypeInt, Nullable: true},
-	}
-	// ChatRoomsTable holds the schema information for the "chat_rooms" table.
-	ChatRoomsTable = &schema.Table{
-		Name:       "chat_rooms",
-		Columns:    ChatRoomsColumns,
-		PrimaryKey: []*schema.Column{ChatRoomsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "chat_rooms_users_owned_chat_rooms",
-				Columns:    []*schema.Column{ChatRoomsColumns[5]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
-	// PasswordTokensColumns holds the columns for the "password_tokens" table.
-	PasswordTokensColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "token", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeInt},
-	}
-	// PasswordTokensTable holds the schema information for the "password_tokens" table.
-	PasswordTokensTable = &schema.Table{
-		Name:       "password_tokens",
-		Columns:    PasswordTokensColumns,
-		PrimaryKey: []*schema.Column{PasswordTokensColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "password_tokens_users_user",
-				Columns:    []*schema.Column{PasswordTokensColumns[3]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-	}
-	// PaymentCustomersColumns holds the columns for the "payment_customers" table.
-	PaymentCustomersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "provider_customer_id", Type: field.TypeString},
-		{Name: "provider", Type: field.TypeString, Default: "stripe"},
-		{Name: "email", Type: field.TypeString},
-		{Name: "name", Type: field.TypeString, Nullable: true},
-		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "secret", Type: field.TypeString},
+		{Name: "plain_token", Type: field.TypeString, Default: ""},
+		{Name: "name", Type: field.TypeString},
+		{Name: "token_type", Type: field.TypeEnum, Enums: []string{"client", "admin"}},
+		{Name: "environment", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "project_id", Type: field.TypeInt},
 	}
-	// PaymentCustomersTable holds the schema information for the "payment_customers" table.
-	PaymentCustomersTable = &schema.Table{
-		Name:       "payment_customers",
-		Columns:    PaymentCustomersColumns,
-		PrimaryKey: []*schema.Column{PaymentCustomersColumns[0]},
-	}
-	// PaymentIntentsColumns holds the columns for the "payment_intents" table.
-	PaymentIntentsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "provider_payment_intent_id", Type: field.TypeString, Unique: true},
-		{Name: "provider", Type: field.TypeString, Default: "stripe"},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"requires_payment_method", "requires_confirmation", "requires_action", "processing", "requires_capture", "canceled", "succeeded"}, Default: "requires_payment_method"},
-		{Name: "amount", Type: field.TypeInt64},
-		{Name: "currency", Type: field.TypeString, Default: "usd"},
-		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "client_secret", Type: field.TypeString, Nullable: true},
-		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "payment_customer_payment_intents", Type: field.TypeInt},
-	}
-	// PaymentIntentsTable holds the schema information for the "payment_intents" table.
-	PaymentIntentsTable = &schema.Table{
-		Name:       "payment_intents",
-		Columns:    PaymentIntentsColumns,
-		PrimaryKey: []*schema.Column{PaymentIntentsColumns[0]},
+	// APITokensTable holds the schema information for the "api_tokens" table.
+	APITokensTable = &schema.Table{
+		Name:       "api_tokens",
+		Columns:    APITokensColumns,
+		PrimaryKey: []*schema.Column{APITokensColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "payment_intents_payment_customers_payment_intents",
-				Columns:    []*schema.Column{PaymentIntentsColumns[11]},
-				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
+				Symbol:     "api_tokens_projects_api_tokens",
+				Columns:    []*schema.Column{APITokensColumns[8]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 	}
-	// PaymentMethodsColumns holds the columns for the "payment_methods" table.
-	PaymentMethodsColumns = []*schema.Column{
+	// ConstraintsColumns holds the columns for the "constraints" table.
+	ConstraintsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "provider_payment_method_id", Type: field.TypeString, Unique: true},
-		{Name: "provider", Type: field.TypeString, Default: "stripe"},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"card", "bank_account", "wallet"}, Default: "card"},
-		{Name: "last_four", Type: field.TypeString, Nullable: true},
-		{Name: "brand", Type: field.TypeString, Nullable: true},
-		{Name: "exp_month", Type: field.TypeInt, Nullable: true},
-		{Name: "exp_year", Type: field.TypeInt, Nullable: true},
-		{Name: "is_default", Type: field.TypeBool, Default: false},
-		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "context_name", Type: field.TypeString},
+		{Name: "operator", Type: field.TypeEnum, Enums: []string{"IN", "NOT_IN", "STR_CONTAINS", "STR_STARTS_WITH", "STR_ENDS_WITH", "NUM_EQ", "NUM_GT", "NUM_GTE", "NUM_LT", "NUM_LTE", "DATE_AFTER", "DATE_BEFORE"}},
+		{Name: "values", Type: field.TypeJSON},
+		{Name: "inverted", Type: field.TypeBool, Default: false},
+		{Name: "case_insensitive", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "payment_customer_payment_methods", Type: field.TypeInt},
+		{Name: "strategy_id", Type: field.TypeInt},
 	}
-	// PaymentMethodsTable holds the schema information for the "payment_methods" table.
-	PaymentMethodsTable = &schema.Table{
-		Name:       "payment_methods",
-		Columns:    PaymentMethodsColumns,
-		PrimaryKey: []*schema.Column{PaymentMethodsColumns[0]},
+	// ConstraintsTable holds the schema information for the "constraints" table.
+	ConstraintsTable = &schema.Table{
+		Name:       "constraints",
+		Columns:    ConstraintsColumns,
+		PrimaryKey: []*schema.Column{ConstraintsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "payment_methods_payment_customers_payment_methods",
-				Columns:    []*schema.Column{PaymentMethodsColumns[12]},
-				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
+				Symbol:     "constraints_strategies_constraints",
+				Columns:    []*schema.Column{ConstraintsColumns[8]},
+				RefColumns: []*schema.Column{StrategiesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 	}
-	// SubscriptionsColumns holds the columns for the "subscriptions" table.
-	SubscriptionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "provider_subscription_id", Type: field.TypeString, Unique: true},
-		{Name: "provider", Type: field.TypeString, Default: "stripe"},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"incomplete", "incomplete_expired", "trialing", "active", "past_due", "canceled", "unpaid", "paused"}, Default: "incomplete"},
-		{Name: "price_id", Type: field.TypeString},
-		{Name: "amount", Type: field.TypeInt64},
-		{Name: "currency", Type: field.TypeString, Default: "usd"},
-		{Name: "interval", Type: field.TypeEnum, Enums: []string{"day", "week", "month", "year"}},
-		{Name: "interval_count", Type: field.TypeInt, Default: 1},
-		{Name: "current_period_start", Type: field.TypeTime, Nullable: true},
-		{Name: "current_period_end", Type: field.TypeTime, Nullable: true},
-		{Name: "trial_start", Type: field.TypeTime, Nullable: true},
-		{Name: "trial_end", Type: field.TypeTime, Nullable: true},
-		{Name: "canceled_at", Type: field.TypeTime, Nullable: true},
-		{Name: "ended_at", Type: field.TypeTime, Nullable: true},
-		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "payment_customer_subscriptions", Type: field.TypeInt},
-	}
-	// SubscriptionsTable holds the schema information for the "subscriptions" table.
-	SubscriptionsTable = &schema.Table{
-		Name:       "subscriptions",
-		Columns:    SubscriptionsColumns,
-		PrimaryKey: []*schema.Column{SubscriptionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "subscriptions_payment_customers_subscriptions",
-				Columns:    []*schema.Column{SubscriptionsColumns[18]},
-				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
+	// EnvironmentsColumns holds the columns for the "environments" table.
+	EnvironmentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "password", Type: field.TypeString},
-		{Name: "verified", Type: field.TypeBool, Default: false},
-		{Name: "admin", Type: field.TypeBool, Default: false},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"development", "staging", "production"}},
+		{Name: "sort_order", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "payment_customer_user", Type: field.TypeInt, Unique: true, Nullable: true},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "project_id", Type: field.TypeInt},
 	}
-	// UsersTable holds the schema information for the "users" table.
-	UsersTable = &schema.Table{
-		Name:       "users",
-		Columns:    UsersColumns,
-		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	// EnvironmentsTable holds the schema information for the "environments" table.
+	EnvironmentsTable = &schema.Table{
+		Name:       "environments",
+		Columns:    EnvironmentsColumns,
+		PrimaryKey: []*schema.Column{EnvironmentsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "users_payment_customers_user",
-				Columns:    []*schema.Column{UsersColumns[7]},
-				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
-				OnDelete:   schema.SetNull,
+				Symbol:     "environments_projects_environments",
+				Columns:    []*schema.Column{EnvironmentsColumns[6]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "environment_name_project_id",
+				Unique:  true,
+				Columns: []*schema.Column{EnvironmentsColumns[1], EnvironmentsColumns[6]},
+			},
+		},
+	}
+	// FlagsColumns holds the columns for the "flags" table.
+	FlagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "flag_type", Type: field.TypeEnum, Enums: []string{"release", "experiment", "operational", "kill_switch"}},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "project_id", Type: field.TypeInt},
+	}
+	// FlagsTable holds the schema information for the "flags" table.
+	FlagsTable = &schema.Table{
+		Name:       "flags",
+		Columns:    FlagsColumns,
+		PrimaryKey: []*schema.Column{FlagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "flags_projects_flags",
+				Columns:    []*schema.Column{FlagsColumns[6]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "flag_name_project_id",
+				Unique:  true,
+				Columns: []*schema.Column{FlagsColumns[1], FlagsColumns[6]},
+			},
+		},
+	}
+	// FlagEnvironmentsColumns holds the columns for the "flag_environments" table.
+	FlagEnvironmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "enabled", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "environment_id", Type: field.TypeInt},
+		{Name: "flag_id", Type: field.TypeInt},
+	}
+	// FlagEnvironmentsTable holds the schema information for the "flag_environments" table.
+	FlagEnvironmentsTable = &schema.Table{
+		Name:       "flag_environments",
+		Columns:    FlagEnvironmentsColumns,
+		PrimaryKey: []*schema.Column{FlagEnvironmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "flag_environments_environments_flag_environments",
+				Columns:    []*schema.Column{FlagEnvironmentsColumns[4]},
+				RefColumns: []*schema.Column{EnvironmentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "flag_environments_flags_flag_environments",
+				Columns:    []*schema.Column{FlagEnvironmentsColumns[5]},
+				RefColumns: []*schema.Column{FlagsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "flagenvironment_flag_id_environment_id",
+				Unique:  true,
+				Columns: []*schema.Column{FlagEnvironmentsColumns[5], FlagEnvironmentsColumns[4]},
+			},
+		},
+	}
+	// ProjectsColumns holds the columns for the "projects" table.
+	ProjectsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ProjectsTable holds the schema information for the "projects" table.
+	ProjectsTable = &schema.Table{
+		Name:       "projects",
+		Columns:    ProjectsColumns,
+		PrimaryKey: []*schema.Column{ProjectsColumns[0]},
+	}
+	// StrategiesColumns holds the columns for the "strategies" table.
+	StrategiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "parameters", Type: field.TypeJSON, Nullable: true},
+		{Name: "sort_order", Type: field.TypeInt, Default: 0},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "flag_environment_id", Type: field.TypeInt},
+	}
+	// StrategiesTable holds the schema information for the "strategies" table.
+	StrategiesTable = &schema.Table{
+		Name:       "strategies",
+		Columns:    StrategiesColumns,
+		PrimaryKey: []*schema.Column{StrategiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "strategies_flag_environments_strategies",
+				Columns:    []*schema.Column{StrategiesColumns[6]},
+				RefColumns: []*schema.Column{FlagEnvironmentsColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		ChatBansTable,
-		ChatMessagesTable,
-		ChatRoomsTable,
-		PasswordTokensTable,
-		PaymentCustomersTable,
-		PaymentIntentsTable,
-		PaymentMethodsTable,
-		SubscriptionsTable,
-		UsersTable,
+		APITokensTable,
+		ConstraintsTable,
+		EnvironmentsTable,
+		FlagsTable,
+		FlagEnvironmentsTable,
+		ProjectsTable,
+		StrategiesTable,
 	}
 )
 
 func init() {
-	ChatBansTable.ForeignKeys[0].RefTable = ChatRoomsTable
-	ChatBansTable.ForeignKeys[1].RefTable = UsersTable
-	ChatBansTable.ForeignKeys[2].RefTable = UsersTable
-	ChatMessagesTable.ForeignKeys[0].RefTable = ChatRoomsTable
-	ChatMessagesTable.ForeignKeys[1].RefTable = UsersTable
-	ChatRoomsTable.ForeignKeys[0].RefTable = UsersTable
-	PasswordTokensTable.ForeignKeys[0].RefTable = UsersTable
-	PaymentIntentsTable.ForeignKeys[0].RefTable = PaymentCustomersTable
-	PaymentMethodsTable.ForeignKeys[0].RefTable = PaymentCustomersTable
-	SubscriptionsTable.ForeignKeys[0].RefTable = PaymentCustomersTable
-	UsersTable.ForeignKeys[0].RefTable = PaymentCustomersTable
+	APITokensTable.ForeignKeys[0].RefTable = ProjectsTable
+	ConstraintsTable.ForeignKeys[0].RefTable = StrategiesTable
+	EnvironmentsTable.ForeignKeys[0].RefTable = ProjectsTable
+	FlagsTable.ForeignKeys[0].RefTable = ProjectsTable
+	FlagEnvironmentsTable.ForeignKeys[0].RefTable = EnvironmentsTable
+	FlagEnvironmentsTable.ForeignKeys[1].RefTable = FlagsTable
+	StrategiesTable.ForeignKeys[0].RefTable = FlagEnvironmentsTable
 }

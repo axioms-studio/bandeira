@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/pkg/session"
+	"github.com/felipekafuri/bandeira/pkg/session"
 )
 
 // Session sets the session storage in the request context

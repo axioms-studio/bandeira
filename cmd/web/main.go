@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -9,17 +8,15 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/occult/pagode/pkg/handlers"
-	"github.com/occult/pagode/pkg/log"
-	"github.com/occult/pagode/pkg/services"
-	"github.com/occult/pagode/pkg/tasks"
+	"github.com/felipekafuri/bandeira/pkg/handlers"
+	"github.com/felipekafuri/bandeira/pkg/log"
+	"github.com/felipekafuri/bandeira/pkg/services"
 )
 
 func main() {
 	// Start a new container.
 	c := services.NewContainer()
 	defer func() {
-		// Gracefully shutdown all services.
 		fatal("shutdown failed", c.Shutdown())
 	}()
 
@@ -27,12 +24,6 @@ func main() {
 	if err := handlers.BuildRouter(c); err != nil {
 		fatal("failed to build the router", err)
 	}
-
-	// Register all task queues.
-	tasks.Register(c)
-
-	// Start the task runner to execute queued tasks.
-	c.Tasks.Start(context.Background())
 
 	// Start the server.
 	go func() {
@@ -58,14 +49,13 @@ func main() {
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shut down the web server and task runner.
+	// Wait for interrupt signal to gracefully shut down the server.
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	signal.Notify(quit, os.Kill)
 	<-quit
 }
 
-// fatal logs an error and terminates the application, if the error is not nil.
 func fatal(msg string, err error) {
 	if err != nil {
 		log.Default().Error(msg, "error", err)

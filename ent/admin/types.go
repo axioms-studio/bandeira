@@ -4,100 +4,74 @@ package admin
 import (
 	"time"
 
-	"github.com/occult/pagode/ent/paymentintent"
-	"github.com/occult/pagode/ent/paymentmethod"
-	"github.com/occult/pagode/ent/subscription"
+	"github.com/felipekafuri/bandeira/ent/apitoken"
+	"github.com/felipekafuri/bandeira/ent/constraint"
+	"github.com/felipekafuri/bandeira/ent/environment"
+	"github.com/felipekafuri/bandeira/ent/flag"
 )
 
-type ChatBan struct {
-	IpHash    *string    `form:"ip_hash"`
-	Reason    *string    `form:"reason"`
-	CreatedAt *time.Time `form:"created_at"`
+type ApiToken struct {
+	Secret      *string            `form:"secret"`
+	PlainToken  *string            `form:"plain_token"`
+	Name        string             `form:"name"`
+	TokenType   apitoken.TokenType `form:"token_type"`
+	Environment *string            `form:"environment"`
+	ProjectID   int                `form:"project_id"`
+	CreatedAt   *time.Time         `form:"created_at"`
+	UpdatedAt   *time.Time         `form:"updated_at"`
 }
 
-type ChatMessage struct {
-	Body       string     `form:"body"`
-	SenderName string     `form:"sender_name"`
-	CreatedAt  *time.Time `form:"created_at"`
+type Constraint struct {
+	ContextName     string              `form:"context_name"`
+	Operator        constraint.Operator `form:"operator"`
+	Values          []string            `form:"values"`
+	Inverted        bool                `form:"inverted"`
+	CaseInsensitive bool                `form:"case_insensitive"`
+	StrategyID      int                 `form:"strategy_id"`
+	CreatedAt       *time.Time          `form:"created_at"`
+	UpdatedAt       *time.Time          `form:"updated_at"`
 }
 
-type ChatRoom struct {
-	Name         string     `form:"name"`
-	IsPublic     bool       `form:"is_public"`
-	PasswordHash *string    `form:"password_hash"`
-	CreatedAt    *time.Time `form:"created_at"`
+type Environment struct {
+	Name      string           `form:"name"`
+	Type      environment.Type `form:"type"`
+	SortOrder *int             `form:"sort_order"`
+	ProjectID int              `form:"project_id"`
+	CreatedAt *time.Time       `form:"created_at"`
+	UpdatedAt *time.Time       `form:"updated_at"`
 }
 
-type PasswordToken struct {
-	Token     *string    `form:"token"`
-	UserID    int        `form:"user_id"`
-	CreatedAt *time.Time `form:"created_at"`
+type Flag struct {
+	Name        string        `form:"name"`
+	Description *string       `form:"description"`
+	FlagType    flag.FlagType `form:"flag_type"`
+	ProjectID   int           `form:"project_id"`
+	CreatedAt   *time.Time    `form:"created_at"`
+	UpdatedAt   *time.Time    `form:"updated_at"`
 }
 
-type PaymentCustomer struct {
-	ProviderCustomerID string                  `form:"provider_customer_id"`
-	Provider           *string                 `form:"provider"`
-	Email              string                  `form:"email"`
-	Name               *string                 `form:"name"`
-	Metadata           *map[string]interface{} `form:"metadata"`
-	CreatedAt          *time.Time              `form:"created_at"`
-	UpdatedAt          *time.Time              `form:"updated_at"`
+type FlagEnvironment struct {
+	Enabled       bool       `form:"enabled"`
+	FlagID        int        `form:"flag_id"`
+	EnvironmentID int        `form:"environment_id"`
+	CreatedAt     *time.Time `form:"created_at"`
+	UpdatedAt     *time.Time `form:"updated_at"`
 }
 
-type PaymentIntent struct {
-	ProviderPaymentIntentID string                  `form:"provider_payment_intent_id"`
-	Provider                *string                 `form:"provider"`
-	Status                  *paymentintent.Status   `form:"status"`
-	Amount                  int64                   `form:"amount"`
-	Currency                *string                 `form:"currency"`
-	Description             *string                 `form:"description"`
-	ClientSecret            *string                 `form:"client_secret"`
-	Metadata                *map[string]interface{} `form:"metadata"`
-	CreatedAt               *time.Time              `form:"created_at"`
-	UpdatedAt               *time.Time              `form:"updated_at"`
+type Project struct {
+	Name        string     `form:"name"`
+	Description *string    `form:"description"`
+	CreatedAt   *time.Time `form:"created_at"`
+	UpdatedAt   *time.Time `form:"updated_at"`
 }
 
-type PaymentMethod struct {
-	ProviderPaymentMethodID string                  `form:"provider_payment_method_id"`
-	Provider                *string                 `form:"provider"`
-	Type                    *paymentmethod.Type     `form:"type"`
-	LastFour                *string                 `form:"last_four"`
-	Brand                   *string                 `form:"brand"`
-	ExpMonth                *int                    `form:"exp_month"`
-	ExpYear                 *int                    `form:"exp_year"`
-	IsDefault               bool                    `form:"is_default"`
-	Metadata                *map[string]interface{} `form:"metadata"`
-	CreatedAt               *time.Time              `form:"created_at"`
-	UpdatedAt               *time.Time              `form:"updated_at"`
-}
-
-type Subscription struct {
-	ProviderSubscriptionID string                  `form:"provider_subscription_id"`
-	Provider               *string                 `form:"provider"`
-	Status                 *subscription.Status    `form:"status"`
-	PriceID                string                  `form:"price_id"`
-	Amount                 int64                   `form:"amount"`
-	Currency               *string                 `form:"currency"`
-	Interval               subscription.Interval   `form:"interval"`
-	IntervalCount          *int                    `form:"interval_count"`
-	CurrentPeriodStart     *time.Time              `form:"current_period_start"`
-	CurrentPeriodEnd       *time.Time              `form:"current_period_end"`
-	TrialStart             *time.Time              `form:"trial_start"`
-	TrialEnd               *time.Time              `form:"trial_end"`
-	CanceledAt             *time.Time              `form:"canceled_at"`
-	EndedAt                *time.Time              `form:"ended_at"`
-	Metadata               *map[string]interface{} `form:"metadata"`
-	CreatedAt              *time.Time              `form:"created_at"`
-	UpdatedAt              *time.Time              `form:"updated_at"`
-}
-
-type User struct {
-	Name      string     `form:"name"`
-	Email     string     `form:"email"`
-	Password  *string    `form:"password"`
-	Verified  bool       `form:"verified"`
-	Admin     bool       `form:"admin"`
-	CreatedAt *time.Time `form:"created_at"`
+type Strategy struct {
+	Name              string                  `form:"name"`
+	Parameters        *map[string]interface{} `form:"parameters"`
+	SortOrder         *int                    `form:"sort_order"`
+	FlagEnvironmentID int                     `form:"flag_environment_id"`
+	CreatedAt         *time.Time              `form:"created_at"`
+	UpdatedAt         *time.Time              `form:"updated_at"`
 }
 
 type EntityList struct {
@@ -120,14 +94,12 @@ type HandlerConfig struct {
 
 func GetEntityTypeNames() []string {
 	return []string{
-		"ChatBan",
-		"ChatMessage",
-		"ChatRoom",
-		"PasswordToken",
-		"PaymentCustomer",
-		"PaymentIntent",
-		"PaymentMethod",
-		"Subscription",
-		"User",
+		"ApiToken",
+		"Constraint",
+		"Environment",
+		"Flag",
+		"FlagEnvironment",
+		"Project",
+		"Strategy",
 	}
 }

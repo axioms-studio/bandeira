@@ -1,17 +1,12 @@
 package tests
 
 import (
-	"context"
-	"fmt"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"time"
 
-	"github.com/occult/pagode/ent"
-	"github.com/occult/pagode/pkg/session"
+	"github.com/felipekafuri/bandeira/pkg/session"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -60,15 +55,4 @@ func AssertHTTPErrorCode(t *testing.T, err error, code int) {
 	httpError, ok := err.(*echo.HTTPError)
 	require.True(t, ok)
 	assert.Equal(t, code, httpError.Code)
-}
-
-// CreateUser creates a random user entity
-func CreateUser(orm *ent.Client) (*ent.User, error) {
-	seed := fmt.Sprintf("%d-%d", time.Now().UnixMilli(), rand.Intn(1000000))
-	return orm.User.
-		Create().
-		SetEmail(fmt.Sprintf("testuser-%s@localhost.localhost", seed)).
-		SetPassword("password").
-		SetName(fmt.Sprintf("Test User %s", seed)).
-		Save(context.Background())
 }

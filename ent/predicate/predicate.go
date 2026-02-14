@@ -6,29 +6,23 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// ChatBan is the predicate function for chatban builders.
-type ChatBan func(*sql.Selector)
+// ApiToken is the predicate function for apitoken builders.
+type ApiToken func(*sql.Selector)
 
-// ChatMessage is the predicate function for chatmessage builders.
-type ChatMessage func(*sql.Selector)
+// Constraint is the predicate function for constraint builders.
+type Constraint func(*sql.Selector)
 
-// ChatRoom is the predicate function for chatroom builders.
-type ChatRoom func(*sql.Selector)
+// Environment is the predicate function for environment builders.
+type Environment func(*sql.Selector)
 
-// PasswordToken is the predicate function for passwordtoken builders.
-type PasswordToken func(*sql.Selector)
+// Flag is the predicate function for flag builders.
+type Flag func(*sql.Selector)
 
-// PaymentCustomer is the predicate function for paymentcustomer builders.
-type PaymentCustomer func(*sql.Selector)
+// FlagEnvironment is the predicate function for flagenvironment builders.
+type FlagEnvironment func(*sql.Selector)
 
-// PaymentIntent is the predicate function for paymentintent builders.
-type PaymentIntent func(*sql.Selector)
+// Project is the predicate function for project builders.
+type Project func(*sql.Selector)
 
-// PaymentMethod is the predicate function for paymentmethod builders.
-type PaymentMethod func(*sql.Selector)
-
-// Subscription is the predicate function for subscription builders.
-type Subscription func(*sql.Selector)
-
-// User is the predicate function for user builders.
-type User func(*sql.Selector)
+// Strategy is the predicate function for strategy builders.
+type Strategy func(*sql.Selector)

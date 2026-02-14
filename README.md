@@ -1,108 +1,337 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/mikestefanello/pagoda)](https://goreportcard.com/report/github.com/mikestefanello/pagoda)
-[![Test](https://github.com/mikestefanello/pagoda/actions/workflows/test.yml/badge.svg)](https://github.com/mikestefanello/pagoda/actions/workflows/test.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Go Reference](https://pkg.go.dev/badge/github.com/mikestefanello/pagoda.svg)](https://pkg.go.dev/github.com/mikestefanello/pagoda)
-[![GoT](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev)
-[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
+# Bandeira
 
-![pagode_banner](https://github.com/user-attachments/assets/756e2fa3-de77-4469-8f6f-6940c83696cc)
+Self-hosted, open-source feature flag service built with Go. Ships as a single binary + SQLite.
 
-## About Pagode
+**Bandeira** — Portuguese for "flag."
 
-Pagode is a full-stack web application starter kit with expressive, elegant architecture. We believe development must be an enjoyable and creative experience to be truly fulfilling. Pagode takes the pain out of development by combining the power of Go with modern React, providing:
+## Features
 
-- [Fast, type-safe backend](https://pagode.dev/docs/intro) with Go and Echo.
-- [Modern React frontend](https://pagode.dev/docs/intro) with InertiaJS bridge.
-- [Powerful ORM](https://pagode.dev/docs/database-and-orm) with Ent code generation.
-- [Built-in authentication](https://pagode.dev/docs/authentication) and session management.
-- [Background job processing](https://pagode.dev/docs/tasks-and-queues) with SQLite queues.
-- [Admin panel](https://pagode.dev/docs/admin-panel) auto-generated for all entities.
-- [Hot reload development](https://pagode.dev/docs/intro) experience.
+- **Kill switches** — disable features in production without redeploying
+- **Gradual rollouts** — roll features out to a % of users or specific groups
+- **Environment toggles** — enable in staging, disable in production
+- **Multi-project** — one Bandeira instance serves all projects
+- **Admin dashboard** — React UI with matrix toggle view
+- **Admin API** — 18 JSON endpoints for CI/CD, Terraform, and scripts
+- **Client API** — lightweight SDK endpoint for flag evaluation
 
-Pagode is accessible, powerful, and provides tools required for large, robust applications.
+## Architecture
 
-## Learning Pagode
-
-Pagode has comprehensive [documentation](https://pagode.dev/) and examples to help you get started quickly with the framework
-
-## Getting Started
-
-### Dependencies
-
-Ensure that [Go](https://go.dev/) is installed on your system.
-
-### Getting the Code
-
-Start by checking out the repository. Since this repository is a _template_ and not a Go _library_, you **do not** use `go get`.
-
-```bash
-git clone git@github.com:occult/pagode.git
-cd pagode
+```
++---------------------------------------------+
+|                  Bandeira                    |
+|                                             |
+|  +----------+  +----------+  +-----------+  |
+|  | Admin UI |  | Admin API|  | Client API|  |
+|  | (React/  |  | (18 CRUD |  | (GET      |  |
+|  | Inertia) |  | endpoints|  | /api/v1/  |  |
+|  |          |  |          |  | flags)    |  |
+|  +----+-----+  +----+-----+  +-----+-----+  |
+|       |              |              |        |
+|       +--------------+--------------+        |
+|                      |                       |
+|              +-------v--------+              |
+|              |   Ent ORM      |              |
+|              |   (SQLite)     |              |
+|              +----------------+              |
++---------------------------------------------+
+        |                          ^
+        |  polls every N seconds   |
+        v                          |
++------------------+       +------------------+
+|  Go SDK          |       |  Future SDKs     |
+|  (bandeira-go)   |       |  (Node, Py, etc) |
++------------------+       +------------------+
 ```
 
-### Create an Admin Account
+Single Go binary. No Redis, no background workers, no message queue. SQLite is the only dependency.
 
-To access the admin panel, you need an admin user account. To create your first admin user, use the command-line:
+## Tech Stack
+
+- **Backend**: Go, Echo, Ent ORM
+- **Frontend**: React, InertiaJS, Tailwind CSS v4, shadcn/ui
+- **Database**: SQLite (embedded, zero config)
+
+## Quick Start
+
+### Docker (recommended)
 
 ```bash
-make admin email=your@email.com
+docker compose up -d
 ```
 
-This will generate an admin account using that email address and print the randomly-generated password.
+The dashboard is available at `http://localhost:8080`. Log in with the admin password (`admin` by default).
 
-### Start the Application
-
-Before starting, install the frontend dependencies:
+### From source
 
 ```bash
-npm install
-```
+# Install dependencies
+npm ci
 
-Then, start the Vite frontend development server:
+# Build frontend
+npm run build
 
-```bash
-npx vite
-```
-
-From within the root of the codebase, run:
-
-```bash
+# Run the server
 make run
 ```
 
-By default, you can access the application at `localhost:8000`. Your data will be stored in the `dbs` directory.
-
-### Live Reloading
-
-For automatic rebuilding when code changes, install [air](https://github.com/air-verse/air) and use:
+### Development
 
 ```bash
-make air-install
-make watch
+make watch     # Start with hot reload (requires air)
+make test      # Run all tests
+make ent-gen   # Regenerate Ent code after schema changes
 ```
 
-## Credits
+## Configuration
 
-Thank you to all the following amazing projects for making this possible.
+All settings live in `config/config.yaml` and can be overridden via environment variables with the `BANDEIRA_` prefix.
 
-- [afero](https://github.com/spf13/afero)
-- [gonertia](https://github.com/romsar/gonertia)
-- [pagoda](https://github.com/mikestefanello/pagoda)
-- [inertiajs](https://inertiajs.com/)
-- [laravel](https://github.com/laravel)
-- [tailwindcss](https://github.com/tailwindlabs/tailwindcss)
-- [shadcn](https://github.com/shadcn-ui/ui)
-- [air](https://github.com/air-verse/air)
-- [backlite](https://github.com/mikestefanello/backlite)
-- [echo](https://github.com/labstack/echo)
-- [ent](https://github.com/ent/ent)
-- [go](https://go.dev/)
-- [go-sqlite3](https://github.com/mattn/go-sqlite3)
-- [goquery](https://github.com/PuerkitoBio/goquery)
-- [jwt](https://github.com/golang-jwt/jwt)
-- [otter](https://github.com/maypok86/otter)
-- [sessions](https://github.com/gorilla/sessions)
-- [sqlite](https://sqlite.org/)
-- [testify](https://github.com/stretchr/testify)
-- [validator](https://github.com/go-playground/validator)
-- [viper](https://github.com/spf13/viper)
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BANDEIRA_HTTP_PORT` | `8080` | HTTP listen port |
+| `BANDEIRA_AUTH_ADMINPASSWORD` | `change-me-in-production` | Dashboard login password |
+| `BANDEIRA_APP_ENCRYPTIONKEY` | *(set in config)* | 32-char key for session encryption |
+| `BANDEIRA_APP_ENVIRONMENT` | `local` | `local`, `test`, or `prod` |
+| `BANDEIRA_DATABASE_CONNECTION` | `dbs/main.db?...` | SQLite connection string |
+
+## API Reference
+
+Bandeira exposes two API surfaces:
+
+- **Client API** — read-only flag data for SDKs (`/api/v1/`)
+- **Admin API** — full CRUD for managing projects, flags, environments, and tokens (`/api/admin/`)
+
+Both require a `Bearer` token in the `Authorization` header.
+
+---
+
+### Client API
+
+Used by SDKs. Requires a **client** token (scoped to one project + one environment).
+
+#### `GET /api/v1/flags`
+
+Returns all flags for the token's project and environment, with strategies and constraints.
+
+**Response:**
+
+```json
+{
+  "flags": [
+    {
+      "name": "new-dashboard",
+      "enabled": true,
+      "strategies": [
+        {
+          "name": "gradualRollout",
+          "parameters": { "rollout": 50, "stickiness": "userId" },
+          "constraints": [
+            {
+              "context_name": "companyId",
+              "operator": "IN",
+              "values": ["1", "2", "3"],
+              "inverted": false,
+              "case_insensitive": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Evaluation logic (performed by SDK, not server):**
+
+1. If `enabled` is `false` — flag is OFF, skip strategies
+2. If `enabled` is `true` and no strategies — flag is ON for everyone
+3. If `enabled` is `true` with strategies — evaluate each in order; if ANY returns true the flag is ON (OR between strategies, AND between constraints)
+
+---
+
+### Admin API
+
+Used by CI/CD, Terraform, scripts, or the dashboard. Requires an **admin** token (scoped to one project).
+
+All responses use JSON. Timestamps are RFC 3339.
+
+#### Projects
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/admin/projects` | List projects (returns only the token's project) |
+| `POST` | `/api/admin/projects` | Returns `403` — admin tokens are project-scoped |
+| `GET` | `/api/admin/projects/:id` | Get project with flag/environment counts |
+| `PUT` | `/api/admin/projects/:id` | Update project name/description |
+| `DELETE` | `/api/admin/projects/:id` | Delete project and all children |
+
+**Example — update project:**
+
+```bash
+curl -X PUT http://localhost:8080/api/admin/projects/1 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-project", "description": "Updated description"}'
+```
+
+#### Environments
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/admin/projects/:id/environments` | List environments (ordered by sort_order) |
+| `POST` | `/api/admin/projects/:id/environments` | Create environment |
+| `PUT` | `/api/admin/projects/:id/environments/:envId` | Update environment |
+| `DELETE` | `/api/admin/projects/:id/environments/:envId` | Delete environment |
+
+**Create request body:**
+
+```json
+{
+  "name": "production",
+  "type": "production",
+  "sort_order": 3
+}
+```
+
+`type` must be one of: `development`, `staging`, `production`.
+
+#### Flags
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/admin/projects/:id/flags` | List flags |
+| `POST` | `/api/admin/projects/:id/flags` | Create flag |
+| `GET` | `/api/admin/projects/:id/flags/:flagId` | Get flag with all environment configs, strategies, and constraints |
+| `PUT` | `/api/admin/projects/:id/flags/:flagId` | Update flag metadata |
+| `DELETE` | `/api/admin/projects/:id/flags/:flagId` | Delete flag |
+| `PATCH` | `/api/admin/projects/:id/flags/:flagId/environments/:envId` | Toggle flag and/or replace strategies |
+
+**Create request body:**
+
+```json
+{
+  "name": "new-feature",
+  "description": "Optional description",
+  "flag_type": "release"
+}
+```
+
+`flag_type` must be one of: `release`, `experiment`, `operational`, `kill_switch`.
+
+**PATCH flag/env** — both fields are optional (PATCH semantics):
+
+```json
+{
+  "enabled": true,
+  "strategies": [
+    {
+      "name": "gradualRollout",
+      "parameters": { "rollout": 50, "stickiness": "userId" },
+      "constraints": [
+        {
+          "context_name": "region",
+          "operator": "IN",
+          "values": ["us-east", "us-west"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+When `strategies` is present, all existing strategies are replaced.
+
+#### API Tokens
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/admin/api-tokens` | List tokens for the project |
+| `POST` | `/api/admin/api-tokens` | Create token (returns `raw_token` once) |
+| `DELETE` | `/api/admin/api-tokens/:id` | Revoke token |
+
+**Create request body:**
+
+```json
+{
+  "name": "ci-deploy",
+  "token_type": "admin"
+}
+```
+
+For client tokens, include `"environment": "production"` (required for client type).
+
+**Response includes `raw_token`** — save it, it is only shown once:
+
+```json
+{
+  "id": 5,
+  "name": "ci-deploy",
+  "token_type": "admin",
+  "environment": "",
+  "raw_token": "a1b2c3d4e5f6...",
+  "created_at": "2026-02-14T12:00:00Z"
+}
+```
+
+---
+
+### Error Responses
+
+**401 Unauthorized** — missing or invalid token:
+
+```json
+{ "message": "Missing or invalid Authorization header" }
+```
+
+**403 Forbidden** — token cannot access this resource:
+
+```json
+{ "error": "Forbidden" }
+```
+
+**422 Validation failed** — invalid input:
+
+```json
+{
+  "error": "Validation failed",
+  "fields": {
+    "name": "Name is required",
+    "type": "Type must be one of: development, staging, production"
+  }
+}
+```
+
+---
+
+### Authentication
+
+- **Client tokens**: scoped to one project + one environment. Can only read flags via `GET /api/v1/flags`.
+- **Admin tokens**: scoped to one project. Full CRUD on that project's resources via `/api/admin/`.
+- **Dashboard auth**: session-based, single admin password via `BANDEIRA_AUTH_ADMINPASSWORD`.
+
+## Strategy Reference
+
+Strategies are evaluated by the SDK, not the server. Documented here for SDK implementors.
+
+| Strategy | Parameters | Description |
+|----------|-----------|-------------|
+| `default` | *(none)* | Always returns true |
+| `gradualRollout` | `rollout` (0-100), `stickiness` (context field), `groupId` (optional salt) | Percentage rollout with consistent bucketing |
+| `userWithId` | `userIds` (comma-separated) | Match specific user IDs |
+| `remoteAddress` | `IPs` (comma-separated, supports CIDR) | Match IP addresses |
+
+### Constraint Operators
+
+| Operator | Category | Description |
+|----------|----------|-------------|
+| `IN` | Set | Value is in list |
+| `NOT_IN` | Set | Value is not in list |
+| `STR_CONTAINS` | String | Contains substring |
+| `STR_STARTS_WITH` | String | Starts with prefix |
+| `STR_ENDS_WITH` | String | Ends with suffix |
+| `NUM_EQ` / `NUM_GT` / `NUM_GTE` / `NUM_LT` / `NUM_LTE` | Numeric | Numeric comparisons |
+| `DATE_AFTER` / `DATE_BEFORE` | Date | ISO-8601 date comparisons |
+
+## License
+
+MIT
