@@ -82,8 +82,8 @@ export default function Home() {
         title2="Made Simple"
         subtitle="Self-hosted feature flag management with per-environment toggles, gradual rollouts, and a Go SDK — deploy with Docker in 60 seconds."
         cta={{
-          label: auth?.user ? "Go to Dashboard" : "Get Started",
-          href: auth?.user ? "/dashboard" : "/user/login",
+          label: auth?.user ? "Go to Dashboard" : "View on GitHub",
+          href: auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira",
         }}
       />
 
@@ -207,10 +207,11 @@ export default function Home() {
               GitHub
             </a>
             <a
-              href={auth?.user ? "/dashboard" : "/user/login"}
+              href={auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira"}
+              {...(!auth?.user && { target: "_blank", rel: "noopener noreferrer" })}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
             >
-              Get Started
+              {auth?.user ? "Go to Dashboard" : "Get Started"}
               <ArrowRight className="w-4 h-4" />
             </a>
           </div>

@@ -23,23 +23,16 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-4">
-          {auth?.user ? (
+        {auth?.user && (
+          <nav className="flex items-center gap-4">
             <Link
               href="/dashboard"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Dashboard
             </Link>
-          ) : (
-            <Link
-              href="/user/login"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Sign in
-            </Link>
-          )}
-        </nav>
+          </nav>
+        )}
       </header>
 
       <main className="flex-1 flex flex-col">
