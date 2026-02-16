@@ -376,7 +376,7 @@ func TestAdminAPI_Flags_Get_WithStrategies(t *testing.T) {
 	require.NoError(t, err)
 
 	s, err := c.ORM.Strategy.Create().
-		SetName("percentage").
+		SetName("gradualRollout").
 		SetParameters(map[string]any{"rollout": 50}).
 		SetFlagEnvironmentID(fe.ID).
 		Save(gocontext.Background())
@@ -407,7 +407,7 @@ func TestAdminAPI_Flags_Get_WithStrategies(t *testing.T) {
 	assert.Len(t, strategies, 1)
 
 	strat := strategies[0].(map[string]any)
-	assert.Equal(t, "percentage", strat["name"])
+	assert.Equal(t, "gradualRollout", strat["name"])
 
 	constraints := strat["constraints"].([]any)
 	assert.Len(t, constraints, 1)
@@ -500,7 +500,7 @@ func TestAdminAPI_PatchFlagEnv_ReplaceStrategies(t *testing.T) {
 	resp := adminRequest(t, "PATCH", path, map[string]any{
 		"strategies": []map[string]any{
 			{
-				"name":       "percentage",
+				"name":       "gradualRollout",
 				"parameters": map[string]any{"rollout": 80},
 				"constraints": []map[string]any{
 					{
@@ -517,7 +517,7 @@ func TestAdminAPI_PatchFlagEnv_ReplaceStrategies(t *testing.T) {
 	body := parseJSON(t, resp)
 	strategies := body["strategies"].([]any)
 	assert.Len(t, strategies, 1)
-	assert.Equal(t, "percentage", strategies[0].(map[string]any)["name"])
+	assert.Equal(t, "gradualRollout", strategies[0].(map[string]any)["name"])
 	constraints := strategies[0].(map[string]any)["constraints"].([]any)
 	assert.Len(t, constraints, 1)
 }
