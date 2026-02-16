@@ -45,7 +45,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             </Link>
           ) : (
             typeof window !== "undefined" &&
-            !window.location.hostname.endsWith("bandeiras.app") && (
+            !window.location.hostname.endsWith("bandeira.app") && (
               <Link
                 href="/user/login"
                 className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
