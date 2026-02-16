@@ -12,7 +12,10 @@ import {
   Crosshair,
   Palette,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useAppearance } from "@/hooks/useAppearance";
 
 interface Props {
   children: ReactNode;
@@ -35,6 +38,10 @@ export default function PublicLayout({
 
   const { post, processing } = useForm({});
   const handleLogout = () => post("/user/logout");
+
+  const { appearance, updateAppearance } = useAppearance();
+  const isDark = appearance === "dark" || (appearance === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const toggleTheme = () => updateAppearance(isDark ? "light" : "dark");
 
   const navLinkClass = (page?: string) =>
     page === activePage
@@ -88,7 +95,15 @@ export default function PublicLayout({
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-muted-foreground hover:text-foreground h-8 w-8"
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </Button>
           {auth?.user ? (
             <>
               <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
