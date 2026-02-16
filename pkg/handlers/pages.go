@@ -25,6 +25,7 @@ func (h *Pages) Init(c *services.Container) error {
 
 func (h *Pages) Routes(g *echo.Group) {
 	g.GET("/", h.Welcome).Name = routenames.Welcome
+	g.GET("/strategies", h.Strategies).Name = routenames.Strategies
 }
 
 func (h *Pages) Welcome(ctx echo.Context) error {
@@ -32,6 +33,21 @@ func (h *Pages) Welcome(ctx echo.Context) error {
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Welcome",
+		inertia.Props{},
+	)
+	if err != nil {
+		handleServerErr(ctx.Response().Writer, err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *Pages) Strategies(ctx echo.Context) error {
+	err := h.Inertia.Render(
+		ctx.Response().Writer,
+		ctx.Request(),
+		"Strategies",
 		inertia.Props{},
 	)
 	if err != nil {

@@ -2,6 +2,7 @@ package routenames
 
 const (
 	Welcome    = "welcome"
+	Strategies = "strategies"
 	UserLogin  = "user.login"
 	UserLogout = "user.logout"
 	Dashboard  = "dashboard"

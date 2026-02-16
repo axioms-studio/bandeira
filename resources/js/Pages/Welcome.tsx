@@ -1,4 +1,4 @@
-import { usePage } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { SharedProps } from "@/types/global";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 import PublicLayout from "@/Layouts/PublicLayout";
@@ -23,12 +23,14 @@ const features = [
     title: "Targeting Strategies",
     description:
       "Roll out to specific users, percentages, or IP ranges with built-in strategies.",
+    href: "/strategies",
   },
   {
     icon: Shield,
     title: "Constraint Engine",
     description:
       "AND/OR logic with operators like IN, STR_CONTAINS, NUM_GT, and date comparisons.",
+    href: "/strategies",
   },
   {
     icon: Zap,
@@ -112,6 +114,14 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {feature.description}
                 </p>
+                {feature.href && (
+                  <Link
+                    href={feature.href}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-3"
+                  >
+                    Learn more <ArrowRight className="w-3 h-3" />
+                  </Link>
+                )}
               </div>
             ))}
           </div>

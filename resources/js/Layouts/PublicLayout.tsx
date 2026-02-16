@@ -23,16 +23,38 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
           </span>
         </Link>
 
-        {auth?.user && (
-          <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-4">
+          <Link
+            href="/docs"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Docs
+          </Link>
+          <Link
+            href="/strategies"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Strategies
+          </Link>
+          {auth?.user ? (
             <Link
               href="/dashboard"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Dashboard
             </Link>
-          </nav>
-        )}
+          ) : (
+            typeof window !== "undefined" &&
+            !window.location.hostname.endsWith("bandeiras.app") && (
+              <Link
+                href="/user/login"
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                Sign in
+              </Link>
+            )
+          )}
+        </nav>
       </header>
 
       <main className="flex-1 flex flex-col">

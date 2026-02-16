@@ -11,6 +11,7 @@ import {
   Rocket,
   Server,
   Shield,
+  Crosshair,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -44,19 +45,30 @@ export default function Docs() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
+              {auth?.user && (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/projects"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    <FolderOpen className="w-4 h-4" />
+                    Projects
+                  </Link>
+                </>
+              )}
               <Link
-                href="/dashboard"
+                href="/strategies"
                 className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               >
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
-              <Link
-                href="/projects"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <FolderOpen className="w-4 h-4" />
-                Projects
+                <Crosshair className="w-4 h-4" />
+                Strategies
               </Link>
               <Link
                 href="/docs"
@@ -69,22 +81,38 @@ export default function Docs() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xs font-semibold text-primary">A</span>
-              </div>
-              <span>{auth?.user?.name}</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              disabled={processing}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Sign out</span>
-            </Button>
+            {auth?.user ? (
+              <>
+                <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-xs font-semibold text-primary">
+                      {auth.user.name?.charAt(0)?.toUpperCase() ?? "U"}
+                    </span>
+                  </div>
+                  <span>{auth.user.name}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  disabled={processing}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign out</span>
+                </Button>
+              </>
+            ) : (
+              typeof window !== "undefined" &&
+              !window.location.hostname.endsWith("bandeiras.app") && (
+                <Link
+                  href="/user/login"
+                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  Sign in
+                </Link>
+              )
+            )}
           </div>
         </div>
       </header>
@@ -126,6 +154,16 @@ export default function Docs() {
                   CI/CD pipelines, Terraform, scripts, and any automation that
                   manages projects, flags, environments, and tokens
                   programmatically.
+                </li>
+                <li>
+                  <Link
+                    href="/strategies"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Strategy Documentation
+                  </Link>{" "}
+                  — Learn how targeting strategies and constraints work with an
+                  interactive playground.
                 </li>
               </ul>
             </section>
