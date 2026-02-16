@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for component in alert dialog dropdown-menu navigation-menu placeholder-pattern table avatar)",
+      "Bash(do echo \"=== $component ===\")",
+      "Bash(done)",
+      "Bash(xargs:*)"
+    ]
+  }
+}

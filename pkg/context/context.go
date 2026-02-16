@@ -17,9 +17,6 @@ const (
 	// SessionKey is the key used to store the session data in context.
 	SessionKey = "session"
 
-	// HTMXRequestKey is the key used to store the HTMX request data in context.
-	HTMXRequestKey = "htmx"
-
 	// CSRFKey is the key used to store the CSRF token in context.
 	CSRFKey = "csrf"
 
