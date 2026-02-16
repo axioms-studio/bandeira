@@ -229,10 +229,18 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 px-4 text-center bg-background">
-        <p className="text-xs text-muted-foreground">
-          Bandeira — Open source feature flag management
-        </p>
+      <footer className="border-t border-border py-8 px-4 bg-background">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            Bandeira — Open source feature flag management
+          </p>
+          <Link
+            href="/brand"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Brand
+          </Link>
+        </div>
       </footer>
     </PublicLayout>
   );

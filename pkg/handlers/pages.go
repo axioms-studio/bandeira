@@ -26,6 +26,7 @@ func (h *Pages) Init(c *services.Container) error {
 func (h *Pages) Routes(g *echo.Group) {
 	g.GET("/", h.Welcome).Name = routenames.Welcome
 	g.GET("/strategies", h.Strategies).Name = routenames.Strategies
+	g.GET("/brand", h.Brand).Name = routenames.Brand
 }
 
 func (h *Pages) Welcome(ctx echo.Context) error {
@@ -48,6 +49,21 @@ func (h *Pages) Strategies(ctx echo.Context) error {
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Strategies",
+		inertia.Props{},
+	)
+	if err != nil {
+		handleServerErr(ctx.Response().Writer, err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *Pages) Brand(ctx echo.Context) error {
+	err := h.Inertia.Render(
+		ctx.Response().Writer,
+		ctx.Request(),
+		"Brand",
 		inertia.Props{},
 	)
 	if err != nil {

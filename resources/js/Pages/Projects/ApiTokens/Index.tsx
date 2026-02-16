@@ -1,15 +1,9 @@
-import { Link, useForm, usePage, router } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
 import { SharedProps } from "@/types/global";
-import { useFlashToasts } from "@/hooks/useFlashToast";
-import { Toaster } from "@/components/ui/sonner";
+import PublicLayout from "@/Layouts/PublicLayout";
 import { Button } from "@/components/ui/button";
 import {
-  Flag,
-  LayoutDashboard,
-  FolderOpen,
-  BookOpen,
-  LogOut,
   ArrowLeft,
   Plus,
   Trash2,
@@ -35,12 +29,7 @@ interface Props {
 }
 
 export default function Index() {
-  const { flash, auth } = usePage<SharedProps>().props;
   const { project, tokens } = usePage<SharedProps & Props>().props;
-  useFlashToasts(flash);
-
-  const { post: logoutPost, processing: logoutProcessing } = useForm({});
-  const handleLogout = () => logoutPost("/user/logout");
 
   const [visibleTokens, setVisibleTokens] = useState<Record<number, boolean>>({});
   const [copiedId, setCopiedId] = useState<number | null>(null);
@@ -62,67 +51,8 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Toaster />
-
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-16">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
-                <Flag className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                Bandeira
-              </span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-1">
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
-              <Link
-                href="/projects"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-accent text-accent-foreground"
-              >
-                <FolderOpen className="w-4 h-4" />
-                Projects
-              </Link>
-              <Link
-                href="/docs"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <BookOpen className="w-4 h-4" />
-                Docs
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xs font-semibold text-primary">A</span>
-              </div>
-              <span>{auth?.user?.name}</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              disabled={logoutProcessing}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Sign out</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-6 py-8">
+    <PublicLayout activePage="projects">
+      <div className="mx-auto max-w-7xl px-6 py-8 w-full">
           <Link
             href={`/projects/${project.id}`}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
@@ -237,8 +167,7 @@ export default function Index() {
               </div>
             )}
           </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </PublicLayout>
   );
 }

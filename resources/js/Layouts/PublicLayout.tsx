@@ -10,12 +10,13 @@ import {
   FolderOpen,
   BookOpen,
   Crosshair,
+  Palette,
   LogOut,
 } from "lucide-react";
 
 interface Props {
   children: ReactNode;
-  activePage?: "docs" | "strategies";
+  activePage?: "dashboard" | "projects" | "docs" | "strategies" | "brand";
   overlay?: boolean;
 }
 
@@ -62,11 +63,11 @@ export default function PublicLayout({
           <nav className="hidden md:flex items-center gap-1">
             {auth?.user && (
               <>
-                <Link href="/dashboard" className={navLinkClass()}>
+                <Link href="/dashboard" className={navLinkClass("dashboard")}>
                   <LayoutDashboard className="w-4 h-4" />
                   Dashboard
                 </Link>
-                <Link href="/projects" className={navLinkClass()}>
+                <Link href="/projects" className={navLinkClass("projects")}>
                   <FolderOpen className="w-4 h-4" />
                   Projects
                 </Link>
@@ -79,6 +80,10 @@ export default function PublicLayout({
             <Link href="/docs" className={navLinkClass("docs")}>
               <BookOpen className="w-4 h-4" />
               Docs
+            </Link>
+            <Link href="/brand" className={navLinkClass("brand")}>
+              <Palette className="w-4 h-4" />
+              Brand
             </Link>
           </nav>
         </div>
