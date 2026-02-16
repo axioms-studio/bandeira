@@ -5,7 +5,6 @@ import { SharedProps } from "@/types/global";
 import { useFlashToasts } from "@/hooks/useFlashToast";
 import { Button } from "@/components/ui/button";
 import {
-  Flag,
   LayoutDashboard,
   FolderOpen,
   BookOpen,
@@ -15,6 +14,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import Logo from "@/components/Logo";
 import { useAppearance } from "@/hooks/useAppearance";
 
 interface Props {
@@ -59,9 +59,7 @@ export default function PublicLayout({
       <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-16">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
-              <Flag className="w-4 h-4 text-primary-foreground" />
-            </div>
+            <Logo size={32} />
             <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
               Bandeira
             </span>

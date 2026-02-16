@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAppearance, type Appearance } from "@/hooks/useAppearance";
 import {
-  Flag,
   Sun,
   Moon,
   Monitor,
@@ -21,7 +20,9 @@ import {
   Palette,
   Component,
   Sparkles,
+  Flag,
 } from "lucide-react";
+import Logo from "@/components/Logo";
 import { useEffect, useRef, useState } from "react";
 
 /* ------------------------------------------------------------------ */
@@ -612,19 +613,7 @@ if (client.isEnabled("new-checkout")) {
               {[16, 32, 64, 128].map((size) => (
                 <div key={size} className="text-center">
                   <div className="inline-flex items-center justify-center mb-2">
-                    {/* Light bg */}
-                    <div
-                      className="flex items-center justify-center rounded-lg bg-primary"
-                      style={{ width: size, height: size }}
-                    >
-                      <Flag
-                        className="text-primary-foreground"
-                        style={{
-                          width: size * 0.5,
-                          height: size * 0.5,
-                        }}
-                      />
-                    </div>
+                    <Logo size={size} />
                   </div>
                   <p className="text-xs text-muted-foreground font-mono">
                     {size}px
@@ -640,17 +629,8 @@ if (client.isEnabled("new-checkout")) {
               <div className="bg-[oklch(0.13_0.04_265)] rounded-xl p-6 flex flex-wrap gap-6 items-end">
                 {[32, 64, 128].map((size) => (
                   <div key={size} className="text-center">
-                    <div
-                      className="flex items-center justify-center rounded-lg bg-primary mx-auto mb-2"
-                      style={{ width: size, height: size }}
-                    >
-                      <Flag
-                        className="text-primary-foreground"
-                        style={{
-                          width: size * 0.5,
-                          height: size * 0.5,
-                        }}
-                      />
+                    <div className="mx-auto mb-2">
+                      <Logo size={size} />
                     </div>
                     <p className="text-xs text-[oklch(0.71_0.04_257)] font-mono">
                       {size}px
@@ -665,9 +645,7 @@ if (client.isEnabled("new-checkout")) {
                 Wordmark
               </p>
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
-                  <Flag className="w-5 h-5 text-primary-foreground" />
-                </div>
+                <Logo size={40} />
                 <span className="text-2xl font-semibold text-foreground tracking-tight">
                   Bandeira
                 </span>

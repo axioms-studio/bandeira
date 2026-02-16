@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InputError from "@/components/InputError";
-import { Flag, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Logo from "@/components/Logo";
 import { useState } from "react";
 
 export default function Login() {
@@ -47,9 +48,7 @@ export default function Login() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
-            <Flag className="w-4 h-4 text-primary-foreground" />
-          </div>
+          <Logo size={32} />
           <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
             Bandeira
           </span>
@@ -61,8 +60,8 @@ export default function Login() {
         <div className="w-full max-w-sm">
           {/* Logo & heading */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-primary/10 rounded-2xl mb-6">
-              <Flag className="w-7 h-7 text-primary" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6">
+              <Logo size={56} />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               Welcome back
