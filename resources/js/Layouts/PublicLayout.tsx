@@ -1,5 +1,5 @@
 import { Link, useForm, usePage } from "@inertiajs/react";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SharedProps } from "@/types/global";
 import { useFlashToasts } from "@/hooks/useFlashToast";
@@ -13,6 +13,8 @@ import {
   LogOut,
   Sun,
   Moon,
+  Menu,
+  X,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { useAppearance } from "@/hooks/useAppearance";
@@ -38,6 +40,8 @@ export default function PublicLayout({
 
   const { post, processing } = useForm({});
   const handleLogout = () => post("/user/logout");
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { appearance, updateAppearance } = useAppearance();
   const isDark = appearance === "dark" || (appearance === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -133,8 +137,66 @@ export default function PublicLayout({
               </Link>
             )
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-muted-foreground hover:text-foreground h-8 w-8"
+          >
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </Button>
         </div>
       </div>
+
+      {/* Mobile nav menu */}
+      {mobileMenuOpen && (
+        <nav className="md:hidden border-t border-border bg-card px-4 py-3 space-y-1">
+          {auth?.user && (
+            <>
+              <Link
+                href="/dashboard"
+                className={navLinkClass("dashboard")}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </Link>
+              <Link
+                href="/projects"
+                className={navLinkClass("projects")}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <FolderOpen className="w-4 h-4" />
+                Projects
+              </Link>
+            </>
+          )}
+          <Link
+            href="/strategies"
+            className={navLinkClass("strategies")}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Crosshair className="w-4 h-4" />
+            Strategies
+          </Link>
+          <Link
+            href="/docs"
+            className={navLinkClass("docs")}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <BookOpen className="w-4 h-4" />
+            Docs
+          </Link>
+          <Link
+            href="/brand"
+            className={navLinkClass("brand")}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Palette className="w-4 h-4" />
+            Brand
+          </Link>
+        </nav>
+      )}
     </header>
   );
 
