@@ -424,6 +424,7 @@ function ConstraintsReference() {
 // ── Interactive Playground ────────────────────────────────────────────────
 
 function Playground() {
+  const [activePreset, setActivePreset] = useState<string | null>("50% Rollout");
   const [strategyName, setStrategyName] = useState("gradualRollout");
   const [parameters, setParameters] = useState<Record<string, any>>({ rollout: 50, stickiness: "userId", groupId: "" });
   const [constraints, setConstraints] = useState<Constraint[]>([]);
@@ -459,6 +460,7 @@ function Playground() {
   );
 
   const applyPreset = (preset: Preset) => {
+    setActivePreset(preset.label);
     setStrategyName(preset.strategy.name);
     setParameters({ ...preset.strategy.parameters });
     setConstraints(preset.constraints.map((c) => ({ ...c, values: [...c.values] })));
@@ -467,6 +469,9 @@ function Playground() {
     setRemoteAddress(preset.context.remoteAddress);
     setProperties(preset.context.properties.map((p) => ({ ...p })));
   };
+
+  // Clear active preset when user manually changes anything
+  const clearPreset = () => setActivePreset(null);
 
   const updateConstraint = (index: number, c: Constraint) => {
     setConstraints((prev) => prev.map((item, i) => (i === index ? c : item)));
@@ -491,8 +496,14 @@ function Playground() {
   };
 
   const handleStrategyChange = (name: string) => {
+    clearPreset();
     setStrategyName(name);
     setParameters({});
+  };
+
+  const handleParamsChange = (params: Record<string, any>) => {
+    clearPreset();
+    setParameters(params);
   };
 
   return (
@@ -503,19 +514,28 @@ function Playground() {
           Try an example:
         </p>
         <div className="flex flex-wrap gap-2">
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.label}
-              onClick={() => applyPreset(preset)}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-muted/30 hover:bg-muted hover:border-primary/30 transition-all text-left group"
-            >
-              <preset.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-foreground">{preset.label}</p>
-                <p className="text-[11px] text-muted-foreground">{preset.description}</p>
-              </div>
-            </button>
-          ))}
+          {PRESETS.map((preset) => {
+            const isActive = activePreset === preset.label;
+            return (
+              <button
+                key={preset.label}
+                onClick={() => applyPreset(preset)}
+                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left group ${
+                  isActive
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-muted/30 hover:bg-muted hover:border-primary/30"
+                }`}
+              >
+                <preset.icon className={`w-4 h-4 shrink-0 transition-colors ${
+                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                }`} />
+                <div>
+                  <p className={`text-xs font-medium ${isActive ? "text-primary" : "text-foreground"}`}>{preset.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{preset.description}</p>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -570,7 +590,7 @@ function Playground() {
             <StrategyParams
               strategyName={strategyName}
               parameters={parameters}
-              onChange={setParameters}
+              onChange={handleParamsChange}
             />
           </div>
 
@@ -587,7 +607,7 @@ function Playground() {
                 <Input
                   placeholder="e.g. 42"
                   value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  onChange={(e) => { clearPreset(); setUserId(e.target.value); }}
                   className="h-9 text-sm"
                 />
               </div>
@@ -596,7 +616,7 @@ function Playground() {
                 <Input
                   placeholder="e.g. sess_abc"
                   value={sessionId}
-                  onChange={(e) => setSessionId(e.target.value)}
+                  onChange={(e) => { clearPreset(); setSessionId(e.target.value); }}
                   className="h-9 text-sm"
                 />
               </div>
@@ -605,7 +625,7 @@ function Playground() {
                 <Input
                   placeholder="e.g. 192.168.1.100"
                   value={remoteAddress}
-                  onChange={(e) => setRemoteAddress(e.target.value)}
+                  onChange={(e) => { clearPreset(); setRemoteAddress(e.target.value); }}
                   className="h-9 text-sm"
                 />
               </div>
@@ -855,8 +875,8 @@ function Playground() {
 
 export default function Strategies() {
   return (
-    <PublicLayout>
-      <div className="pt-24 pb-16 px-4 md:px-6">
+    <PublicLayout activePage="strategies">
+      <div className="pt-8 pb-16 px-4 md:px-6">
         <div className="mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-8">

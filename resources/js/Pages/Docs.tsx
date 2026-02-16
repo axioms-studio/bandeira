@@ -1,19 +1,12 @@
-import { Link, useForm, usePage } from "@inertiajs/react";
-import { SharedProps } from "@/types/global";
+import { Link } from "@inertiajs/react";
 import {
-  Flag,
-  LayoutDashboard,
-  FolderOpen,
-  BookOpen,
-  LogOut,
   Terminal,
   Key,
   Rocket,
   Server,
   Shield,
-  Crosshair,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import PublicLayout from "@/Layouts/PublicLayout";
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -24,102 +17,9 @@ function CodeBlock({ children }: { children: string }) {
 }
 
 export default function Docs() {
-  const { auth } = usePage<SharedProps>().props;
-
-  const { post, processing } = useForm({});
-  const handleLogout = () => post("/user/logout");
-
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Top nav */}
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-16">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
-                <Flag className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                Bandeira
-              </span>
-            </Link>
-
-            <nav className="hidden md:flex items-center gap-1">
-              {auth?.user && (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/projects"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                  >
-                    <FolderOpen className="w-4 h-4" />
-                    Projects
-                  </Link>
-                </>
-              )}
-              <Link
-                href="/strategies"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <Crosshair className="w-4 h-4" />
-                Strategies
-              </Link>
-              <Link
-                href="/docs"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-accent text-accent-foreground"
-              >
-                <BookOpen className="w-4 h-4" />
-                Docs
-              </Link>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {auth?.user ? (
-              <>
-                <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-xs font-semibold text-primary">
-                      {auth.user.name?.charAt(0)?.toUpperCase() ?? "U"}
-                    </span>
-                  </div>
-                  <span>{auth.user.name}</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  disabled={processing}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Sign out</span>
-                </Button>
-              </>
-            ) : (
-              typeof window !== "undefined" &&
-              !window.location.hostname.endsWith("bandeira.app") && (
-                <Link
-                  href="/user/login"
-                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                >
-                  Sign in
-                </Link>
-              )
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Content */}
-      <main className="flex-1">
-        <div className="mx-auto max-w-4xl px-6 py-8">
+    <PublicLayout activePage="docs">
+      <div className="mx-auto max-w-4xl px-6 py-8">
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               API Documentation
@@ -542,7 +442,6 @@ echo "Flag enabled in production"`}
             </section>
           </div>
         </div>
-      </main>
-    </div>
+    </PublicLayout>
   );
 }
