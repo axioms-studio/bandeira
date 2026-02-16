@@ -34,6 +34,7 @@ COPY --from=backend /app/go.mod /app/go.mod
 COPY --from=frontend /app/public/build /app/public/build
 COPY config/config.yaml /app/config/config.yaml
 COPY resources/views/ /app/resources/views/
+COPY static/ /app/static/
 
 RUN mkdir -p /app/dbs
 
