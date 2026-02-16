@@ -27,7 +27,6 @@ FROM alpine:3.21
 
 RUN apk add --no-cache ca-certificates tzdata curl
 
-RUN adduser -D -u 1000 bandeira
 WORKDIR /app
 
 COPY --from=backend /bandeira /app/bandeira
@@ -36,9 +35,7 @@ COPY --from=frontend /app/public/build /app/public/build
 COPY config/config.yaml /app/config/config.yaml
 COPY resources/views/ /app/resources/views/
 
-RUN mkdir -p /app/dbs && chown -R bandeira:bandeira /app
-
-USER bandeira
+RUN mkdir -p /app/dbs
 
 EXPOSE 8080
 
