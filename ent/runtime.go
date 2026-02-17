@@ -13,6 +13,7 @@ import (
 	"github.com/felipekafuri/bandeira/ent/project"
 	"github.com/felipekafuri/bandeira/ent/schema"
 	"github.com/felipekafuri/bandeira/ent/strategy"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -26,11 +27,11 @@ func init() {
 	// apitoken.DefaultPlainToken holds the default value on creation for the plain_token field.
 	apitoken.DefaultPlainToken = apitokenDescPlainToken.Default.(string)
 	// apitokenDescCreatedAt is the schema descriptor for created_at field.
-	apitokenDescCreatedAt := apitokenFields[6].Descriptor()
+	apitokenDescCreatedAt := apitokenFields[7].Descriptor()
 	// apitoken.DefaultCreatedAt holds the default value on creation for the created_at field.
 	apitoken.DefaultCreatedAt = apitokenDescCreatedAt.Default.(func() time.Time)
 	// apitokenDescUpdatedAt is the schema descriptor for updated_at field.
-	apitokenDescUpdatedAt := apitokenFields[7].Descriptor()
+	apitokenDescUpdatedAt := apitokenFields[8].Descriptor()
 	// apitoken.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	apitoken.DefaultUpdatedAt = apitokenDescUpdatedAt.Default.(func() time.Time)
 	// apitoken.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -127,4 +128,24 @@ func init() {
 	strategy.DefaultUpdatedAt = strategyDescUpdatedAt.Default.(func() time.Time)
 	// strategy.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	strategy.UpdateDefaultUpdatedAt = strategyDescUpdatedAt.UpdateDefault.(func() time.Time)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescEmail is the schema descriptor for email field.
+	userDescEmail := userFields[0].Descriptor()
+	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[2].Descriptor()
+	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userFields[4].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	// userDescUpdatedAt is the schema descriptor for updated_at field.
+	userDescUpdatedAt := userFields[5].Descriptor()
+	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
+	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

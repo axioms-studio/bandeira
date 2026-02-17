@@ -10,6 +10,7 @@ import {
   BookOpen,
   Crosshair,
   Palette,
+  Users,
   LogOut,
   Sun,
   Moon,
@@ -21,7 +22,7 @@ import { useAppearance } from "@/hooks/useAppearance";
 
 interface Props {
   children: ReactNode;
-  activePage?: "dashboard" | "projects" | "docs" | "strategies" | "brand";
+  activePage?: "dashboard" | "projects" | "docs" | "strategies" | "brand" | "users";
   overlay?: boolean;
 }
 
@@ -80,6 +81,12 @@ export default function PublicLayout({
                   <FolderOpen className="w-4 h-4" />
                   Projects
                 </Link>
+                {auth.user.role === "admin" && (
+                  <Link href="/users" className={navLinkClass("users")}>
+                    <Users className="w-4 h-4" />
+                    Users
+                  </Link>
+                )}
               </>
             )}
             <Link href="/strategies" className={navLinkClass("strategies")}>
@@ -169,6 +176,16 @@ export default function PublicLayout({
                 <FolderOpen className="w-4 h-4" />
                 Projects
               </Link>
+              {auth.user.role === "admin" && (
+                <Link
+                  href="/users"
+                  className={navLinkClass("users")}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Users className="w-4 h-4" />
+                  Users
+                </Link>
+              )}
             </>
           )}
           <Link

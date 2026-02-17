@@ -98,6 +98,7 @@ type (
 
 	// AuthConfig stores the authentication configuration.
 	AuthConfig struct {
+		AdminEmail    string
 		AdminPassword string
 	}
 )

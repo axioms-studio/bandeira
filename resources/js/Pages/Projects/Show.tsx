@@ -49,7 +49,8 @@ interface Props {
 }
 
 export default function Show() {
-  const { project } = usePage<SharedProps & Props>().props;
+  const { project, auth } = usePage<SharedProps & Props>().props;
+  const canMutate = auth?.user?.role === "admin" || auth?.user?.role === "editor";
 
   const handleDeleteProject = () => {
     if (confirm("Are you sure you want to delete this project?")) {
@@ -164,23 +165,25 @@ export default function Show() {
                 Created {project.createdAt}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/projects/${project.id}/edit`}>
-                  <Pencil className="w-4 h-4" />
-                  Edit
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDeleteProject}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </Button>
-            </div>
+            {canMutate && (
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/projects/${project.id}/edit`}>
+                    <Pencil className="w-4 h-4" />
+                    Edit
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeleteProject}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Flag Matrix */}
@@ -242,12 +245,13 @@ export default function Show() {
                             <td key={env.id} className="text-center px-4 py-3">
                               <button
                                 type="button"
-                                onClick={() => handleToggle(flag.id, env.id)}
+                                onClick={() => canMutate && handleToggle(flag.id, env.id)}
+                                disabled={!canMutate}
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                                   enabled
                                     ? "bg-primary"
                                     : "bg-muted-foreground/20"
-                                }`}
+                                } ${!canMutate ? "opacity-60 cursor-not-allowed" : ""}`}
                                 role="switch"
                                 aria-checked={enabled}
                                 aria-label={`Toggle ${flag.name} in ${env.name}`}
@@ -275,12 +279,14 @@ export default function Show() {
           <div className="bg-card border border-border rounded-xl shadow-sm mb-6">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <h2 className="font-semibold text-foreground">Feature Flags</h2>
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/projects/${project.id}/flags/create`}>
-                  <Plus className="w-4 h-4" />
-                  Add Flag
-                </Link>
-              </Button>
+              {canMutate && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/projects/${project.id}/flags/create`}>
+                    <Plus className="w-4 h-4" />
+                    Add Flag
+                  </Link>
+                </Button>
+              )}
             </div>
             {project.flags.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
@@ -315,28 +321,30 @@ export default function Show() {
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        asChild
-                      >
-                        <Link
-                          href={`/projects/${project.id}/flags/${flag.id}/edit`}
+                    {canMutate && (
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          asChild
                         >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        onClick={() => handleDeleteFlag(flag.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
+                          <Link
+                            href={`/projects/${project.id}/flags/${flag.id}/edit`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteFlag(flag.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -347,12 +355,14 @@ export default function Show() {
           <div className="bg-card border border-border rounded-xl shadow-sm mb-6">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <h2 className="font-semibold text-foreground">Environments</h2>
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/projects/${project.id}/environments/create`}>
-                  <Plus className="w-4 h-4" />
-                  Add Environment
-                </Link>
-              </Button>
+              {canMutate && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/projects/${project.id}/environments/create`}>
+                    <Plus className="w-4 h-4" />
+                    Add Environment
+                  </Link>
+                </Button>
+              )}
             </div>
             {project.environments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
@@ -382,28 +392,30 @@ export default function Show() {
                         {env.type}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        asChild
-                      >
-                        <Link
-                          href={`/projects/${project.id}/environments/${env.id}/edit`}
+                    {canMutate && (
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          asChild
                         >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        onClick={() => handleDeleteEnv(env.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
+                          <Link
+                            href={`/projects/${project.id}/environments/${env.id}/edit`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteEnv(env.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

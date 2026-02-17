@@ -17,20 +17,22 @@ export default function Login() {
   const errors = usePage().props.errors as Record<string, string[]> | undefined;
   useFlashToasts(flash);
 
+  const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const { data, setData, post, processing } = useForm({
+    email: "",
     password: "",
   });
 
   useEffect(() => {
-    passwordRef.current?.focus();
+    emailRef.current?.focus();
   }, []);
 
   // Clear password and re-focus on validation error
   useEffect(() => {
-    if (errors?.Password) {
+    if (errors?.Email || errors?.Password) {
       setData("password", "");
       passwordRef.current?.focus();
     }
@@ -67,13 +69,31 @@ export default function Login() {
               Welcome back
             </h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              Enter your admin password to continue
+              Sign in to your account
             </p>
           </div>
 
           {/* Form card */}
           <div className="bg-card border border-border rounded-xl shadow-md p-6">
             <form onSubmit={submit} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  ref={emailRef}
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value={data.email}
+                  onChange={(e) => setData("email", e.target.value)}
+                  aria-invalid={!!errors?.Email}
+                  className="h-11"
+                />
+                {errors?.Email?.map((msg, i) => (
+                  <InputError key={i} message={msg} />
+                ))}
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">

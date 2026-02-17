@@ -44,12 +44,15 @@ func (h *Project) Init(c *services.Container) error {
 func (h *Project) Routes(g *echo.Group) {
 	projects := g.Group("/projects", middleware.RequireAuth())
 	projects.GET("", h.Index).Name = routenames.ProjectIndex
-	projects.GET("/create", h.Create).Name = routenames.ProjectCreate
-	projects.POST("", h.Store).Name = routenames.ProjectStore
 	projects.GET("/:id", h.Show).Name = routenames.ProjectShow
-	projects.GET("/:id/edit", h.Edit).Name = routenames.ProjectEdit
-	projects.PUT("/:id", h.Update).Name = routenames.ProjectUpdate
-	projects.DELETE("/:id", h.Delete).Name = routenames.ProjectDelete
+
+	// Mutation routes require admin or editor role
+	mut := g.Group("/projects", middleware.RequireAuth(), middleware.RequireRole(h.ORM, "admin", "editor"))
+	mut.GET("/create", h.Create).Name = routenames.ProjectCreate
+	mut.POST("", h.Store).Name = routenames.ProjectStore
+	mut.GET("/:id/edit", h.Edit).Name = routenames.ProjectEdit
+	mut.PUT("/:id", h.Update).Name = routenames.ProjectUpdate
+	mut.DELETE("/:id", h.Delete).Name = routenames.ProjectDelete
 }
 
 func (h *Project) Index(ctx echo.Context) error {

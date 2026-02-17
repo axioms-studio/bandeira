@@ -28,4 +28,5 @@ database:
   testConnection: "file:/$RAND?vfs=memdb&_timeout=1000&_fk=true"
 
 auth:
+  adminEmail: "admin@bandeira.local"
   adminPassword: "change-me-in-production"

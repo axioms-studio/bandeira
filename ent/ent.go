@@ -19,6 +19,7 @@ import (
 	"github.com/felipekafuri/bandeira/ent/flagenvironment"
 	"github.com/felipekafuri/bandeira/ent/project"
 	"github.com/felipekafuri/bandeira/ent/strategy"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -86,6 +87,7 @@ func checkColumn(t, c string) error {
 			flagenvironment.Table: flagenvironment.ValidColumn,
 			project.Table:         project.ValidColumn,
 			strategy.Table:        strategy.ValidColumn,
+			user.Table:            user.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

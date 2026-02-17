@@ -29,7 +29,8 @@ interface Props {
 }
 
 export default function Index() {
-  const { project, tokens } = usePage<SharedProps & Props>().props;
+  const { project, tokens, auth } = usePage<SharedProps & Props>().props;
+  const canMutate = auth?.user?.role === "admin" || auth?.user?.role === "editor";
 
   const [visibleTokens, setVisibleTokens] = useState<Record<number, boolean>>({});
   const [copiedId, setCopiedId] = useState<number | null>(null);
@@ -70,12 +71,14 @@ export default function Index() {
                 Manage API tokens for {project.name}.
               </p>
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/projects/${project.id}/api-tokens/create`}>
-                <Plus className="w-4 h-4" />
-                Add Token
-              </Link>
-            </Button>
+            {canMutate && (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/projects/${project.id}/api-tokens/create`}>
+                  <Plus className="w-4 h-4" />
+                  Add Token
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Token list */}
@@ -146,15 +149,17 @@ export default function Index() {
                             <Copy className="w-3.5 h-3.5" />
                           )}
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDelete(tok.id)}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          Revoke
-                        </Button>
+                        {canMutate && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => handleDelete(tok.id)}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Revoke
+                          </Button>
+                        )}
                       </div>
                     </div>
                     {visibleTokens[tok.id] && (

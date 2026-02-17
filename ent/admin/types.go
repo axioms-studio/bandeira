@@ -8,6 +8,7 @@ import (
 	"github.com/felipekafuri/bandeira/ent/constraint"
 	"github.com/felipekafuri/bandeira/ent/environment"
 	"github.com/felipekafuri/bandeira/ent/flag"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 type ApiToken struct {
@@ -17,6 +18,7 @@ type ApiToken struct {
 	TokenType   apitoken.TokenType `form:"token_type"`
 	Environment *string            `form:"environment"`
 	ProjectID   int                `form:"project_id"`
+	CreatedBy   *int               `form:"created_by"`
 	CreatedAt   *time.Time         `form:"created_at"`
 	UpdatedAt   *time.Time         `form:"updated_at"`
 }
@@ -74,6 +76,15 @@ type Strategy struct {
 	UpdatedAt         *time.Time              `form:"updated_at"`
 }
 
+type User struct {
+	Email     string     `form:"email"`
+	Password  *string    `form:"password"`
+	Name      string     `form:"name"`
+	Role      *user.Role `form:"role"`
+	CreatedAt *time.Time `form:"created_at"`
+	UpdatedAt *time.Time `form:"updated_at"`
+}
+
 type EntityList struct {
 	Columns     []string
 	Entities    []EntityValues
@@ -101,5 +112,6 @@ func GetEntityTypeNames() []string {
 		"FlagEnvironment",
 		"Project",
 		"Strategy",
+		"User",
 	}
 }

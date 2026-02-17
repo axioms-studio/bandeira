@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/felipekafuri/bandeira/config"
+	"github.com/felipekafuri/bandeira/ent"
+	"github.com/felipekafuri/bandeira/ent/user"
 	"github.com/felipekafuri/bandeira/pkg/form"
 	"github.com/felipekafuri/bandeira/pkg/middleware"
 	"github.com/felipekafuri/bandeira/pkg/msg"
@@ -12,16 +13,18 @@ import (
 	"github.com/felipekafuri/bandeira/pkg/session"
 	"github.com/felipekafuri/bandeira/pkg/services"
 	inertia "github.com/romsar/gonertia/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Auth struct {
 	Inertia *inertia.Inertia
-	Config  *config.Config
+	ORM     *ent.Client
 }
 
 type LoginForm struct {
 	form.Submission
 
+	Email    string `form:"email" validate:"required,email"`
 	Password string `form:"password" validate:"required"`
 }
 
@@ -31,15 +34,15 @@ func init() {
 
 func (h *Auth) Init(c *services.Container) error {
 	h.Inertia = c.Inertia
-	h.Config = c.Config
+	h.ORM = c.ORM
 	return nil
 }
 
 func (h *Auth) Routes(g *echo.Group) {
-	user := g.Group("/user")
-	user.GET("/login", h.LoginPage, middleware.RequireGuest()).Name = routenames.UserLogin
-	user.POST("/login", h.LoginSubmit, middleware.RequireGuest())
-	user.POST("/logout", h.Logout).Name = routenames.UserLogout
+	u := g.Group("/user")
+	u.GET("/login", h.LoginPage, middleware.RequireGuest()).Name = routenames.UserLogin
+	u.POST("/login", h.LoginSubmit, middleware.RequireGuest())
+	u.POST("/logout", h.Logout).Name = routenames.UserLogout
 }
 
 func (h *Auth) LoginPage(ctx echo.Context) error {
@@ -59,14 +62,22 @@ func (h *Auth) LoginSubmit(ctx echo.Context) error {
 		return nil
 	}
 
-	if f.Password != h.Config.Auth.AdminPassword {
-		f.SetFieldError("Password", "Invalid password.")
+	u, err := h.ORM.User.Query().Where(user.Email(f.Email)).Only(ctx.Request().Context())
+	if err != nil {
+		f.SetFieldError("Email", "Invalid email or password.")
 		form.ShareErrors(ctx, &f)
 		h.Inertia.Back(ctx.Response(), ctx.Request())
 		return nil
 	}
 
-	if err := session.SetAuthenticated(ctx, true); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(f.Password)); err != nil {
+		f.SetFieldError("Email", "Invalid email or password.")
+		form.ShareErrors(ctx, &f)
+		h.Inertia.Back(ctx.Response(), ctx.Request())
+		return nil
+	}
+
+	if err := session.SetAuthenticatedUser(ctx, u.ID); err != nil {
 		return err
 	}
 
@@ -75,7 +86,7 @@ func (h *Auth) LoginSubmit(ctx echo.Context) error {
 }
 
 func (h *Auth) Logout(ctx echo.Context) error {
-	if err := session.SetAuthenticated(ctx, false); err != nil {
+	if err := session.ClearAuth(ctx); err != nil {
 		return err
 	}
 

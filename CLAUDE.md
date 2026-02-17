@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Bandeira** is a self-hosted, open-source feature flag service built with Go. Ships as a single binary + MySQL. Forked from Pagode (Go/Echo/Ent/InertiaJS/React starter kit).
+**Bandeira** is a self-hosted, open-source feature flag service built with Go. Ships as a single binary + SQLite. Forked from Pagode (Go/Echo/Ent/InertiaJS/React starter kit).
 
 ## Key Technologies
 
-- **Backend**: Go 1.26, Echo v4 web framework, Ent ORM, SQLite (migrating to MySQL)
+- **Backend**: Go 1.26, Echo v4 web framework, Ent ORM, SQLite
 - **Frontend**: React 19, TypeScript, InertiaJS, Tailwind CSS v4, shadcn/ui
 - **Build Tools**: Vite (frontend), Air (Go hot reload)
 
@@ -59,7 +59,16 @@ All application dependencies are managed through a service container (`pkg/servi
 
 ## Configuration
 
-Configuration uses Viper with `config/config.yaml` as base. Environment variables override config using `BANDEIRA_` prefix (e.g., `BANDEIRA_HTTP_PORT` overrides `http.port`, `BANDEIRA_AUTH_ADMINPASSWORD` overrides `auth.adminPassword`).
+Configuration uses Viper with `config/config.yaml` as base. Environment variables override config using `BANDEIRA_` prefix (e.g., `BANDEIRA_HTTP_PORT` overrides `http.port`, `BANDEIRA_AUTH_ADMINEMAIL` overrides `auth.adminEmail`).
+
+## Authentication & RBAC
+
+- Email/password login with bcrypt hashing
+- Three roles: `admin` (full access), `editor` (manage flags/projects, no user mgmt), `viewer` (read-only)
+- First admin user seeded from `BANDEIRA_AUTH_ADMINEMAIL` + `BANDEIRA_AUTH_ADMINPASSWORD` env vars
+- Session stores user ID via `pkg/session/auth.go`
+- `RequireRole(orm, roles...)` middleware enforces role-based access on routes
+- `InertiaProps` middleware loads real user from DB and shares `role` in frontend props
 
 ## File Generation
 

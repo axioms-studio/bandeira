@@ -62,7 +62,7 @@ func BuildRouter(c *services.Container) error {
 			ContextKey:     context.CSRFKey,
 		}),
 		echo.WrapMiddleware(c.Inertia.Middleware),
-		middleware.InertiaProps(),
+		middleware.InertiaProps(c.ORM),
 	)
 
 	// API route group — no session, CSRF, or Inertia middleware.

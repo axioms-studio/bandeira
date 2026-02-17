@@ -6,6 +6,7 @@ services:
     environment:
       BANDEIRA_APP_ENVIRONMENT: "prod"
       BANDEIRA_APP_ENCRYPTIONKEY: "change-this-to-a-random-32-char!"
+      BANDEIRA_AUTH_ADMINEMAIL: "admin@bandeira.local"
       BANDEIRA_AUTH_ADMINPASSWORD: "admin"
     volumes:
       - bandeira-data:/app/dbs

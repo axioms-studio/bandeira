@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/felipekafuri/bandeira/ent/apitoken"
 	"github.com/felipekafuri/bandeira/ent/project"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 // ApiTokenCreate is the builder for creating a ApiToken entity.
@@ -73,6 +74,20 @@ func (_c *ApiTokenCreate) SetProjectID(v int) *ApiTokenCreate {
 	return _c
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (_c *ApiTokenCreate) SetCreatedBy(v int) *ApiTokenCreate {
+	_c.mutation.SetCreatedBy(v)
+	return _c
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (_c *ApiTokenCreate) SetNillableCreatedBy(v *int) *ApiTokenCreate {
+	if v != nil {
+		_c.SetCreatedBy(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *ApiTokenCreate) SetCreatedAt(v time.Time) *ApiTokenCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -104,6 +119,25 @@ func (_c *ApiTokenCreate) SetNillableUpdatedAt(v *time.Time) *ApiTokenCreate {
 // SetProject sets the "project" edge to the Project entity.
 func (_c *ApiTokenCreate) SetProject(v *Project) *ApiTokenCreate {
 	return _c.SetProjectID(v.ID)
+}
+
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_c *ApiTokenCreate) SetCreatorID(id int) *ApiTokenCreate {
+	_c.mutation.SetCreatorID(id)
+	return _c
+}
+
+// SetNillableCreatorID sets the "creator" edge to the User entity by ID if the given value is not nil.
+func (_c *ApiTokenCreate) SetNillableCreatorID(id *int) *ApiTokenCreate {
+	if id != nil {
+		_c = _c.SetCreatorID(*id)
+	}
+	return _c
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_c *ApiTokenCreate) SetCreator(v *User) *ApiTokenCreate {
+	return _c.SetCreatorID(v.ID)
 }
 
 // Mutation returns the ApiTokenMutation object of the builder.
@@ -255,6 +289,23 @@ func (_c *ApiTokenCreate) createSpec() (*ApiToken, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ProjectID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   apitoken.CreatorTable,
+			Columns: []string{apitoken.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CreatedBy = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

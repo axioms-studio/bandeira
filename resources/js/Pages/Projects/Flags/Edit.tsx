@@ -41,10 +41,11 @@ interface Props {
 }
 
 export default function Edit() {
-  const { project, flag, environments, toggles } = usePage<
+  const { project, flag, environments, toggles, auth } = usePage<
     SharedProps & Props
   >().props;
   const errors = usePage().props.errors as Record<string, string[]> | undefined;
+  const canMutate = auth?.user?.role === "admin" || auth?.user?.role === "editor";
 
   const { data, setData, put, processing } = useForm({
     name: flag.name,
@@ -150,24 +151,26 @@ export default function Edit() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-3 pt-2">
-                <Button type="submit" disabled={processing}>
-                  {processing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
-                <Link
-                  href={`/projects/${project.id}`}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Cancel
-                </Link>
-              </div>
+              {canMutate && (
+                <div className="flex items-center gap-3 pt-2">
+                  <Button type="submit" disabled={processing}>
+                    {processing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Changes"
+                    )}
+                  </Button>
+                  <Link
+                    href={`/projects/${project.id}`}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Cancel
+                  </Link>
+                </div>
+              )}
             </form>
           </div>
 

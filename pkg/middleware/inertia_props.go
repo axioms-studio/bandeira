@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/felipekafuri/bandeira/ent"
 	"github.com/felipekafuri/bandeira/pkg/msg"
 	"github.com/felipekafuri/bandeira/pkg/session"
 	"github.com/romsar/gonertia/v2"
 )
 
-func InertiaProps() echo.MiddlewareFunc {
+func InertiaProps(orm *ent.Client) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			// Collect errors by type
@@ -26,13 +27,17 @@ func InertiaProps() echo.MiddlewareFunc {
 
 			// Build auth prop
 			var auth any
-			if session.IsAuthenticated(ctx) {
-				auth = map[string]any{
-					"user": map[string]any{
-						"id":    1,
-						"name":  "Admin",
-						"email": "admin@bandeira.local",
-					},
+			if userID, ok := session.GetAuthenticatedUserID(ctx); ok {
+				u, err := orm.User.Get(ctx.Request().Context(), userID)
+				if err == nil {
+					auth = map[string]any{
+						"user": map[string]any{
+							"id":    u.ID,
+							"name":  u.Name,
+							"email": u.Email,
+							"role":  string(u.Role),
+						},
+					}
 				}
 			}
 

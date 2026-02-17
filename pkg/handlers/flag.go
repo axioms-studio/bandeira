@@ -62,18 +62,21 @@ func (h *FlagHandler) Init(c *services.Container) error {
 }
 
 func (h *FlagHandler) Routes(g *echo.Group) {
+	// Read-only routes
 	flags := g.Group("/projects/:projectId/flags", middleware.RequireAuth())
-	flags.GET("/create", h.Create).Name = routenames.FlagCreate
-	flags.POST("", h.Store).Name = routenames.FlagStore
 	flags.GET("/:id/edit", h.Edit).Name = routenames.FlagEdit
-	flags.PUT("/:id", h.Update).Name = routenames.FlagUpdate
-	flags.DELETE("/:id", h.Delete).Name = routenames.FlagDelete
-	flags.POST("/:id/toggle", h.Toggle).Name = routenames.FlagToggle
-
 	flags.GET("/:id/strategies", h.ListStrategies).Name = routenames.StrategyList
-	flags.POST("/:id/strategies", h.StoreStrategy).Name = routenames.StrategyStore
-	flags.PUT("/:id/strategies/:strategyId", h.UpdateStrategy).Name = routenames.StrategyUpdate
-	flags.DELETE("/:id/strategies/:strategyId", h.DeleteStrategy).Name = routenames.StrategyDelete
+
+	// Mutation routes require admin or editor role
+	mut := g.Group("/projects/:projectId/flags", middleware.RequireAuth(), middleware.RequireRole(h.ORM, "admin", "editor"))
+	mut.GET("/create", h.Create).Name = routenames.FlagCreate
+	mut.POST("", h.Store).Name = routenames.FlagStore
+	mut.PUT("/:id", h.Update).Name = routenames.FlagUpdate
+	mut.DELETE("/:id", h.Delete).Name = routenames.FlagDelete
+	mut.POST("/:id/toggle", h.Toggle).Name = routenames.FlagToggle
+	mut.POST("/:id/strategies", h.StoreStrategy).Name = routenames.StrategyStore
+	mut.PUT("/:id/strategies/:strategyId", h.UpdateStrategy).Name = routenames.StrategyUpdate
+	mut.DELETE("/:id/strategies/:strategyId", h.DeleteStrategy).Name = routenames.StrategyDelete
 }
 
 func (h *FlagHandler) Create(ctx echo.Context) error {

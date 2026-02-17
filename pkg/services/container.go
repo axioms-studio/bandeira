@@ -16,7 +16,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/felipekafuri/bandeira/config"
 	"github.com/felipekafuri/bandeira/ent"
+	"github.com/felipekafuri/bandeira/ent/user"
 	inertia "github.com/romsar/gonertia/v2"
+	"golang.org/x/crypto/bcrypt"
 
 	entsql "entgo.io/ent/dialect/sql"
 )
@@ -55,6 +57,7 @@ func NewContainer() *Container {
 	c.initCache()
 	c.initDatabase()
 	c.initORM()
+	c.seedAdminUser()
 	c.initInertia()
 	return c
 }
@@ -144,6 +147,50 @@ func (c *Container) initORM() {
 	if err := c.ORM.Schema.Create(context.Background()); err != nil {
 		panic(fmt.Sprintf("failed to create schema resources: %v", err))
 	}
+}
+
+// seedAdminUser creates the initial admin user if no users exist and
+// the admin email and password are configured.
+func (c *Container) seedAdminUser() {
+	count, err := c.ORM.User.Query().Count(context.Background())
+	if err != nil {
+		slog.Error("failed to count users", "error", err)
+		return
+	}
+	if count > 0 {
+		return
+	}
+
+	email := c.Config.Auth.AdminEmail
+	password := c.Config.Auth.AdminPassword
+	if password == "" {
+		slog.Warn("no users exist and BANDEIRA_AUTH_ADMINPASSWORD not set — skipping admin seed")
+		return
+	}
+	// Backward compat: existing deployments may only have the password set.
+	// Fall back to a default email so they aren't locked out on upgrade.
+	if email == "" {
+		email = "admin@bandeira.local"
+		slog.Info("BANDEIRA_AUTH_ADMINEMAIL not set, using default", "email", email)
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		slog.Error("failed to hash admin password", "error", err)
+		return
+	}
+
+	_, err = c.ORM.User.Create().
+		SetEmail(email).
+		SetPassword(string(hash)).
+		SetName("Admin").
+		SetRole(user.RoleAdmin).
+		Save(context.Background())
+	if err != nil {
+		slog.Error("failed to seed admin user", "error", err)
+		return
+	}
+	slog.Info("seeded admin user", "email", email)
 }
 
 func ProjectRoot() string {

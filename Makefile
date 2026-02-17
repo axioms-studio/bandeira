@@ -37,7 +37,8 @@ check-updates: ## Check for direct dependency updates
 	go list -u -m -f '{{if not .Indirect}}{{.}}{{end}}' all | grep "\["
 
 .PHONY: seed
-seed: ## Print the default admin password from config
+seed: ## Print the default admin credentials from config
+	@echo "Admin email:    $$(grep 'adminEmail' config/config.yaml | awk '{print $$2}' | tr -d '\"')"
 	@echo "Admin password: $$(grep 'adminPassword' config/config.yaml | awk '{print $$2}' | tr -d '\"')"
 
 .PHONY: docker-build

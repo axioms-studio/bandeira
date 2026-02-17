@@ -23,7 +23,8 @@ interface Props {
 }
 
 export default function Index() {
-  const { projects } = usePage<SharedProps & Props>().props;
+  const { projects, auth } = usePage<SharedProps & Props>().props;
+  const canMutate = auth?.user?.role === "admin" || auth?.user?.role === "editor";
 
   return (
     <PublicLayout activePage="projects">
@@ -38,12 +39,14 @@ export default function Index() {
                 Manage your feature flag projects
               </p>
             </div>
-            <Button asChild>
-              <Link href="/projects/create">
-                <Plus className="w-4 h-4" />
-                Create Project
-              </Link>
-            </Button>
+            {canMutate && (
+              <Button asChild>
+                <Link href="/projects/create">
+                  <Plus className="w-4 h-4" />
+                  Create Project
+                </Link>
+              </Button>
+            )}
           </div>
 
           {projects.length === 0 ? (

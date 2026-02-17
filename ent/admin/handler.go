@@ -18,6 +18,7 @@ import (
 	"github.com/felipekafuri/bandeira/ent/flagenvironment"
 	"github.com/felipekafuri/bandeira/ent/project"
 	"github.com/felipekafuri/bandeira/ent/strategy"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 const dateTimeFormat = "2006-01-02T15:04:05"
@@ -51,6 +52,8 @@ func (h *Handler) Create(ctx echo.Context, entityType string) error {
 		return h.ProjectCreate(ctx)
 	case "Strategy":
 		return h.StrategyCreate(ctx)
+	case "User":
+		return h.UserCreate(ctx)
 	default:
 		return fmt.Errorf("unsupported entity type: %s", entityType)
 	}
@@ -72,6 +75,8 @@ func (h *Handler) Get(ctx echo.Context, entityType string, id int) (url.Values, 
 		return h.ProjectGet(ctx, id)
 	case "Strategy":
 		return h.StrategyGet(ctx, id)
+	case "User":
+		return h.UserGet(ctx, id)
 	default:
 		return nil, fmt.Errorf("unsupported entity type: %s", entityType)
 	}
@@ -93,6 +98,8 @@ func (h *Handler) Delete(ctx echo.Context, entityType string, id int) error {
 		return h.ProjectDelete(ctx, id)
 	case "Strategy":
 		return h.StrategyDelete(ctx, id)
+	case "User":
+		return h.UserDelete(ctx, id)
 	default:
 		return fmt.Errorf("unsupported entity type: %s", entityType)
 	}
@@ -114,6 +121,8 @@ func (h *Handler) Update(ctx echo.Context, entityType string, id int) error {
 		return h.ProjectUpdate(ctx, id)
 	case "Strategy":
 		return h.StrategyUpdate(ctx, id)
+	case "User":
+		return h.UserUpdate(ctx, id)
 	default:
 		return fmt.Errorf("unsupported entity type: %s", entityType)
 	}
@@ -135,6 +144,8 @@ func (h *Handler) List(ctx echo.Context, entityType string) (*EntityList, error)
 		return h.ProjectList(ctx)
 	case "Strategy":
 		return h.StrategyList(ctx)
+	case "User":
+		return h.UserList(ctx)
 	default:
 		return nil, fmt.Errorf("unsupported entity type: %s", entityType)
 	}
@@ -159,6 +170,9 @@ func (h *Handler) ApiTokenCreate(ctx echo.Context) error {
 		op.SetEnvironment(*payload.Environment)
 	}
 	op.SetProjectID(payload.ProjectID)
+	if payload.CreatedBy != nil {
+		op.SetCreatedBy(*payload.CreatedBy)
+	}
 	if payload.CreatedAt != nil {
 		op.SetCreatedAt(*payload.CreatedAt)
 	}
@@ -198,6 +212,7 @@ func (h *Handler) ApiTokenUpdate(ctx echo.Context, id int) error {
 		op.SetEnvironment(*payload.Environment)
 	}
 	op.SetProjectID(payload.ProjectID)
+	op.SetNillableCreatedBy(payload.CreatedBy)
 	if payload.UpdatedAt == nil {
 		var empty time.Time
 		op.SetUpdatedAt(empty)
@@ -233,6 +248,7 @@ func (h *Handler) ApiTokenList(ctx echo.Context) (*EntityList, error) {
 			"Token type",
 			"Environment",
 			"Project ID",
+			"Created by",
 			"Created at",
 			"Updated at",
 		},
@@ -250,6 +266,7 @@ func (h *Handler) ApiTokenList(ctx echo.Context) (*EntityList, error) {
 				fmt.Sprint(res[i].TokenType),
 				res[i].Environment,
 				fmt.Sprint(res[i].ProjectID),
+				fmt.Sprint(res[i].CreatedBy),
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
 				res[i].UpdatedAt.Format(h.Config.TimeFormat),
 			},
@@ -271,6 +288,7 @@ func (h *Handler) ApiTokenGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("token_type", fmt.Sprint(entity.TokenType))
 	v.Set("environment", entity.Environment)
 	v.Set("project_id", fmt.Sprint(entity.ProjectID))
+	v.Set("created_by", fmt.Sprint(entity.CreatedBy))
 	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
 	return v, err
 }
@@ -964,6 +982,125 @@ func (h *Handler) StrategyGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("parameters", fmt.Sprint(entity.Parameters))
 	v.Set("sort_order", fmt.Sprint(entity.SortOrder))
 	v.Set("flag_environment_id", fmt.Sprint(entity.FlagEnvironmentID))
+	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
+	return v, err
+}
+
+func (h *Handler) UserCreate(ctx echo.Context) error {
+	var payload User
+	if err := h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := h.client.User.Create()
+	op.SetEmail(payload.Email)
+	if payload.Password != nil {
+		op.SetPassword(*payload.Password)
+	}
+	op.SetName(payload.Name)
+	if payload.Role != nil {
+		op.SetRole(*payload.Role)
+	}
+	if payload.CreatedAt != nil {
+		op.SetCreatedAt(*payload.CreatedAt)
+	}
+	if payload.UpdatedAt != nil {
+		op.SetUpdatedAt(*payload.UpdatedAt)
+	}
+	_, err := op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
+	entity, err := h.client.User.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return err
+	}
+
+	var payload User
+	if err = h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := entity.Update()
+	op.SetEmail(payload.Email)
+	if payload.Password != nil {
+		op.SetPassword(*payload.Password)
+	}
+	op.SetName(payload.Name)
+	if payload.Role == nil {
+		var empty user.Role
+		op.SetRole(empty)
+	} else {
+		op.SetRole(*payload.Role)
+	}
+	if payload.UpdatedAt == nil {
+		var empty time.Time
+		op.SetUpdatedAt(empty)
+	} else {
+		op.SetUpdatedAt(*payload.UpdatedAt)
+	}
+	_, err = op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) UserDelete(ctx echo.Context, id int) error {
+	return h.client.User.DeleteOneID(id).
+		Exec(ctx.Request().Context())
+}
+
+func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
+	page, offset := h.getPageAndOffset(ctx)
+	res, err := h.client.User.
+		Query().
+		Limit(h.Config.ItemsPerPage + 1).
+		Offset(offset).
+		Order(user.ByID(sql.OrderDesc())).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := &EntityList{
+		Columns: []string{
+			"Email",
+			"Name",
+			"Role",
+			"Created at",
+			"Updated at",
+		},
+		Entities:    make([]EntityValues, 0, len(res)),
+		Page:        page,
+		HasNextPage: len(res) > h.Config.ItemsPerPage,
+	}
+
+	for i := 0; i <= len(res)-1; i++ {
+		list.Entities = append(list.Entities, EntityValues{
+			ID: res[i].ID,
+			Values: []string{
+				res[i].Email,
+				res[i].Name,
+				fmt.Sprint(res[i].Role),
+				res[i].CreatedAt.Format(h.Config.TimeFormat),
+				res[i].UpdatedAt.Format(h.Config.TimeFormat),
+			},
+		})
+	}
+
+	return list, err
+}
+
+func (h *Handler) UserGet(ctx echo.Context, id int) (url.Values, error) {
+	entity, err := h.client.User.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	v.Set("email", entity.Email)
+	v.Set("name", entity.Name)
+	v.Set("role", fmt.Sprint(entity.Role))
 	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
 	return v, err
 }

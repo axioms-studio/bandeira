@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/felipekafuri/bandeira/ent/apitoken"
 	"github.com/felipekafuri/bandeira/ent/project"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 // ApiToken is the model entity for the ApiToken schema.
@@ -30,6 +31,8 @@ type ApiToken struct {
 	Environment string `json:"environment,omitempty"`
 	// ProjectID holds the value of the "project_id" field.
 	ProjectID int `json:"project_id,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy *int `json:"created_by,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -44,9 +47,11 @@ type ApiToken struct {
 type ApiTokenEdges struct {
 	// Project holds the value of the project edge.
 	Project *Project `json:"project,omitempty"`
+	// Creator holds the value of the creator edge.
+	Creator *User `json:"creator,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ProjectOrErr returns the Project value or an error if the edge
@@ -60,12 +65,23 @@ func (e ApiTokenEdges) ProjectOrErr() (*Project, error) {
 	return nil, &NotLoadedError{edge: "project"}
 }
 
+// CreatorOrErr returns the Creator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ApiTokenEdges) CreatorOrErr() (*User, error) {
+	if e.Creator != nil {
+		return e.Creator, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "creator"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*ApiToken) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case apitoken.FieldID, apitoken.FieldProjectID:
+		case apitoken.FieldID, apitoken.FieldProjectID, apitoken.FieldCreatedBy:
 			values[i] = new(sql.NullInt64)
 		case apitoken.FieldSecret, apitoken.FieldPlainToken, apitoken.FieldName, apitoken.FieldTokenType, apitoken.FieldEnvironment:
 			values[i] = new(sql.NullString)
@@ -128,6 +144,13 @@ func (_m *ApiToken) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ProjectID = int(value.Int64)
 			}
+		case apitoken.FieldCreatedBy:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value.Valid {
+				_m.CreatedBy = new(int)
+				*_m.CreatedBy = int(value.Int64)
+			}
 		case apitoken.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -156,6 +179,11 @@ func (_m *ApiToken) Value(name string) (ent.Value, error) {
 // QueryProject queries the "project" edge of the ApiToken entity.
 func (_m *ApiToken) QueryProject() *ProjectQuery {
 	return NewApiTokenClient(_m.config).QueryProject(_m)
+}
+
+// QueryCreator queries the "creator" edge of the ApiToken entity.
+func (_m *ApiToken) QueryCreator() *UserQuery {
+	return NewApiTokenClient(_m.config).QueryCreator(_m)
 }
 
 // Update returns a builder for updating this ApiToken.
@@ -197,6 +225,11 @@ func (_m *ApiToken) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("project_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ProjectID))
+	builder.WriteString(", ")
+	if v := _m.CreatedBy; v != nil {
+		builder.WriteString("created_by=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

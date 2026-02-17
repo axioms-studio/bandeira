@@ -14,6 +14,7 @@ import (
 	"github.com/felipekafuri/bandeira/ent/apitoken"
 	"github.com/felipekafuri/bandeira/ent/predicate"
 	"github.com/felipekafuri/bandeira/ent/project"
+	"github.com/felipekafuri/bandeira/ent/user"
 )
 
 // ApiTokenUpdate is the builder for updating ApiToken entities.
@@ -119,6 +120,26 @@ func (_u *ApiTokenUpdate) SetNillableProjectID(v *int) *ApiTokenUpdate {
 	return _u
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (_u *ApiTokenUpdate) SetCreatedBy(v int) *ApiTokenUpdate {
+	_u.mutation.SetCreatedBy(v)
+	return _u
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (_u *ApiTokenUpdate) SetNillableCreatedBy(v *int) *ApiTokenUpdate {
+	if v != nil {
+		_u.SetCreatedBy(*v)
+	}
+	return _u
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (_u *ApiTokenUpdate) ClearCreatedBy() *ApiTokenUpdate {
+	_u.mutation.ClearCreatedBy()
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *ApiTokenUpdate) SetUpdatedAt(v time.Time) *ApiTokenUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -130,6 +151,25 @@ func (_u *ApiTokenUpdate) SetProject(v *Project) *ApiTokenUpdate {
 	return _u.SetProjectID(v.ID)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_u *ApiTokenUpdate) SetCreatorID(id int) *ApiTokenUpdate {
+	_u.mutation.SetCreatorID(id)
+	return _u
+}
+
+// SetNillableCreatorID sets the "creator" edge to the User entity by ID if the given value is not nil.
+func (_u *ApiTokenUpdate) SetNillableCreatorID(id *int) *ApiTokenUpdate {
+	if id != nil {
+		_u = _u.SetCreatorID(*id)
+	}
+	return _u
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_u *ApiTokenUpdate) SetCreator(v *User) *ApiTokenUpdate {
+	return _u.SetCreatorID(v.ID)
+}
+
 // Mutation returns the ApiTokenMutation object of the builder.
 func (_u *ApiTokenUpdate) Mutation() *ApiTokenMutation {
 	return _u.mutation
@@ -138,6 +178,12 @@ func (_u *ApiTokenUpdate) Mutation() *ApiTokenMutation {
 // ClearProject clears the "project" edge to the Project entity.
 func (_u *ApiTokenUpdate) ClearProject() *ApiTokenUpdate {
 	_u.mutation.ClearProject()
+	return _u
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (_u *ApiTokenUpdate) ClearCreator() *ApiTokenUpdate {
+	_u.mutation.ClearCreator()
 	return _u
 }
 
@@ -245,6 +291,35 @@ func (_u *ApiTokenUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   apitoken.CreatorTable,
+			Columns: []string{apitoken.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   apitoken.CreatorTable,
+			Columns: []string{apitoken.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -362,6 +437,26 @@ func (_u *ApiTokenUpdateOne) SetNillableProjectID(v *int) *ApiTokenUpdateOne {
 	return _u
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (_u *ApiTokenUpdateOne) SetCreatedBy(v int) *ApiTokenUpdateOne {
+	_u.mutation.SetCreatedBy(v)
+	return _u
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (_u *ApiTokenUpdateOne) SetNillableCreatedBy(v *int) *ApiTokenUpdateOne {
+	if v != nil {
+		_u.SetCreatedBy(*v)
+	}
+	return _u
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (_u *ApiTokenUpdateOne) ClearCreatedBy() *ApiTokenUpdateOne {
+	_u.mutation.ClearCreatedBy()
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *ApiTokenUpdateOne) SetUpdatedAt(v time.Time) *ApiTokenUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
@@ -373,6 +468,25 @@ func (_u *ApiTokenUpdateOne) SetProject(v *Project) *ApiTokenUpdateOne {
 	return _u.SetProjectID(v.ID)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_u *ApiTokenUpdateOne) SetCreatorID(id int) *ApiTokenUpdateOne {
+	_u.mutation.SetCreatorID(id)
+	return _u
+}
+
+// SetNillableCreatorID sets the "creator" edge to the User entity by ID if the given value is not nil.
+func (_u *ApiTokenUpdateOne) SetNillableCreatorID(id *int) *ApiTokenUpdateOne {
+	if id != nil {
+		_u = _u.SetCreatorID(*id)
+	}
+	return _u
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_u *ApiTokenUpdateOne) SetCreator(v *User) *ApiTokenUpdateOne {
+	return _u.SetCreatorID(v.ID)
+}
+
 // Mutation returns the ApiTokenMutation object of the builder.
 func (_u *ApiTokenUpdateOne) Mutation() *ApiTokenMutation {
 	return _u.mutation
@@ -381,6 +495,12 @@ func (_u *ApiTokenUpdateOne) Mutation() *ApiTokenMutation {
 // ClearProject clears the "project" edge to the Project entity.
 func (_u *ApiTokenUpdateOne) ClearProject() *ApiTokenUpdateOne {
 	_u.mutation.ClearProject()
+	return _u
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (_u *ApiTokenUpdateOne) ClearCreator() *ApiTokenUpdateOne {
+	_u.mutation.ClearCreator()
 	return _u
 }
 
@@ -518,6 +638,35 @@ func (_u *ApiTokenUpdateOne) sqlSave(ctx context.Context) (_node *ApiToken, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   apitoken.CreatorTable,
+			Columns: []string{apitoken.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   apitoken.CreatorTable,
+			Columns: []string{apitoken.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

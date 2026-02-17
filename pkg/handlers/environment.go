@@ -41,7 +41,8 @@ func (h *Environment) Init(c *services.Container) error {
 }
 
 func (h *Environment) Routes(g *echo.Group) {
-	envs := g.Group("/projects/:projectId/environments", middleware.RequireAuth())
+	// All environment routes require admin or editor role (no read-only views)
+	envs := g.Group("/projects/:projectId/environments", middleware.RequireAuth(), middleware.RequireRole(h.ORM, "admin", "editor"))
 	envs.GET("/create", h.Create).Name = routenames.EnvironmentCreate
 	envs.POST("", h.Store).Name = routenames.EnvironmentStore
 	envs.GET("/:id/edit", h.Edit).Name = routenames.EnvironmentEdit

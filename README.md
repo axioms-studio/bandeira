@@ -16,6 +16,7 @@ Self-hosted, open-source feature flag service built with Go. Ships as a single b
 - **Gradual rollouts** — roll features out to a % of users or specific groups
 - **Environment toggles** — enable in staging, disable in production
 - **Multi-project** — one Bandeira instance serves all projects
+- **Multi-user RBAC** — admin, editor, and viewer roles with email/password auth
 - **Admin dashboard** — React UI with matrix toggle view
 - **Admin API** — 18 JSON endpoints for CI/CD, Terraform, and scripts
 - **Client API** — lightweight SDK endpoint for flag evaluation
@@ -67,6 +68,7 @@ docker pull ghcr.io/felipekafuri/bandeira:latest
 docker run -d \
   -p 8080:8080 \
   -v bandeira-data:/app/dbs \
+  -e BANDEIRA_AUTH_ADMINEMAIL=admin@yourcompany.com \
   -e BANDEIRA_AUTH_ADMINPASSWORD=your-password \
   -e BANDEIRA_APP_ENCRYPTIONKEY=$(openssl rand -hex 16) \
   ghcr.io/felipekafuri/bandeira:latest
@@ -78,7 +80,7 @@ Or with Docker Compose:
 docker compose up -d
 ```
 
-The dashboard is available at `http://localhost:8080`. Log in with the admin password.
+The dashboard is available at `http://localhost:8080`. Log in with the admin email and password. Once logged in, you can create additional users with different roles from the Users page.
 
 ### Coolify
 
@@ -129,10 +131,13 @@ All settings live in `config/config.yaml` and can be overridden via environment 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `BANDEIRA_HTTP_PORT` | `8080` | HTTP listen port |
-| `BANDEIRA_AUTH_ADMINPASSWORD` | `change-me-in-production` | Dashboard login password |
+| `BANDEIRA_AUTH_ADMINEMAIL` | `admin@bandeira.local` | Initial admin user email |
+| `BANDEIRA_AUTH_ADMINPASSWORD` | `change-me-in-production` | Initial admin user password |
 | `BANDEIRA_APP_ENCRYPTIONKEY` | *(set in config)* | 32-char key for session encryption |
 | `BANDEIRA_APP_ENVIRONMENT` | `local` | `local`, `test`, or `prod` |
 | `BANDEIRA_DATABASE_CONNECTION` | `dbs/main.db?...` | SQLite connection string |
+
+The admin email and password are only used to **seed the first user** on initial startup. After that, manage users from the dashboard.
 
 ## API Reference
 
@@ -347,7 +352,21 @@ For client tokens, include `"environment": "production"` (required for client ty
 
 - **Client tokens**: scoped to one project + one environment. Can only read flags via `GET /api/v1/flags`.
 - **Admin tokens**: scoped to one project. Full CRUD on that project's resources via `/api/admin/`.
-- **Dashboard auth**: session-based, single admin password via `BANDEIRA_AUTH_ADMINPASSWORD`.
+- **Dashboard auth**: session-based, email + password. Users are managed from the dashboard.
+
+### User Roles
+
+The dashboard supports three roles:
+
+| Role | Dashboard | Flags/Projects/Envs | User Management |
+|------|-----------|---------------------|-----------------|
+| **Admin** | Full access | Create, edit, delete | Create, edit, delete users |
+| **Editor** | Full access | Create, edit, delete | No access |
+| **Viewer** | Read-only | View only | No access |
+
+The first admin user is seeded on startup from `BANDEIRA_AUTH_ADMINEMAIL` and `BANDEIRA_AUTH_ADMINPASSWORD`. Additional users are created by admins from the `/users` page.
+
+**Upgrading from single-password auth:** Existing deployments that only have `BANDEIRA_AUTH_ADMINPASSWORD` set will automatically get an admin user with email `admin@bandeira.local` on first upgrade. Log in with that email and your existing password.
 
 ## Strategy Reference
 

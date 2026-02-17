@@ -43,11 +43,15 @@ func (h *ApiTokenHandler) Init(c *services.Container) error {
 }
 
 func (h *ApiTokenHandler) Routes(g *echo.Group) {
+	// Read-only: list tokens
 	tokens := g.Group("/projects/:projectId/api-tokens", middleware.RequireAuth())
 	tokens.GET("", h.Index).Name = routenames.ApiTokenIndex
-	tokens.GET("/create", h.Create).Name = routenames.ApiTokenCreate
-	tokens.POST("", h.Store).Name = routenames.ApiTokenStore
-	tokens.DELETE("/:id", h.Delete).Name = routenames.ApiTokenDelete
+
+	// Mutation routes require admin or editor role
+	mut := g.Group("/projects/:projectId/api-tokens", middleware.RequireAuth(), middleware.RequireRole(h.ORM, "admin", "editor"))
+	mut.GET("/create", h.Create).Name = routenames.ApiTokenCreate
+	mut.POST("", h.Store).Name = routenames.ApiTokenStore
+	mut.DELETE("/:id", h.Delete).Name = routenames.ApiTokenDelete
 }
 
 func (h *ApiTokenHandler) Index(ctx echo.Context) error {

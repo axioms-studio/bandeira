@@ -6,36 +6,44 @@ import (
 
 const (
 	authSessionName = "auth"
-	authKey         = "authenticated"
+	authUserIDKey   = "user_id"
 )
 
-// IsAuthenticated checks if the current session is authenticated.
+// IsAuthenticated checks if the current session has a valid user ID.
 func IsAuthenticated(ctx echo.Context) bool {
-	sess, err := Get(ctx, authSessionName)
-	if err != nil {
-		return false
-	}
-
-	val, ok := sess.Values[authKey].(bool)
-	return ok && val
+	_, ok := GetAuthenticatedUserID(ctx)
+	return ok
 }
 
-// SetAuthenticated sets or clears the authenticated flag in the session.
-func SetAuthenticated(ctx echo.Context, authenticated bool) error {
+// GetAuthenticatedUserID returns the authenticated user's ID from the session.
+func GetAuthenticatedUserID(ctx echo.Context) (int, bool) {
+	sess, err := Get(ctx, authSessionName)
+	if err != nil {
+		return 0, false
+	}
+
+	val, ok := sess.Values[authUserIDKey].(int)
+	return val, ok && val > 0
+}
+
+// SetAuthenticatedUser stores the user ID in the session.
+func SetAuthenticatedUser(ctx echo.Context, userID int) error {
 	sess, err := Get(ctx, authSessionName)
 	if err != nil {
 		return err
 	}
 
-	if authenticated {
-		sess.Values[authKey] = true
-	} else {
-		delete(sess.Values, authKey)
-	}
+	sess.Values[authUserIDKey] = userID
+	return sess.Save(ctx.Request(), ctx.Response())
+}
 
-	if err := sess.Save(ctx.Request(), ctx.Response()); err != nil {
+// ClearAuth removes auth data from the session.
+func ClearAuth(ctx echo.Context) error {
+	sess, err := Get(ctx, authSessionName)
+	if err != nil {
 		return err
 	}
 
-	return nil
+	delete(sess.Values, authUserIDKey)
+	return sess.Save(ctx.Request(), ctx.Response())
 }
