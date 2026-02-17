@@ -1,7 +1,10 @@
 # Bandeira
 
-<img width="1720" height="945" alt="image" src="https://github.com/user-attachments/assets/9d1b5c15-43c5-4343-a4f6-7354ddeb3301" />
+[![Docker Image](https://img.shields.io/badge/ghcr.io-felipekafuri%2Fbandeira-blue?logo=docker)](https://github.com/felipekafuri/bandeira/pkgs/container/bandeira)
+[![Go SDK](https://img.shields.io/badge/Go_SDK-v0.1.0-00ADD8?logo=go)](https://github.com/felipekafuri/bandeira-go)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+<img width="1720" height="945" alt="image" src="https://github.com/user-attachments/assets/9d1b5c15-43c5-4343-a4f6-7354ddeb3301" />
 
 Self-hosted, open-source feature flag service built with Go. Ships as a single binary + SQLite.
 
@@ -59,10 +62,44 @@ Single Go binary. No Redis, no background workers, no message queue. SQLite is t
 ### Docker (recommended)
 
 ```bash
+docker pull ghcr.io/felipekafuri/bandeira:latest
+
+docker run -d \
+  -p 8080:8080 \
+  -v bandeira-data:/app/dbs \
+  -e BANDEIRA_AUTH_ADMINPASSWORD=your-password \
+  -e BANDEIRA_APP_ENCRYPTIONKEY=$(openssl rand -hex 16) \
+  ghcr.io/felipekafuri/bandeira:latest
+```
+
+Or with Docker Compose:
+
+```bash
 docker compose up -d
 ```
 
-The dashboard is available at `http://localhost:8080`. Log in with the admin password (`admin` by default).
+The dashboard is available at `http://localhost:8080`. Log in with the admin password.
+
+### Coolify
+
+Bandeira is available in the [Coolify](https://coolify.io) service store for one-click deployment.
+
+### Go SDK
+
+```bash
+go get github.com/felipekafuri/bandeira-go@v0.1.0
+```
+
+```go
+client := bandeira.NewClient("http://localhost:8080", "your-client-token")
+flags, _ := client.GetFlags()
+
+enabled := bandeira.IsEnabled(flags, "my-feature", bandeira.Context{
+    UserID: "user-123",
+})
+```
+
+See the [SDK repository](https://github.com/felipekafuri/bandeira-go) for full documentation.
 
 ### From source
 

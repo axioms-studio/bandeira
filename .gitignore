@@ -13,3 +13,8 @@ build/
 .aider.input.history
 .aider.tags.cache.v4/
 static/chat-uploads/
+.agent/
+.agents/
+.claude/skills/
+.cursor/
+.windsurf/
