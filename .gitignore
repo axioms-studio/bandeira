@@ -1,0 +1,14 @@
+.idea
+dbs
+uploads
+tmp
+node_modules/
+.DS_Store
+build/
+/public/build
+/public/hot
+/public/storage
+.aider
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4/
