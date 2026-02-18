@@ -4,7 +4,8 @@
 [![Go SDK](https://img.shields.io/badge/Go_SDK-v0.1.0-00ADD8?logo=go)](https://github.com/felipekafuri/bandeira-go)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-<img width="1720" height="945" alt="image" src="https://github.com/user-attachments/assets/9d1b5c15-43c5-4343-a4f6-7354ddeb3301" />
+<img width="2550" height="927" alt="Screenshot 2026-02-18 at 11 43 58" src="https://github.com/user-attachments/assets/ba553a72-1edf-4d9b-954c-058235e0c0bb" />
+
 
 Self-hosted, open-source feature flag service built with Go. Ships as a single binary + SQLite.
 
