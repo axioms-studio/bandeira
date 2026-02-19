@@ -10,16 +10,51 @@ import PublicLayout from "@/Layouts/PublicLayout";
 
 function CodeBlock({ children }: { children: string }) {
   return (
-    <pre className="bg-muted rounded-lg p-4 overflow-x-auto text-sm leading-relaxed">
+    <pre className="bg-muted rounded-lg p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm leading-relaxed max-w-full">
       <code>{children}</code>
     </pre>
+  );
+}
+
+const methodColors: Record<string, string> = {
+  GET: "text-green-600",
+  POST: "text-yellow-600",
+  PUT: "text-blue-600",
+  PATCH: "text-purple-600",
+  DELETE: "text-red-600",
+};
+
+function Endpoint({
+  method,
+  path,
+  description,
+}: {
+  method: string;
+  path: string;
+  description: string;
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-muted-foreground py-1 min-w-0">
+      <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+        <code
+          className={`bg-muted px-1.5 py-0.5 rounded text-xs font-semibold shrink-0 ${methodColors[method] ?? ""}`}
+        >
+          {method}
+        </code>
+        <code className="text-xs sm:text-sm truncate min-w-0">{path}</code>
+      </div>
+      <span className="text-xs text-muted-foreground shrink-0">
+        {description}
+      </span>
+    </div>
   );
 }
 
 export default function Docs() {
   return (
     <PublicLayout activePage="docs">
-      <div className="mx-auto max-w-4xl px-6 py-8">
+      <div className="py-8 px-4 md:px-6">
+        <div className="mx-auto max-w-4xl">
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               API Documentation
@@ -31,7 +66,7 @@ export default function Docs() {
 
           <div className="space-y-8">
             {/* Getting Started */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-6">
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
                   <Rocket className="w-4.5 h-4.5 text-primary" />
@@ -69,7 +104,7 @@ export default function Docs() {
             </section>
 
             {/* Go SDK */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-6">
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
                   <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
@@ -130,7 +165,7 @@ if client.IsEnabled("premium-feature", bandeira.Context{
             </section>
 
             {/* Authentication */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-6">
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
                   <Shield className="w-4.5 h-4.5 text-primary" />
@@ -144,7 +179,7 @@ if client.IsEnabled("premium-feature", bandeira.Context{
                 two token types:
               </p>
               <div className="space-y-3">
-                <div className="bg-muted rounded-lg p-4">
+                <div className="bg-muted rounded-lg p-3 sm:p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-1">
                     Client tokens
                   </h3>
@@ -154,7 +189,7 @@ if client.IsEnabled("premium-feature", bandeira.Context{
                     the dashboard under Project {">"} API Tokens.
                   </p>
                 </div>
-                <div className="bg-muted rounded-lg p-4">
+                <div className="bg-muted rounded-lg p-3 sm:p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-1">
                     Admin tokens
                   </h3>
@@ -173,7 +208,7 @@ if client.IsEnabled("premium-feature", bandeira.Context{
             </section>
 
             {/* Client API */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-6">
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
                   <Server className="w-4.5 h-4.5 text-accent-foreground" />
@@ -236,7 +271,7 @@ if client.IsEnabled("premium-feature", bandeira.Context{
             </section>
 
             {/* Admin API */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-6">
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
                   <Key className="w-4.5 h-4.5 text-primary" />
@@ -255,113 +290,45 @@ if client.IsEnabled("premium-feature", bandeira.Context{
               <h3 className="text-sm font-semibold text-foreground mb-3 mt-6 border-b border-border pb-2">
                 Projects
               </h3>
-              <div className="space-y-1 text-sm mb-4">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-green-600">GET</code>
-                  <code>/api/v1/admin/projects</code>
-                  <span className="text-xs">— List projects</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-green-600">GET</code>
-                  <code>/api/v1/admin/projects/:id</code>
-                  <span className="text-xs">— Get project details</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-blue-600">PUT</code>
-                  <code>/api/v1/admin/projects/:id</code>
-                  <span className="text-xs">— Update project</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-red-600">DELETE</code>
-                  <code>/api/v1/admin/projects/:id</code>
-                  <span className="text-xs">— Delete project</span>
-                </div>
+              <div className="space-y-0.5 text-sm mb-4">
+                <Endpoint method="GET" path="/api/v1/admin/projects" description="— List projects" />
+                <Endpoint method="GET" path="/api/v1/admin/projects/:id" description="— Get project details" />
+                <Endpoint method="PUT" path="/api/v1/admin/projects/:id" description="— Update project" />
+                <Endpoint method="DELETE" path="/api/v1/admin/projects/:id" description="— Delete project" />
               </div>
 
               {/* Environments */}
               <h3 className="text-sm font-semibold text-foreground mb-3 mt-6 border-b border-border pb-2">
                 Environments
               </h3>
-              <div className="space-y-1 text-sm mb-4">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-green-600">GET</code>
-                  <code>/api/v1/admin/projects/:id/environments</code>
-                  <span className="text-xs">— List environments</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-yellow-600">POST</code>
-                  <code>/api/v1/admin/projects/:id/environments</code>
-                  <span className="text-xs">— Create environment</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-blue-600">PUT</code>
-                  <code>/api/v1/admin/projects/:id/environments/:envId</code>
-                  <span className="text-xs">— Update environment</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-red-600">DELETE</code>
-                  <code>/api/v1/admin/projects/:id/environments/:envId</code>
-                  <span className="text-xs">— Delete environment</span>
-                </div>
+              <div className="space-y-0.5 text-sm mb-4">
+                <Endpoint method="GET" path="/api/v1/admin/projects/:id/environments" description="— List environments" />
+                <Endpoint method="POST" path="/api/v1/admin/projects/:id/environments" description="— Create environment" />
+                <Endpoint method="PUT" path="/api/v1/admin/projects/:id/environments/:envId" description="— Update environment" />
+                <Endpoint method="DELETE" path="/api/v1/admin/projects/:id/environments/:envId" description="— Delete environment" />
               </div>
 
               {/* Flags */}
               <h3 className="text-sm font-semibold text-foreground mb-3 mt-6 border-b border-border pb-2">
                 Flags
               </h3>
-              <div className="space-y-1 text-sm mb-4">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-green-600">GET</code>
-                  <code>/api/v1/admin/projects/:id/flags</code>
-                  <span className="text-xs">— List flags</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-yellow-600">POST</code>
-                  <code>/api/v1/admin/projects/:id/flags</code>
-                  <span className="text-xs">— Create flag</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-green-600">GET</code>
-                  <code>/api/v1/admin/projects/:id/flags/:flagId</code>
-                  <span className="text-xs">— Get flag with strategies</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-blue-600">PUT</code>
-                  <code>/api/v1/admin/projects/:id/flags/:flagId</code>
-                  <span className="text-xs">— Update flag</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-red-600">DELETE</code>
-                  <code>/api/v1/admin/projects/:id/flags/:flagId</code>
-                  <span className="text-xs">— Delete flag</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-purple-600">PATCH</code>
-                  <code>/api/v1/admin/projects/:id/flags/:flagId/environments/:envId</code>
-                  <span className="text-xs">— Toggle flag / set strategies</span>
-                </div>
+              <div className="space-y-0.5 text-sm mb-4">
+                <Endpoint method="GET" path="/api/v1/admin/projects/:id/flags" description="— List flags" />
+                <Endpoint method="POST" path="/api/v1/admin/projects/:id/flags" description="— Create flag" />
+                <Endpoint method="GET" path="/api/v1/admin/projects/:id/flags/:flagId" description="— Get flag with strategies" />
+                <Endpoint method="PUT" path="/api/v1/admin/projects/:id/flags/:flagId" description="— Update flag" />
+                <Endpoint method="DELETE" path="/api/v1/admin/projects/:id/flags/:flagId" description="— Delete flag" />
+                <Endpoint method="PATCH" path="/api/v1/admin/projects/:id/flags/:flagId/environments/:envId" description="— Toggle flag / set strategies" />
               </div>
 
               {/* Tokens */}
               <h3 className="text-sm font-semibold text-foreground mb-3 mt-6 border-b border-border pb-2">
                 API Tokens
               </h3>
-              <div className="space-y-1 text-sm mb-4">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-green-600">GET</code>
-                  <code>/api/v1/admin/api-tokens</code>
-                  <span className="text-xs">— List tokens</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-yellow-600">POST</code>
-                  <code>/api/v1/admin/api-tokens</code>
-                  <span className="text-xs">— Create token</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-red-600">DELETE</code>
-                  <code>/api/v1/admin/api-tokens/:id</code>
-                  <span className="text-xs">— Delete token</span>
-                </div>
+              <div className="space-y-0.5 text-sm mb-4">
+                <Endpoint method="GET" path="/api/v1/admin/api-tokens" description="— List tokens" />
+                <Endpoint method="POST" path="/api/v1/admin/api-tokens" description="— Create token" />
+                <Endpoint method="DELETE" path="/api/v1/admin/api-tokens/:id" description="— Delete token" />
               </div>
 
               {/* Examples */}
@@ -401,7 +368,7 @@ if client.IsEnabled("premium-feature", bandeira.Context{
             </section>
 
             {/* CI/CD */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-6">
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
                   <Rocket className="w-4.5 h-4.5 text-accent-foreground" />
@@ -442,6 +409,7 @@ echo "Flag enabled in production"`}
             </section>
           </div>
         </div>
+      </div>
     </PublicLayout>
   );
 }

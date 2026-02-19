@@ -1,7 +1,10 @@
 import { Link, usePage } from "@inertiajs/react";
 import { SharedProps } from "@/types/global";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
+import { FeatureFlagToggle } from "@/components/ui/feature-flag-toggle";
+import { AnimateInView, AnimateChild } from "@/components/ui/animate-in-view";
 import PublicLayout from "@/Layouts/PublicLayout";
+import { motion } from "framer-motion";
 import {
   ToggleRight,
   Users,
@@ -73,6 +76,33 @@ if client.IsEnabled("new-checkout", bandeira.Context{
 const curlCode = `curl http://localhost:8080/api/v1/flags \\
   -H "Authorization: Bearer <token>"`;
 
+function ConnectorLine() {
+  // In a 3-col grid, centers are at 16.67% and 83.33%.
+  // We position the SVG to span between them.
+  return (
+    <svg
+      className="hidden md:block absolute top-6 h-[2px] overflow-visible"
+      style={{ left: "calc(100% / 6)", width: "calc(100% * 2 / 3)" }}
+      preserveAspectRatio="none"
+    >
+      <motion.line
+        x1="0"
+        y1="1"
+        x2="100%"
+        y2="1"
+        stroke="currentColor"
+        className="text-border"
+        strokeWidth={1}
+        strokeDasharray="6 4"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
+      />
+    </svg>
+  );
+}
+
 export default function Home() {
   const { auth } = usePage<SharedProps>().props;
 
@@ -87,112 +117,165 @@ export default function Home() {
           label: auth?.user ? "Go to Dashboard" : "View on GitHub",
           href: auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira",
         }}
-      />
+      >
+        <FeatureFlagToggle />
+      </HeroGeometric>
 
       {/* Features Grid */}
-      <section className="relative py-24 px-4 md:px-6 bg-background">
+      <AnimateInView
+        as="section"
+        preset="fade-up"
+        staggerChildren={0.1}
+        className="relative py-24 px-4 md:px-6 bg-background"
+      >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
-            Everything you need to ship with confidence
-          </h2>
-          <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-            Bandeira gives you fine-grained control over feature rollouts with
-            a self-hosted server and a local-evaluation SDK.
-          </p>
+          <AnimateChild>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
+              Everything you need to ship with confidence
+            </h2>
+          </AnimateChild>
+          <AnimateChild>
+            <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+              Bandeira gives you fine-grained control over feature rollouts with
+              a self-hosted server and a local-evaluation SDK.
+            </p>
+          </AnimateChild>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-all"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
-                    <feature.icon className="w-4.5 h-4.5 text-primary" />
+              <AnimateChild key={feature.title} className="h-full">
+                <motion.div
+                  whileHover={{ y: -2, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="h-full flex flex-col bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-[box-shadow,border-color]"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
+                      <feature.icon className="w-4.5 h-4.5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground">{feature.title}</h3>
                   </div>
-                  <h3 className="font-semibold text-foreground">{feature.title}</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-                {feature.href && (
-                  <Link
-                    href={feature.href}
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-3"
-                  >
-                    Learn more <ArrowRight className="w-3 h-3" />
-                  </Link>
-                )}
-              </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                    {feature.description}
+                  </p>
+                  {feature.href && (
+                    <Link
+                      href={feature.href}
+                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-3"
+                    >
+                      Learn more <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  )}
+                </motion.div>
+              </AnimateChild>
             ))}
           </div>
         </div>
-      </section>
+      </AnimateInView>
 
       {/* How It Works */}
-      <section className="relative py-24 px-4 md:px-6 bg-background">
+      <AnimateInView
+        as="section"
+        preset="fade-up"
+        staggerChildren={0.15}
+        className="relative py-24 px-4 md:px-6 bg-background"
+      >
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
-            How it works
-          </h2>
-          <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
-            Three steps from zero to feature flags in production.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative">
-            {/* Dashed connector line (desktop only) */}
-            <div className="hidden md:block absolute top-6 left-[20%] right-[20%] h-px border-t border-dashed border-border" />
+          <AnimateChild>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
+              How it works
+            </h2>
+          </AnimateChild>
+          <AnimateChild>
+            <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
+              Three steps from zero to feature flags in production.
+            </p>
+          </AnimateChild>
+          <AnimateChild>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative">
+              <ConnectorLine />
 
-            {steps.map((step) => (
-              <div key={step.number} className="text-center relative">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-lg mb-4 relative z-10">
-                  {step.number}
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.description}</p>
-              </div>
-            ))}
-          </div>
+              {steps.map((step, i) => (
+                <motion.div
+                  key={step.number}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.4 + i * 0.2,
+                    ease: [0.25, 0.4, 0.25, 1],
+                  }}
+                  className="text-center relative"
+                >
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-lg mb-4 relative z-10">
+                    {step.number}
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">{step.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </AnimateChild>
         </div>
-      </section>
+      </AnimateInView>
 
       {/* Code Snippet */}
-      <section className="relative py-24 px-4 md:px-6 bg-background">
+      <AnimateInView
+        as="section"
+        preset="fade-up"
+        staggerChildren={0.1}
+        className="relative py-24 px-4 md:px-6 bg-background"
+      >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
-            Integrate in minutes
-          </h2>
-          <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
-            Use the Go SDK for in-app evaluation or the REST API for scripts
-            and automation.
-          </p>
+          <AnimateChild>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
+              Integrate in minutes
+            </h2>
+          </AnimateChild>
+          <AnimateChild>
+            <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
+              Use the Go SDK for in-app evaluation or the REST API for scripts
+              and automation.
+            </p>
+          </AnimateChild>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-              <div className="px-4 py-2.5 border-b border-border flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-xs font-medium text-muted-foreground">
-                  Go SDK
-                </span>
+            <AnimateInView preset="slide-left" duration={0.7} className="h-full">
+              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm h-full">
+                <div className="px-4 py-2.5 border-b border-border flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Go SDK
+                  </span>
+                </div>
+                <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
+                  <code>{goCode}</code>
+                </pre>
               </div>
-              <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
-                <code>{goCode}</code>
-              </pre>
-            </div>
-            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-              <div className="px-4 py-2.5 border-b border-border flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-accent-foreground" />
-                <span className="text-xs font-medium text-muted-foreground">
-                  curl
-                </span>
+            </AnimateInView>
+            <AnimateInView preset="slide-right" duration={0.7} className="h-full">
+              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm h-full">
+                <div className="px-4 py-2.5 border-b border-border flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">
+                    curl
+                  </span>
+                </div>
+                <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
+                  <code>{curlCode}</code>
+                </pre>
               </div>
-              <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
-                <code>{curlCode}</code>
-              </pre>
-            </div>
+            </AnimateInView>
           </div>
         </div>
-      </section>
+      </AnimateInView>
 
       {/* Open Source CTA */}
-      <section className="relative py-24 px-4 md:px-6 bg-background">
+      <AnimateInView
+        as="section"
+        preset="scale-up"
+        duration={0.7}
+        className="relative py-24 px-4 md:px-6 bg-background"
+      >
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4 tracking-tight text-foreground">
             Self-host in 60 seconds
@@ -226,10 +309,16 @@ export default function Home() {
             </a>
           </div>
         </div>
-      </section>
+      </AnimateInView>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 px-4 bg-background">
+      <AnimateInView
+        as="footer"
+        preset="fade"
+        duration={0.5}
+        viewportAmount={0.5}
+        className="border-t border-border py-8 px-4 bg-background"
+      >
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
             Bandeira — Open source feature flag management
@@ -241,7 +330,7 @@ export default function Home() {
             Brand
           </Link>
         </div>
-      </footer>
+      </AnimateInView>
     </PublicLayout>
   );
 }

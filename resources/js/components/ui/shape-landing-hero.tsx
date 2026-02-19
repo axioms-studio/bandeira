@@ -75,12 +75,14 @@ function HeroGeometric({
   title2 = "Crafting Exceptional Websites",
   subtitle,
   cta,
+  children,
 }: {
   badge?: string;
   title1?: string;
   title2?: string;
   subtitle?: string;
   cta?: { label: string; href: string };
+  children?: React.ReactNode;
 }) {
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -205,6 +207,12 @@ function HeroGeometric({
                 </svg>
               </a>
             </motion.div>
+          )}
+
+          {children && (
+            <div className="mt-10 md:mt-14">
+              {children}
+            </div>
           )}
         </div>
       </div>
