@@ -220,7 +220,19 @@ client.close()`}
                 </CodeBlock>
               </SdkSection>
 
-              <SdkSection title="PHP" install="composer require bandeira/bandeira">
+              <SdkSection title="PHP" install="See install instructions on GitHub">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Add the repository to your <code className="bg-muted px-1.5 py-0.5 rounded text-foreground text-xs">composer.json</code>, then require the package.
+                  See{" "}
+                  <a
+                    href="https://github.com/felipekafuri/bandeira-sdks/tree/main/php#install"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    full install instructions
+                  </a>.
+                </p>
                 <CodeBlock>
                   {`<?php
 
