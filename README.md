@@ -1,7 +1,12 @@
 # Bandeira
 
 [![Docker Image](https://img.shields.io/badge/ghcr.io-felipekafuri%2Fbandeira-blue?logo=docker)](https://github.com/felipekafuri/bandeira/pkgs/container/bandeira)
-[![SDKs](https://img.shields.io/badge/SDKs-Go_%7C_JS_%7C_Python-00ADD8)](https://github.com/felipekafuri/bandeira-sdks)
+[![Go SDK](https://img.shields.io/badge/Go-SDK-00ADD8?logo=go&logoColor=white)](https://github.com/felipekafuri/bandeira-sdks/tree/main/go)
+[![npm](https://img.shields.io/npm/v/bandeira?logo=npm&label=JS/TS)](https://www.npmjs.com/package/bandeira)
+[![PyPI](https://img.shields.io/pypi/v/bandeira?logo=python&logoColor=white&label=Python)](https://pypi.org/project/bandeira/)
+[![Hex.pm](https://img.shields.io/hexpm/v/bandeira?logo=elixir&logoColor=white&label=Elixir)](https://hex.pm/packages/bandeira)
+[![Pub.dev](https://img.shields.io/pub/v/bandeira?logo=dart&logoColor=white&label=Dart)](https://pub.dev/packages/bandeira)
+[![PHP](https://img.shields.io/badge/PHP-SDK-777BB4?logo=php&logoColor=white)](https://github.com/felipekafuri/bandeira-sdks/tree/main/php)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 <img width="2550" height="927" alt="Screenshot 2026-02-18 at 11 43 58" src="https://github.com/user-attachments/assets/ba553a72-1edf-4d9b-954c-058235e0c0bb" />
@@ -45,10 +50,9 @@ Self-hosted, open-source feature flag service built with Go. Ships as a single b
         |                          ^
         |  polls every N seconds   |
         v                          |
-+------------------+------------------+------------------+
-|    Go SDK        |    JS/TS SDK     |   Python SDK     |
-| (bandeira-sdks)  | (bandeira-sdks)  | (bandeira-sdks)  |
-+------------------+------------------+------------------+
++--------+--------+--------+--------+--------+--------+
+|   Go   | JS/TS  | Python |  PHP   |  Dart  | Elixir |
++--------+--------+--------+--------+--------+--------+
 ```
 
 Single Go binary. No Redis, no background workers, no message queue. SQLite is the only dependency.
@@ -94,8 +98,11 @@ Official client SDKs poll the server, cache flags locally, and evaluate strategi
 | Language | Install | Package |
 |----------|---------|---------|
 | Go | `go get github.com/felipekafuri/bandeira-sdks/go` | [bandeira-sdks/go](https://github.com/felipekafuri/bandeira-sdks) |
-| JS/TS | `npm install bandeira` | [bandeira](https://github.com/felipekafuri/bandeira-sdks) |
-| Python | `pip install bandeira` | [bandeira](https://github.com/felipekafuri/bandeira-sdks) |
+| JS/TS | `npm install bandeira` | [npm](https://www.npmjs.com/package/bandeira) |
+| Python | `pip install bandeira` | [PyPI](https://pypi.org/project/bandeira/) |
+| PHP | [See install instructions](https://github.com/felipekafuri/bandeira-sdks/tree/main/php#install) | [bandeira-sdks/php](https://github.com/felipekafuri/bandeira-sdks) |
+| Dart/Flutter | `dart pub add bandeira` | [pub.dev](https://pub.dev/packages/bandeira) |
+| Elixir | `{:bandeira, "~> 0.1.0"}` | [hex.pm](https://hex.pm/packages/bandeira) |
 
 ```go
 // Go
