@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@inertiajs/react";
 import {
   Terminal,
@@ -5,6 +6,7 @@ import {
   Rocket,
   Server,
   Shield,
+  ChevronRight,
 } from "lucide-react";
 import PublicLayout from "@/Layouts/PublicLayout";
 
@@ -50,6 +52,42 @@ function Endpoint({
   );
 }
 
+function SdkSection({
+  title,
+  install,
+  children,
+}: {
+  title: string;
+  install: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-3 w-full p-4 sm:px-6 text-left hover:bg-muted/50 transition-colors cursor-pointer"
+      >
+        <ChevronRight
+          className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
+        />
+        <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg shrink-0">
+          <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
+        </div>
+        <div className="min-w-0">
+          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+          <p className="text-xs text-muted-foreground font-mono truncate">
+            {install}
+          </p>
+        </div>
+      </button>
+      {open && <div className="px-4 sm:px-6 pb-4 sm:pb-6">{children}</div>}
+    </div>
+  );
+}
+
 export default function Docs() {
   return (
     <PublicLayout activePage="docs">
@@ -80,9 +118,10 @@ export default function Docs() {
               </p>
               <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
                 <li>
-                  <strong className="text-foreground">Go SDK</strong> — For
-                  applications that need to evaluate feature flags at runtime
-                  with local caching and strategy evaluation.
+                  <strong className="text-foreground">SDKs</strong> — Available
+                  for Go, JavaScript/TypeScript, Python, PHP, Dart/Flutter, and
+                  Elixir. Each SDK polls the server, caches flags locally, and
+                  evaluates strategies in-process.
                 </li>
                 <li>
                   <strong className="text-foreground">Admin API</strong> — For
@@ -103,26 +142,15 @@ export default function Docs() {
               </ul>
             </section>
 
-            {/* Go SDK */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
-                  <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Go SDK
-                </h2>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Install the SDK in your Go application:
-              </p>
-              <CodeBlock>go get github.com/felipekafuri/bandeira-sdks/go</CodeBlock>
+            {/* SDKs */}
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold text-foreground px-1">
+                SDKs
+              </h2>
 
-              <p className="text-sm text-muted-foreground mt-4 mb-2">
-                Quick start:
-              </p>
-              <CodeBlock>
-                {`import bandeira "github.com/felipekafuri/bandeira-sdks/go"
+              <SdkSection title="Go" install="go get github.com/felipekafuri/bandeira-sdks/go">
+                <CodeBlock>
+                  {`import bandeira "github.com/felipekafuri/bandeira-sdks/go"
 
 client, err := bandeira.New(bandeira.Config{
     URL:   "http://localhost:8080",
@@ -147,43 +175,12 @@ if client.IsEnabled("premium-feature", bandeira.Context{
 }) {
     // show premium feature
 }`}
-              </CodeBlock>
-              <p className="text-sm text-muted-foreground mt-4">
-                The client polls the server every 15 seconds (configurable) and
-                caches flags locally. IsEnabled() calls are pure in-memory
-                lookups with zero network latency. See the full documentation at{" "}
-                <a
-                  href="https://github.com/felipekafuri/bandeira-sdks"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  github.com/felipekafuri/bandeira-sdks
-                </a>
-                .
-              </p>
-            </section>
+                </CodeBlock>
+              </SdkSection>
 
-            {/* JS/TS SDK */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
-                  <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  JavaScript / TypeScript SDK
-                </h2>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Install the SDK in your Node.js or browser application:
-              </p>
-              <CodeBlock>npm install bandeira</CodeBlock>
-
-              <p className="text-sm text-muted-foreground mt-4 mb-2">
-                Quick start:
-              </p>
-              <CodeBlock>
-                {`import { BandeiraClient } from "bandeira";
+              <SdkSection title="JavaScript / TypeScript" install="npm install bandeira">
+                <CodeBlock>
+                  {`import { BandeiraClient } from "bandeira";
 
 const client = new BandeiraClient({
   url: "http://localhost:8080",
@@ -191,12 +188,6 @@ const client = new BandeiraClient({
 });
 await client.start();
 
-// Simple boolean check
-if (client.isEnabled("new-dashboard")) {
-  // show new dashboard
-}
-
-// With context for strategy evaluation
 if (client.isEnabled("premium-feature", {
   userId: "42",
   properties: { plan: "enterprise" },
@@ -205,43 +196,12 @@ if (client.isEnabled("premium-feature", {
 }
 
 client.close();`}
-              </CodeBlock>
-              <p className="text-sm text-muted-foreground mt-4">
-                The client polls the server every 15 seconds (configurable) and
-                caches flags locally. isEnabled() calls are pure in-memory
-                lookups with zero network latency. See the full documentation at{" "}
-                <a
-                  href="https://github.com/felipekafuri/bandeira-sdks"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  github.com/felipekafuri/bandeira-sdks
-                </a>
-                .
-              </p>
-            </section>
+                </CodeBlock>
+              </SdkSection>
 
-            {/* Python SDK */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
-                  <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Python SDK
-                </h2>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Install the SDK in your Python application:
-              </p>
-              <CodeBlock>pip install bandeira</CodeBlock>
-
-              <p className="text-sm text-muted-foreground mt-4 mb-2">
-                Quick start:
-              </p>
-              <CodeBlock>
-                {`from bandeira import BandeiraClient, Config, Context
+              <SdkSection title="Python" install="pip install bandeira">
+                <CodeBlock>
+                  {`from bandeira import BandeiraClient, Config, Context
 
 client = BandeiraClient(Config(
     url="http://localhost:8080",
@@ -249,12 +209,6 @@ client = BandeiraClient(Config(
 ))
 client.start()
 
-# Simple boolean check
-if client.is_enabled("new-dashboard"):
-    # show new dashboard
-    pass
-
-# With context for strategy evaluation
 if client.is_enabled("premium-feature", Context(
     user_id="42",
     properties={"plan": "enterprise"},
@@ -263,10 +217,73 @@ if client.is_enabled("premium-feature", Context(
     pass
 
 client.close()`}
-              </CodeBlock>
-              <p className="text-sm text-muted-foreground mt-4">
-                The client polls the server every 15 seconds (configurable) and
-                caches flags locally. is_enabled() calls are pure in-memory
+                </CodeBlock>
+              </SdkSection>
+
+              <SdkSection title="PHP" install="composer require bandeira/bandeira">
+                <CodeBlock>
+                  {`<?php
+
+use Bandeira\\Client;
+use Bandeira\\Config;
+use Bandeira\\Context;
+
+$client = new Client(new Config(
+    url: 'http://localhost:8080',
+    token: 'your-client-token',
+));
+
+if ($client->isEnabled('premium-feature', new Context(
+    userId: '42',
+    properties: ['plan' => 'enterprise'],
+))) {
+    // show premium feature
+}`}
+                </CodeBlock>
+              </SdkSection>
+
+              <SdkSection title="Dart / Flutter" install="dart pub add bandeira">
+                <CodeBlock>
+                  {`import 'package:bandeira/bandeira.dart';
+
+final client = await BandeiraClient.create(
+  const BandeiraConfig(
+    url: "http://localhost:8080",
+    token: "your-client-token",
+  ),
+);
+
+if (client.isEnabled("premium-feature",
+    const BandeiraContext(userId: "42"))) {
+  // show premium feature
+}
+
+client.close();`}
+                </CodeBlock>
+              </SdkSection>
+
+              <SdkSection title="Elixir" install='{:bandeira, "~> 0.1.0"}'>
+                <CodeBlock>
+                  {`alias Bandeira.{Client, Config, Context}
+
+{:ok, client} =
+  Client.start_link(%Config{
+    url: "http://localhost:8080",
+    token: "your-client-token"
+  })
+
+if Client.is_enabled(client, "premium-feature",
+     %Context{user_id: "42"}) do
+  # show premium feature
+end
+
+Client.close(client)`}
+                </CodeBlock>
+              </SdkSection>
+
+              <p className="text-sm text-muted-foreground px-1">
+                All SDKs poll the server every 15 seconds (configurable) and
+                cache flags locally. Evaluation calls are pure in-memory
                 lookups with zero network latency. See the full documentation at{" "}
                 <a
                   href="https://github.com/felipekafuri/bandeira-sdks"
@@ -278,7 +295,7 @@ client.close()`}
                 </a>
                 .
               </p>
-            </section>
+            </div>
 
             {/* Authentication */}
             <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
