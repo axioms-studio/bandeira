@@ -40,7 +40,7 @@ const features = [
     icon: Zap,
     title: "Zero-Latency SDKs",
     description:
-      "Go, JS/TS, and Python SDKs poll and cache locally — flag checks are pure in-memory lookups.",
+      "SDKs for Go, JS/TS, Python, PHP, Dart, and Elixir poll and cache locally — flag checks are pure in-memory lookups.",
   },
 ];
 
@@ -58,7 +58,7 @@ const steps = [
   {
     number: 3,
     title: "Evaluate Anywhere",
-    description: "Use the Go, JS/TS, or Python SDK to check flags at runtime.",
+    description: "Use any of our 6 SDKs to check flags at runtime.",
   },
 ];
 
@@ -97,6 +97,40 @@ if client.is_enabled("new-checkout", Context(
 )):
     # show new checkout`;
 
+const phpCode = `$client = new Client(new Config(
+    url: 'http://localhost:8080',
+    token: 'your-token',
+));
+
+if ($client->isEnabled('new-checkout', new Context(
+    userId: '42',
+))) {
+    // show new checkout
+}`;
+
+const dartCode = `final client = await BandeiraClient.create(
+  const BandeiraConfig(
+    url: "http://localhost:8080",
+    token: "your-token",
+  ),
+);
+
+if (client.isEnabled("new-checkout",
+    const BandeiraContext(userId: "42"))) {
+  // show new checkout
+}`;
+
+const elixirCode = `{:ok, client} =
+  Client.start_link(%Config{
+    url: "http://localhost:8080",
+    token: "your-token"
+  })
+
+if Client.is_enabled(client, "new-checkout",
+     %Context{user_id: "42"}) do
+  # show new checkout
+end`;
+
 const curlCode = `curl http://localhost:8080/api/v1/flags \\
   -H "Authorization: Bearer <token>"`;
 
@@ -104,6 +138,9 @@ const sdkTabs = [
   { key: "go", label: "Go", code: goCode },
   { key: "js", label: "JavaScript", code: jsCode },
   { key: "py", label: "Python", code: pyCode },
+  { key: "php", label: "PHP", code: phpCode },
+  { key: "dart", label: "Dart", code: dartCode },
+  { key: "elixir", label: "Elixir", code: elixirCode },
   { key: "curl", label: "curl", code: curlCode },
 ] as const;
 
@@ -171,7 +208,7 @@ export default function Home() {
         badge="Open Source"
         title1="Feature Flags"
         title2="Made Simple"
-        subtitle="Self-hosted feature flag management with per-environment toggles, gradual rollouts, and SDKs for Go, JS/TS, and Python — deploy with Docker in 60 seconds."
+        subtitle="Self-hosted feature flag management with per-environment toggles, gradual rollouts, and SDKs for Go, JS/TS, Python, PHP, Dart, and Elixir — deploy with Docker in 60 seconds."
         cta={{
           label: auth?.user ? "Go to Dashboard" : "View on GitHub",
           href: auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira",
@@ -293,8 +330,8 @@ export default function Home() {
           </AnimateChild>
           <AnimateChild>
             <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
-              Use the Go, JS/TS, or Python SDK for in-app evaluation, or the REST API
-              for scripts and automation.
+              Pick your language — all SDKs evaluate flags locally with zero network
+              latency. Or use the REST API for scripts and automation.
             </p>
           </AnimateChild>
           <CodeTabs />
