@@ -956,7 +956,7 @@ export default function Strategies() {
                 <div>
                   <p className="text-xs font-medium text-foreground mb-2">Install</p>
                   <pre className="bg-muted rounded-lg px-4 py-3 text-sm overflow-x-auto">
-                    <code>go get github.com/felipekafuri/bandeira-go</code>
+                    <code>go get github.com/felipekafuri/bandeira-sdks/go</code>
                   </pre>
                 </div>
 
@@ -1010,7 +1010,7 @@ if client.IsEnabled("new-checkout") {
 
                 <div className="flex items-center gap-3">
                   <a
-                    href="https://github.com/felipekafuri/bandeira-go"
+                    href="https://github.com/felipekafuri/bandeira-sdks"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"

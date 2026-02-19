@@ -1,7 +1,7 @@
 # Bandeira
 
 [![Docker Image](https://img.shields.io/badge/ghcr.io-felipekafuri%2Fbandeira-blue?logo=docker)](https://github.com/felipekafuri/bandeira/pkgs/container/bandeira)
-[![Go SDK](https://img.shields.io/badge/Go_SDK-v0.1.0-00ADD8?logo=go)](https://github.com/felipekafuri/bandeira-go)
+[![SDKs](https://img.shields.io/badge/SDKs-Go_%7C_JS_%7C_Python-00ADD8)](https://github.com/felipekafuri/bandeira-sdks)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 <img width="2550" height="927" alt="Screenshot 2026-02-18 at 11 43 58" src="https://github.com/user-attachments/assets/ba553a72-1edf-4d9b-954c-058235e0c0bb" />
@@ -45,10 +45,10 @@ Self-hosted, open-source feature flag service built with Go. Ships as a single b
         |                          ^
         |  polls every N seconds   |
         v                          |
-+------------------+       +------------------+
-|  Go SDK          |       |  Future SDKs     |
-|  (bandeira-go)   |       |  (Node, Py, etc) |
-+------------------+       +------------------+
++------------------+------------------+------------------+
+|    Go SDK        |    JS/TS SDK     |   Python SDK     |
+| (bandeira-sdks)  | (bandeira-sdks)  | (bandeira-sdks)  |
++------------------+------------------+------------------+
 ```
 
 Single Go binary. No Redis, no background workers, no message queue. SQLite is the only dependency.
@@ -87,22 +87,38 @@ The dashboard is available at `http://localhost:8080`. Log in with the admin ema
 
 Bandeira is available in the [Coolify](https://coolify.io) service store for one-click deployment.
 
-### Go SDK
+### SDKs
 
-```bash
-go get github.com/felipekafuri/bandeira-go@v0.1.0
-```
+Official client SDKs poll the server, cache flags locally, and evaluate strategies in-process.
+
+| Language | Install | Package |
+|----------|---------|---------|
+| Go | `go get github.com/felipekafuri/bandeira-sdks/go` | [bandeira-sdks/go](https://github.com/felipekafuri/bandeira-sdks) |
+| JS/TS | `npm install bandeira` | [bandeira](https://github.com/felipekafuri/bandeira-sdks) |
+| Python | `pip install bandeira` | [bandeira](https://github.com/felipekafuri/bandeira-sdks) |
 
 ```go
-client := bandeira.NewClient("http://localhost:8080", "your-client-token")
-flags, _ := client.GetFlags()
-
-enabled := bandeira.IsEnabled(flags, "my-feature", bandeira.Context{
-    UserID: "user-123",
-})
+// Go
+client, _ := bandeira.New(bandeira.Config{URL: "http://localhost:8080", Token: "your-token"})
+defer client.Close()
+client.IsEnabled("my-feature", bandeira.Context{UserID: "user-123"})
 ```
 
-See the [SDK repository](https://github.com/felipekafuri/bandeira-go) for full documentation.
+```typescript
+// JavaScript / TypeScript
+const client = new BandeiraClient({ url: "http://localhost:8080", token: "your-token" });
+await client.start();
+client.isEnabled("my-feature", { userId: "user-123" });
+```
+
+```python
+# Python
+client = BandeiraClient(Config(url="http://localhost:8080", token="your-token"))
+client.start()
+client.is_enabled("my-feature", Context(user_id="user-123"))
+```
+
+See the [SDKs repository](https://github.com/felipekafuri/bandeira-sdks) for full documentation.
 
 ### From source
 

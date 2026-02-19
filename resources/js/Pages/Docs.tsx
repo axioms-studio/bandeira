@@ -116,13 +116,13 @@ export default function Docs() {
               <p className="text-sm text-muted-foreground mb-4">
                 Install the SDK in your Go application:
               </p>
-              <CodeBlock>go get github.com/felipekafuri/bandeira-go</CodeBlock>
+              <CodeBlock>go get github.com/felipekafuri/bandeira-sdks/go</CodeBlock>
 
               <p className="text-sm text-muted-foreground mt-4 mb-2">
                 Quick start:
               </p>
               <CodeBlock>
-                {`import bandeira "github.com/felipekafuri/bandeira-go"
+                {`import bandeira "github.com/felipekafuri/bandeira-sdks/go"
 
 client, err := bandeira.New(bandeira.Config{
     URL:   "http://localhost:8080",
@@ -153,12 +153,128 @@ if client.IsEnabled("premium-feature", bandeira.Context{
                 caches flags locally. IsEnabled() calls are pure in-memory
                 lookups with zero network latency. See the full documentation at{" "}
                 <a
-                  href="https://github.com/felipekafuri/bandeira-go"
+                  href="https://github.com/felipekafuri/bandeira-sdks"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  github.com/felipekafuri/bandeira-go
+                  github.com/felipekafuri/bandeira-sdks
+                </a>
+                .
+              </p>
+            </section>
+
+            {/* JS/TS SDK */}
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
+                  <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  JavaScript / TypeScript SDK
+                </h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Install the SDK in your Node.js or browser application:
+              </p>
+              <CodeBlock>npm install bandeira</CodeBlock>
+
+              <p className="text-sm text-muted-foreground mt-4 mb-2">
+                Quick start:
+              </p>
+              <CodeBlock>
+                {`import { BandeiraClient } from "bandeira";
+
+const client = new BandeiraClient({
+  url: "http://localhost:8080",
+  token: "your-client-token",
+});
+await client.start();
+
+// Simple boolean check
+if (client.isEnabled("new-dashboard")) {
+  // show new dashboard
+}
+
+// With context for strategy evaluation
+if (client.isEnabled("premium-feature", {
+  userId: "42",
+  properties: { plan: "enterprise" },
+})) {
+  // show premium feature
+}
+
+client.close();`}
+              </CodeBlock>
+              <p className="text-sm text-muted-foreground mt-4">
+                The client polls the server every 15 seconds (configurable) and
+                caches flags locally. isEnabled() calls are pure in-memory
+                lookups with zero network latency. See the full documentation at{" "}
+                <a
+                  href="https://github.com/felipekafuri/bandeira-sdks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  github.com/felipekafuri/bandeira-sdks
+                </a>
+                .
+              </p>
+            </section>
+
+            {/* Python SDK */}
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
+                  <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Python SDK
+                </h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Install the SDK in your Python application:
+              </p>
+              <CodeBlock>pip install bandeira</CodeBlock>
+
+              <p className="text-sm text-muted-foreground mt-4 mb-2">
+                Quick start:
+              </p>
+              <CodeBlock>
+                {`from bandeira import BandeiraClient, Config, Context
+
+client = BandeiraClient(Config(
+    url="http://localhost:8080",
+    token="your-client-token",
+))
+client.start()
+
+# Simple boolean check
+if client.is_enabled("new-dashboard"):
+    # show new dashboard
+    pass
+
+# With context for strategy evaluation
+if client.is_enabled("premium-feature", Context(
+    user_id="42",
+    properties={"plan": "enterprise"},
+)):
+    # show premium feature
+    pass
+
+client.close()`}
+              </CodeBlock>
+              <p className="text-sm text-muted-foreground mt-4">
+                The client polls the server every 15 seconds (configurable) and
+                caches flags locally. is_enabled() calls are pure in-memory
+                lookups with zero network latency. See the full documentation at{" "}
+                <a
+                  href="https://github.com/felipekafuri/bandeira-sdks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  github.com/felipekafuri/bandeira-sdks
                 </a>
                 .
               </p>
