@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { SharedProps } from "@/types/global";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
@@ -37,9 +38,9 @@ const features = [
   },
   {
     icon: Zap,
-    title: "Zero-Latency SDK",
+    title: "Zero-Latency SDKs",
     description:
-      "Go SDK polls and caches locally — flag checks are pure in-memory lookups.",
+      "Go, JS/TS, and Python SDKs poll and cache locally — flag checks are pure in-memory lookups.",
   },
 ];
 
@@ -57,7 +58,7 @@ const steps = [
   {
     number: 3,
     title: "Evaluate Anywhere",
-    description: "Use the Go SDK or Client API to check flags at runtime.",
+    description: "Use the Go, JS/TS, or Python SDK to check flags at runtime.",
   },
 ];
 
@@ -73,8 +74,66 @@ if client.IsEnabled("new-checkout", bandeira.Context{
     // show new checkout
 }`;
 
+const jsCode = `const client = new BandeiraClient({
+  url: "http://localhost:8080",
+  token: "your-token",
+});
+await client.start();
+
+if (client.isEnabled("new-checkout", {
+  userId: "42",
+})) {
+  // show new checkout
+}`;
+
+const pyCode = `client = BandeiraClient(Config(
+    url="http://localhost:8080",
+    token="your-token",
+))
+client.start()
+
+if client.is_enabled("new-checkout", Context(
+    user_id="42",
+)):
+    # show new checkout`;
+
 const curlCode = `curl http://localhost:8080/api/v1/flags \\
   -H "Authorization: Bearer <token>"`;
+
+const sdkTabs = [
+  { key: "go", label: "Go", code: goCode },
+  { key: "js", label: "JavaScript", code: jsCode },
+  { key: "py", label: "Python", code: pyCode },
+  { key: "curl", label: "curl", code: curlCode },
+] as const;
+
+function CodeTabs() {
+  const [active, setActive] = useState<string>("go");
+  const current = sdkTabs.find((t) => t.key === active)!;
+
+  return (
+    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+      <div className="px-4 py-2.5 border-b border-border flex items-center gap-1">
+        {sdkTabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActive(tab.key)}
+            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              active === tab.key
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
+        <code>{current.code}</code>
+      </pre>
+    </div>
+  );
+}
 
 function ConnectorLine() {
   // In a 3-col grid, centers are at 16.67% and 83.33%.
@@ -112,7 +171,7 @@ export default function Home() {
         badge="Open Source"
         title1="Feature Flags"
         title2="Made Simple"
-        subtitle="Self-hosted feature flag management with per-environment toggles, gradual rollouts, and a Go SDK — deploy with Docker in 60 seconds."
+        subtitle="Self-hosted feature flag management with per-environment toggles, gradual rollouts, and SDKs for Go, JS/TS, and Python — deploy with Docker in 60 seconds."
         cta={{
           label: auth?.user ? "Go to Dashboard" : "View on GitHub",
           href: auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira",
@@ -137,7 +196,7 @@ export default function Home() {
           <AnimateChild>
             <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
               Bandeira gives you fine-grained control over feature rollouts with
-              a self-hosted server and a local-evaluation SDK.
+              a self-hosted server and local-evaluation SDKs.
             </p>
           </AnimateChild>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -234,38 +293,11 @@ export default function Home() {
           </AnimateChild>
           <AnimateChild>
             <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
-              Use the Go SDK for in-app evaluation or the REST API for scripts
-              and automation.
+              Use the Go, JS/TS, or Python SDK for in-app evaluation, or the REST API
+              for scripts and automation.
             </p>
           </AnimateChild>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <AnimateInView preset="slide-left" duration={0.7} className="h-full">
-              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm h-full">
-                <div className="px-4 py-2.5 border-b border-border flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Go SDK
-                  </span>
-                </div>
-                <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
-                  <code>{goCode}</code>
-                </pre>
-              </div>
-            </AnimateInView>
-            <AnimateInView preset="slide-right" duration={0.7} className="h-full">
-              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm h-full">
-                <div className="px-4 py-2.5 border-b border-border flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-accent-foreground" />
-                  <span className="text-xs font-medium text-muted-foreground">
-                    curl
-                  </span>
-                </div>
-                <pre className="p-4 text-sm text-foreground/80 overflow-x-auto leading-relaxed bg-muted/30">
-                  <code>{curlCode}</code>
-                </pre>
-              </div>
-            </AnimateInView>
-          </div>
+          <CodeTabs />
         </div>
       </AnimateInView>
 
