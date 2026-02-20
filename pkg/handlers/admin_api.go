@@ -26,6 +26,7 @@ import (
 
 type AdminAPI struct {
 	ORM *ent.Client
+	Hub *services.Hub
 }
 
 func init() {
@@ -34,6 +35,7 @@ func init() {
 
 func (h *AdminAPI) Init(c *services.Container) error {
 	h.ORM = c.ORM
+	h.Hub = c.Hub
 	return nil
 }
 
@@ -474,6 +476,8 @@ func (h *AdminAPI) CreateFlag(ctx echo.Context) error {
 		return jsonError(ctx, http.StatusInternalServerError, "Failed to create flag")
 	}
 
+	h.Hub.NotifyProject(projectID)
+
 	return ctx.JSON(http.StatusCreated, flagSimpleDTO(f))
 }
 
@@ -612,6 +616,8 @@ func (h *AdminAPI) UpdateFlag(ctx echo.Context) error {
 		return jsonError(ctx, http.StatusInternalServerError, "Failed to update flag")
 	}
 
+	h.Hub.NotifyProject(projectID)
+
 	return ctx.JSON(http.StatusOK, flagSimpleDTO(updated))
 }
 
@@ -637,6 +643,8 @@ func (h *AdminAPI) DeleteFlag(ctx echo.Context) error {
 	if err := h.ORM.Flag.DeleteOneID(flagID).Exec(ctx.Request().Context()); err != nil {
 		return jsonError(ctx, http.StatusInternalServerError, "Failed to delete flag")
 	}
+
+	h.Hub.NotifyProject(projectID)
 
 	return ctx.JSON(http.StatusOK, map[string]any{"ok": true})
 }
@@ -802,6 +810,10 @@ func (h *AdminAPI) PatchFlagEnv(ctx echo.Context) error {
 			"sort_order":  s.SortOrder,
 			"constraints": constraints,
 		})
+	}
+
+	if env, err := h.ORM.Environment.Get(reqCtx, envID); err == nil {
+		h.Hub.Notify(projectID, env.Name)
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]any{

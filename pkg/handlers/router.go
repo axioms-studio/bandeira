@@ -65,6 +65,18 @@ func BuildRouter(c *services.Container) error {
 		middleware.InertiaProps(c.ORM),
 	)
 
+	// SSE stream group — registered BEFORE the api group so Echo matches
+	// the more-specific /api/v1/stream path first. No timeout (SSE is
+	// long-lived) and no gzip (breaks flushing).
+	streamAPI := c.Web.Group("/api/v1/stream")
+	streamAPI.Use(
+		echomw.Recover(),
+		echomw.Secure(),
+		echomw.RequestID(),
+		middleware.SetLogger(),
+		middleware.LogRequest(),
+	)
+
 	// API route group — no session, CSRF, or Inertia middleware.
 	api := c.Web.Group("/api")
 	api.Use(
@@ -97,6 +109,10 @@ func BuildRouter(c *services.Container) error {
 
 		if apiH, ok := h.(APIHandler); ok {
 			apiH.APIRoutes(api)
+		}
+
+		if streamH, ok := h.(StreamAPIHandler); ok {
+			streamH.StreamAPIRoutes(streamAPI)
 		}
 	}
 

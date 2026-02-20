@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 
@@ -9,7 +13,7 @@ import (
 	"github.com/felipekafuri/bandeira/ent/environment"
 	entflag "github.com/felipekafuri/bandeira/ent/flag"
 	"github.com/felipekafuri/bandeira/ent/flagenvironment"
-	"github.com/felipekafuri/bandeira/pkg/context"
+	appctx "github.com/felipekafuri/bandeira/pkg/context"
 	"github.com/felipekafuri/bandeira/pkg/middleware"
 	"github.com/felipekafuri/bandeira/pkg/routenames"
 	"github.com/felipekafuri/bandeira/pkg/services"
@@ -17,6 +21,7 @@ import (
 
 type ClientAPI struct {
 	ORM *ent.Client
+	Hub *services.Hub
 }
 
 func init() {
@@ -25,6 +30,7 @@ func init() {
 
 func (h *ClientAPI) Init(c *services.Container) error {
 	h.ORM = c.ORM
+	h.Hub = c.Hub
 	return nil
 }
 
@@ -35,35 +41,104 @@ func (h *ClientAPI) APIRoutes(api *echo.Group) {
 	v1.GET("/flags", h.GetFlags).Name = routenames.APIGetFlags
 }
 
-func (h *ClientAPI) GetFlags(ctx echo.Context) error {
-	tok := ctx.Get(context.APITokenKey).(*ent.ApiToken)
+func (h *ClientAPI) StreamAPIRoutes(g *echo.Group) {
+	g.GET("", h.Stream, middleware.RequireTokenAuth(h.ORM, "client")).Name = routenames.APIStreamFlags
+}
 
+func (h *ClientAPI) GetFlags(ctx echo.Context) error {
+	tok := ctx.Get(appctx.APITokenKey).(*ent.ApiToken)
 	reqCtx := ctx.Request().Context()
 
-	// Resolve the environment by name + project.
-	env, err := h.ORM.Environment.Query().
-		Where(
-			environment.Name(tok.Environment),
-			environment.ProjectID(tok.ProjectID),
-		).
-		Only(reqCtx)
+	payload, err := buildFlagPayload(reqCtx, h.ORM, tok.ProjectID, tok.Environment)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Environment not found for this token")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load flags")
 	}
 
-	// Load all flags for the project, eager-loading FlagEnvironments (filtered
-	// to the token's environment) → Strategies → Constraints.
-	flags, err := h.ORM.Flag.Query().
-		Where(entflag.ProjectID(tok.ProjectID)).
+	return ctx.JSONBlob(http.StatusOK, payload)
+}
+
+// Stream serves an SSE endpoint that pushes flag state whenever it changes.
+func (h *ClientAPI) Stream(ctx echo.Context) error {
+	tok := ctx.Get(appctx.APITokenKey).(*ent.ApiToken)
+	reqCtx := ctx.Request().Context()
+
+	// Set SSE headers.
+	res := ctx.Response()
+	res.Header().Set("Content-Type", "text/event-stream")
+	res.Header().Set("Cache-Control", "no-cache")
+	res.Header().Set("Connection", "keep-alive")
+	res.WriteHeader(http.StatusOK)
+	res.Flush()
+
+	// Send initial flag state.
+	if err := writeSSEFlags(res, h.ORM, tok.ProjectID, tok.Environment); err != nil {
+		return nil
+	}
+
+	notify, unsub := h.Hub.Subscribe(tok.ProjectID, tok.Environment)
+	defer unsub()
+
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-reqCtx.Done():
+			return nil
+		case _, ok := <-notify:
+			if !ok {
+				return nil
+			}
+			if err := writeSSEFlags(res, h.ORM, tok.ProjectID, tok.Environment); err != nil {
+				return nil
+			}
+		case <-ticker.C:
+			if _, err := fmt.Fprint(res, ":heartbeat\n\n"); err != nil {
+				return nil
+			}
+			res.Flush()
+		}
+	}
+}
+
+// writeSSEFlags queries the current flag state and writes it as an SSE event.
+func writeSSEFlags(res *echo.Response, orm *ent.Client, projectID int, envName string) error {
+	payload, err := buildFlagPayload(context.Background(), orm, projectID, envName)
+	if err != nil {
+		return err
+	}
+
+	if _, err := fmt.Fprintf(res, "event: flags\ndata: %s\n\n", payload); err != nil {
+		return err
+	}
+	res.Flush()
+	return nil
+}
+
+// buildFlagPayload queries all flags for a project+environment and returns
+// the JSON-encoded response. Shared by GetFlags and Stream.
+func buildFlagPayload(ctx context.Context, orm *ent.Client, projectID int, envName string) ([]byte, error) {
+	env, err := orm.Environment.Query().
+		Where(
+			environment.Name(envName),
+			environment.ProjectID(projectID),
+		).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	flags, err := orm.Flag.Query().
+		Where(entflag.ProjectID(projectID)).
 		WithFlagEnvironments(func(q *ent.FlagEnvironmentQuery) {
 			q.Where(flagenvironment.EnvironmentID(env.ID))
 			q.WithStrategies(func(sq *ent.StrategyQuery) {
 				sq.WithConstraints()
 			})
 		}).
-		All(reqCtx)
+		All(ctx)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load flags")
+		return nil, err
 	}
 
 	type constraintDTO struct {
@@ -120,7 +195,5 @@ func (h *ClientAPI) GetFlags(ctx echo.Context) error {
 		result = append(result, dto)
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]any{
-		"flags": result,
-	})
+	return json.Marshal(map[string]any{"flags": result})
 }

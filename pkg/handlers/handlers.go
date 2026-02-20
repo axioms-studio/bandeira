@@ -26,6 +26,12 @@ type APIHandler interface {
 	APIRoutes(g *echo.Group)
 }
 
+// StreamAPIHandler is implemented by handlers that register long-lived SSE
+// routes on a separate /api group that has no timeout or gzip middleware.
+type StreamAPIHandler interface {
+	StreamAPIRoutes(g *echo.Group)
+}
+
 // InertiaBacker abstracts the Back method from gonertia.Inertia
 // to allow injection and mocking in handlers and tests.
 type InertiaBacker interface {
