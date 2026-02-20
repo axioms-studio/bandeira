@@ -1,19 +1,11 @@
 import { useState } from "react";
 import { Link } from "@inertiajs/react";
-import {
-  Terminal,
-  Key,
-  Rocket,
-  Server,
-  Shield,
-  Radio,
-  ChevronRight,
-} from "lucide-react";
+
 import PublicLayout from "@/Layouts/PublicLayout";
 
 function CodeBlock({ children }: { children: string }) {
   return (
-    <pre className="bg-muted rounded-lg p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm leading-relaxed max-w-full">
+    <pre className="bg-muted p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm leading-relaxed max-w-full">
       <code>{children}</code>
     </pre>
   );
@@ -40,7 +32,7 @@ function Endpoint({
     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-muted-foreground py-1 min-w-0">
       <div className="flex items-center gap-2 min-w-0 overflow-hidden">
         <code
-          className={`bg-muted px-1.5 py-0.5 rounded text-xs font-semibold shrink-0 ${methodColors[method] ?? ""}`}
+          className={`bg-muted px-1.5 py-0.5 text-xs font-semibold shrink-0 ${methodColors[method] ?? ""}`}
         >
           {method}
         </code>
@@ -65,22 +57,19 @@ function SdkSection({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+    <div className="border border-border bg-card overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
         className="flex items-center gap-3 w-full p-4 sm:px-6 text-left hover:bg-muted/50 transition-colors cursor-pointer"
       >
-        <ChevronRight
-          className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
-        />
-        <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg shrink-0">
-          <Terminal className="w-4.5 h-4.5 text-accent-foreground" />
-        </div>
+        <span className="text-muted-foreground shrink-0 text-sm">
+          {open ? "▼" : "▶"}
+        </span>
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-          <p className="text-xs text-muted-foreground font-mono truncate">
-            {install}
+          <h2 className="text-sm font-semibold text-foreground">{">"} {title.toLowerCase()}</h2>
+          <p className="text-xs text-muted-foreground truncate">
+            $ {install}
           </p>
         </div>
       </button>
@@ -95,25 +84,20 @@ export default function Docs() {
       <div className="py-8 px-4 md:px-6">
         <div className="mx-auto max-w-4xl">
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              API Documentation
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+              {">"} docs
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              Integrate Bandeira into your applications and CI/CD pipelines
+              # api documentation
             </p>
           </div>
 
           <div className="space-y-8">
             {/* Getting Started */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
-                  <Rocket className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Getting Started
-                </h2>
-              </div>
+            <section className="bg-card border border-border p-4 sm:p-6">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
+                // getting_started
+              </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 Bandeira provides two integration paths:
               </p>
@@ -145,8 +129,8 @@ export default function Docs() {
 
             {/* SDKs */}
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground px-1">
-                SDKs
+              <h2 className="text-sm font-semibold text-foreground px-1">
+                // sdks
               </h2>
 
               <SdkSection title="Go" install="go get github.com/felipekafuri/bandeira-sdks/go">
@@ -312,21 +296,16 @@ Client.close(client)`}
             </div>
 
             {/* Authentication */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
-                  <Shield className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Authentication
-                </h2>
-              </div>
+            <section className="bg-card border border-border p-4 sm:p-6">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
+                // authentication
+              </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 Bandeira uses Bearer tokens for API authentication. There are
                 two token types:
               </p>
               <div className="space-y-3">
-                <div className="bg-muted rounded-lg p-3 sm:p-4">
+                <div className="bg-muted p-3 sm:p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-1">
                     Client tokens
                   </h3>
@@ -336,7 +315,7 @@ Client.close(client)`}
                     the dashboard under Project {">"} API Tokens.
                   </p>
                 </div>
-                <div className="bg-muted rounded-lg p-3 sm:p-4">
+                <div className="bg-muted p-3 sm:p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-1">
                     Admin tokens
                   </h3>
@@ -355,15 +334,10 @@ Client.close(client)`}
             </section>
 
             {/* Client API */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
-                  <Server className="w-4.5 h-4.5 text-accent-foreground" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Client API
-                </h2>
-              </div>
+            <section className="bg-card border border-border p-4 sm:p-6">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
+                // client_api
+              </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 The Client API returns all flags for the token's environment,
                 including strategies and constraints for local evaluation.
@@ -418,15 +392,10 @@ Client.close(client)`}
             </section>
 
             {/* Real-Time Streaming (SSE) */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
-                  <Radio className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Real-Time Streaming (SSE)
-                </h2>
-              </div>
+            <section className="bg-card border border-border p-4 sm:p-6">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
+                // real_time_streaming_sse
+              </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 Instead of polling every 15 seconds, you can use Server-Sent
                 Events (SSE) to receive flag updates instantly when they change.
@@ -456,7 +425,7 @@ data: {"flags":[{"name":"new-dashboard","enabled":true,"strategies":[]}]}
 :heartbeat`}
               </CodeBlock>
 
-              <div className="bg-muted rounded-lg p-3 sm:p-4 mt-4 space-y-2 text-sm text-muted-foreground">
+              <div className="bg-muted p-3 sm:p-4 mt-4 space-y-2 text-sm text-muted-foreground">
                 <p>
                   <strong className="text-foreground">Initial state</strong> — On
                   connect, the full flag payload is sent immediately.
@@ -504,15 +473,10 @@ if client.IsEnabled("new-dashboard") {
             </section>
 
             {/* Admin API */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
-                  <Key className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Admin API
-                </h2>
-              </div>
+            <section className="bg-card border border-border p-4 sm:p-6">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
+                // admin_api
+              </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 The Admin API lets you manage your project's resources
                 programmatically. All endpoints require an admin token and are
@@ -601,15 +565,10 @@ if client.IsEnabled("new-dashboard") {
             </section>
 
             {/* CI/CD */}
-            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 bg-accent rounded-lg">
-                  <Rocket className="w-4.5 h-4.5 text-accent-foreground" />
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Terraform / CI/CD
-                </h2>
-              </div>
+            <section className="bg-card border border-border p-4 sm:p-6">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
+                // terraform_cicd
+              </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 Use the Admin API in your deployment pipeline to manage flags as
                 code. Here's an example shell script for a CI job:

@@ -1,8 +1,7 @@
 import { Link, useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 import { SharedProps } from "@/types/global";
-import PublicLayout from "@/Layouts/PublicLayout";
-import { Button } from "@/components/ui/button";
+import TerminalLayout from "@/Layouts/TerminalLayout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InputError from "@/components/InputError";
@@ -22,22 +21,21 @@ export default function Create() {
   };
 
   return (
-    <PublicLayout activePage="projects">
-      <div className="mx-auto max-w-2xl px-6 py-8 w-full">
+    <TerminalLayout activePage="projects">
+      <div className="max-w-2xl">
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Create Project
+              {">"} create_project
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              A project groups feature flags, environments, and API tokens
-              together.
+              # a project groups feature flags, environments, and api tokens together.
             </p>
           </div>
 
-          <div className="bg-card border border-border rounded-xl shadow-sm p-6">
+          <div className="bg-card border border-border p-6">
             <form onSubmit={submit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">name</Label>
                 <Input
                   id="name"
                   name="name"
@@ -54,7 +52,7 @@ export default function Create() {
 
               <div className="space-y-2">
                 <Label htmlFor="description">
-                  Description{" "}
+                  description{" "}
                   <span className="text-muted-foreground font-normal">
                     (optional)
                   </span>
@@ -70,26 +68,30 @@ export default function Create() {
               </div>
 
               <div className="flex items-center gap-3 pt-2">
-                <Button type="submit" disabled={processing}>
+                <button
+                  type="submit"
+                  disabled={processing}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
                   {processing ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Creating...
+                      creating...
                     </>
                   ) : (
-                    "Create Project"
+                    "[create]"
                   )}
-                </Button>
+                </button>
                 <Link
                   href="/projects"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Cancel
+                  [cancel]
                 </Link>
               </div>
             </form>
           </div>
       </div>
-    </PublicLayout>
+    </TerminalLayout>
   );
 }

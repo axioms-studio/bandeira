@@ -1,8 +1,7 @@
 import { Link, useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler, useState, useMemo } from "react";
 import { SharedProps } from "@/types/global";
-import PublicLayout from "@/Layouts/PublicLayout";
-import { Button } from "@/components/ui/button";
+import TerminalLayout from "@/Layouts/TerminalLayout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import InputError from "@/components/InputError";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import StrategyList from "./components/StrategyList";
 
 interface EnvItem {
@@ -75,169 +74,168 @@ export default function Edit() {
   }, []);
 
   return (
-    <PublicLayout activePage="projects">
-      <div className="mx-auto max-w-4xl px-6 py-8 w-full">
-          <Link
-            href={`/projects/${project.id}`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to {project.name}
-          </Link>
+    <TerminalLayout activePage="projects">
+      <div className="max-w-4xl">
+        <Link
+          href={`/projects/${project.id}`}
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          projects / {project.name} /
+        </Link>
 
-          <div className="mb-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Edit Flag
-            </h1>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Update flag details for {project.name}.
+        <div className="mb-8">
+          <h1 className="text-xl font-semibold text-foreground">
+            {">"} edit_flag
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            # update flag details for {project.name}
+          </p>
+        </div>
+
+        {/* Flag metadata form */}
+        <div className="bg-card border border-border p-6 mb-8">
+          <form onSubmit={submit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="name">name</Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="e.g. new-dashboard"
+                value={data.name}
+                onChange={(e) => setData("name", e.target.value)}
+                aria-invalid={!!errors?.Name}
+                className="h-11"
+              />
+              {errors?.Name?.map((msg, i) => (
+                <InputError key={i} message={msg} />
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">
+                description{" "}
+                <span className="text-muted-foreground font-normal">
+                  (optional)
+                </span>
+              </Label>
+              <Input
+                id="description"
+                name="description"
+                placeholder="What does this flag control?"
+                value={data.description}
+                onChange={(e) => setData("description", e.target.value)}
+                className="h-11"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>type</Label>
+              <Select
+                value={data.flag_type}
+                onValueChange={(value) => setData("flag_type", value)}
+              >
+                <SelectTrigger className="w-full h-11">
+                  <SelectValue placeholder="Select a type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="release">release</SelectItem>
+                  <SelectItem value="experiment">experiment</SelectItem>
+                  <SelectItem value="operational">operational</SelectItem>
+                  <SelectItem value="kill_switch">kill_switch</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors?.FlagType?.map((msg, i) => (
+                <InputError key={i} message={msg} />
+              ))}
+            </div>
+
+            {canMutate && (
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={processing}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  {processing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      saving...
+                    </>
+                  ) : (
+                    "[save]"
+                  )}
+                </button>
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  [cancel]
+                </Link>
+              </div>
+            )}
+          </form>
+        </div>
+
+        {/* Strategy Configuration */}
+        <div className="bg-card border border-border p-6">
+          <div className="mb-5">
+            <h2 className="text-sm font-semibold text-foreground">
+              // strategy_configuration
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Configure rollout strategies per environment
             </p>
           </div>
 
-          {/* Flag metadata form */}
-          <div className="bg-card border border-border rounded-xl shadow-sm p-6 mb-8">
-            <form onSubmit={submit} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="e.g. new-dashboard"
-                  value={data.name}
-                  onChange={(e) => setData("name", e.target.value)}
-                  aria-invalid={!!errors?.Name}
-                  className="h-11"
-                />
-                {errors?.Name?.map((msg, i) => (
-                  <InputError key={i} message={msg} />
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">
-                  Description{" "}
-                  <span className="text-muted-foreground font-normal">
-                    (optional)
-                  </span>
-                </Label>
-                <Input
-                  id="description"
-                  name="description"
-                  placeholder="What does this flag control?"
-                  value={data.description}
-                  onChange={(e) => setData("description", e.target.value)}
-                  className="h-11"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Type</Label>
-                <Select
-                  value={data.flag_type}
-                  onValueChange={(value) => setData("flag_type", value)}
-                >
-                  <SelectTrigger className="w-full h-11">
-                    <SelectValue placeholder="Select a type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="release">Release</SelectItem>
-                    <SelectItem value="experiment">Experiment</SelectItem>
-                    <SelectItem value="operational">Operational</SelectItem>
-                    <SelectItem value="kill_switch">Kill Switch</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors?.FlagType?.map((msg, i) => (
-                  <InputError key={i} message={msg} />
-                ))}
-              </div>
-
-              {canMutate && (
-                <div className="flex items-center gap-3 pt-2">
-                  <Button type="submit" disabled={processing}>
-                    {processing ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save Changes"
-                    )}
-                  </Button>
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Cancel
-                  </Link>
-                </div>
-              )}
-            </form>
-          </div>
-
-          {/* Strategy Configuration */}
-          <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-            <div className="mb-5">
-              <h2 className="text-lg font-semibold text-foreground">
-                Strategy Configuration
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Configure rollout strategies per environment.
+          {sortedEnvs.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground mb-3">
+                {">"} no environments configured
               </p>
+              <Link
+                href={`/projects/${project.id}/environments/create`}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors border border-border px-3 py-1.5"
+              >
+                [+ add_environment]
+              </Link>
             </div>
-
-            {sortedEnvs.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground mb-3">
-                  No environments configured for this project.
-                </p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link
-                    href={`/projects/${project.id}/environments/create`}
+          ) : (
+            <>
+              {/* Environment tabs */}
+              <div className="flex gap-1 border-b border-border mb-5">
+                {sortedEnvs.map((env) => (
+                  <button
+                    key={env.id}
+                    type="button"
+                    onClick={() => setSelectedEnvId(env.id)}
+                    className={`px-3 py-2 text-sm font-medium transition-colors relative ${
+                      selectedEnvId === env.id
+                        ? "text-foreground bg-muted"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
-                    Add environments first
-                  </Link>
-                </Button>
+                    {env.name}
+                    <span className="ml-1.5 text-[10px] text-muted-foreground font-normal">
+                      {env.type}
+                    </span>
+                  </button>
+                ))}
               </div>
-            ) : (
-              <>
-                {/* Environment tabs */}
-                <div className="flex gap-1 border-b border-border mb-5">
-                  {sortedEnvs.map((env) => (
-                    <button
-                      key={env.id}
-                      type="button"
-                      onClick={() => setSelectedEnvId(env.id)}
-                      className={`px-3 py-2 text-sm font-medium transition-colors relative ${
-                        selectedEnvId === env.id
-                          ? "text-foreground"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {env.name}
-                      <span className="ml-1.5 text-[10px] text-muted-foreground font-normal">
-                        {env.type}
-                      </span>
-                      {selectedEnvId === env.id && (
-                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
-                      )}
-                    </button>
-                  ))}
-                </div>
 
-                {/* Strategy list for selected env */}
-                {selectedEnvId && (
-                  <StrategyList
-                    key={selectedEnvId}
-                    projectId={project.id}
-                    flagId={flag.id}
-                    environmentId={selectedEnvId}
-                    csrfToken={csrfToken}
-                  />
-                )}
-              </>
-            )}
-          </div>
+              {/* Strategy list for selected env */}
+              {selectedEnvId && (
+                <StrategyList
+                  key={selectedEnvId}
+                  projectId={project.id}
+                  flagId={flag.id}
+                  environmentId={selectedEnvId}
+                  csrfToken={csrfToken}
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </PublicLayout>
+    </TerminalLayout>
   );
 }

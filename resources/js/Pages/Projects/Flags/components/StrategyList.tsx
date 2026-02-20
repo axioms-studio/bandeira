@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import StrategyCard, { type StrategyData } from "./StrategyCard";
 import StrategySheet from "./StrategySheet";
 import type { ConstraintData } from "./ConstraintRow";
@@ -99,7 +98,7 @@ export default function StrategyList({
     return (
       <div className="flex items-center justify-center py-8 text-muted-foreground">
         <Loader2 className="w-4 h-4 animate-spin mr-2" />
-        Loading strategies...
+        loading strategies...
       </div>
     );
   }
@@ -109,12 +108,15 @@ export default function StrategyList({
       {strategies.length === 0 ? (
         <div className="text-center py-6">
           <p className="text-sm text-muted-foreground mb-3">
-            No strategies configured. The flag will use its toggle state only.
+            {">"} no strategies configured — flag uses toggle state only
           </p>
-          <Button variant="outline" size="sm" onClick={openCreate}>
-            <Plus className="w-4 h-4" />
-            Add Strategy
-          </Button>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors border border-border px-3 py-1.5"
+          >
+            [+ add_strategy]
+          </button>
         </div>
       ) : (
         <>
@@ -128,10 +130,13 @@ export default function StrategyList({
               />
             ))}
           </div>
-          <Button variant="outline" size="sm" onClick={openCreate}>
-            <Plus className="w-4 h-4" />
-            Add Strategy
-          </Button>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors border border-border px-3 py-1.5"
+          >
+            [+ add_strategy]
+          </button>
         </>
       )}
 

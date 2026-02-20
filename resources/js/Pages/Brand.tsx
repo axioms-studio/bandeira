@@ -128,9 +128,9 @@ function ColorSwatch({ token }: { token: ColorToken }) {
   }, [token.cssVar]);
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg border border-border bg-card">
+    <div className="flex items-start gap-3 p-3 border border-border bg-card">
       <div
-        className="w-12 h-12 rounded-lg border border-border shrink-0"
+        className="w-12 h-12 border border-border shrink-0"
         style={{ backgroundColor: value || "transparent" }}
       />
       <div className="min-w-0 flex-1">
@@ -188,7 +188,7 @@ function AnchorNav() {
           <a
             key={s.id}
             href={`#${s.id}`}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
               active === s.id
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -216,12 +216,12 @@ function ThemeToggle() {
   ];
 
   return (
-    <div className="inline-flex items-center gap-1 p-1 rounded-lg bg-muted border border-border">
+    <div className="inline-flex items-center gap-1 p-1 bg-muted border border-border">
       {modes.map((m) => (
         <button
           key={m.value}
           onClick={() => updateAppearance(m.value)}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
             appearance === m.value
               ? "bg-card text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -268,12 +268,11 @@ export default function Brand() {
       {/* Hero */}
       <section className="py-16 px-4 md:px-6 bg-background border-b border-border">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-3">
-            Bandeira Brand
+          <h1 className="text-xl font-semibold tracking-tight text-foreground mb-2">
+            {">"} brand
           </h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Colors, typography, and components that make up Bandeira's visual
-            identity.
+          <p className="text-muted-foreground max-w-xl mx-auto text-sm">
+            # colors, typography, and components
           </p>
         </div>
       </section>
@@ -285,8 +284,8 @@ export default function Brand() {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-foreground mb-1">
-                Color Palette
+              <h2 className="text-sm font-semibold text-foreground mb-1">
+                // color_palette
               </h2>
               <p className="text-sm text-muted-foreground">
                 Semantic tokens using OKLch color space. Toggle the theme to
@@ -322,8 +321,8 @@ export default function Brand() {
         className="py-16 px-4 md:px-6 bg-background border-t border-border"
       >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground mb-1">
-            Typography
+          <h2 className="text-sm font-semibold text-foreground mb-1">
+            // typography
           </h2>
           <p className="text-sm text-muted-foreground mb-8">
             Three font families for different contexts.
@@ -331,7 +330,7 @@ export default function Brand() {
 
           <div className="space-y-6">
             {/* Inter */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h3 className="font-semibold text-foreground">Inter</h3>
                 <span className="text-xs text-muted-foreground font-mono bg-muted px-2 py-1 rounded">
@@ -355,7 +354,7 @@ export default function Brand() {
             </div>
 
             {/* JetBrains Mono */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h3 className="font-semibold text-foreground">
                   JetBrains Mono
@@ -373,7 +372,7 @@ if (client.isEnabled("new-checkout")) {
             </div>
 
             {/* Type scale */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">Type Scale</h3>
               <div className="space-y-3">
                 {(
@@ -411,8 +410,8 @@ if (client.isEnabled("new-checkout")) {
         className="py-16 px-4 md:px-6 bg-background border-t border-border"
       >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground mb-1">
-            Components
+          <h2 className="text-sm font-semibold text-foreground mb-1">
+            // components
           </h2>
           <p className="text-sm text-muted-foreground mb-8">
             Live rendered components from the actual UI library.
@@ -420,7 +419,7 @@ if (client.isEnabled("new-checkout")) {
 
           <div className="space-y-6">
             {/* Buttons */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">Buttons</h3>
 
               <div className="space-y-4">
@@ -465,7 +464,7 @@ if (client.isEnabled("new-checkout")) {
             </div>
 
             {/* Inputs */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">Inputs</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl">
                 <div>
@@ -499,7 +498,7 @@ if (client.isEnabled("new-checkout")) {
             </div>
 
             {/* Card */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">Card</h3>
               <div className="max-w-sm">
                 <Card>
@@ -526,34 +525,34 @@ if (client.isEnabled("new-checkout")) {
             </div>
 
             {/* Status badges */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">
                 Status Badges
               </h3>
               <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium border border-current/20 bg-primary/10 text-primary">
                   Enabled
                 </span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
+                <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium border border-current/20 bg-destructive/10 text-destructive">
                   Disabled
                 </span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium border border-current/20 bg-muted text-muted-foreground">
                   Draft
                 </span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+                <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium border border-current/20 bg-secondary text-secondary-foreground">
                   Archived
                 </span>
               </div>
             </div>
 
             {/* Shadows */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">Shadows</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                 {shadowLevels.map((s) => (
                   <div key={s} className="text-center">
                     <div
-                      className={`w-full aspect-square rounded-xl bg-card border border-border ${s} mb-2`}
+                      className={`w-full aspect-square bg-card border border-border ${s} mb-2`}
                     />
                     <span className="text-xs text-muted-foreground font-mono">
                       {s}
@@ -564,7 +563,7 @@ if (client.isEnabled("new-checkout")) {
             </div>
 
             {/* Border radius */}
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="bg-card border border-border p-6">
               <h3 className="font-semibold text-foreground mb-4">
                 Border Radius
               </h3>
@@ -599,15 +598,15 @@ if (client.isEnabled("new-checkout")) {
         className="py-16 px-4 md:px-6 bg-background border-t border-border"
       >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground mb-1">
-            Logo & Identity
+          <h2 className="text-sm font-semibold text-foreground mb-1">
+            // logo_and_identity
           </h2>
           <p className="text-sm text-muted-foreground mb-8">
             Current mark and a ready-to-use prompt for AI logo generators.
           </p>
 
           {/* Current mark */}
-          <div className="bg-card border border-border rounded-xl p-6 mb-6">
+          <div className="bg-card border border-border p-6 mb-6">
             <h3 className="font-semibold text-foreground mb-4">Current Mark</h3>
             <div className="flex flex-wrap gap-6 items-end">
               {[16, 32, 64, 128].map((size) => (
@@ -626,7 +625,7 @@ if (client.isEnabled("new-checkout")) {
               <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider font-medium">
                 On dark background
               </p>
-              <div className="bg-[oklch(0.13_0.04_265)] rounded-xl p-6 flex flex-wrap gap-6 items-end">
+              <div className="bg-[oklch(0.13_0.04_265)] p-6 flex flex-wrap gap-6 items-end">
                 {[32, 64, 128].map((size) => (
                   <div key={size} className="text-center">
                     <div className="mx-auto mb-2">
@@ -654,7 +653,7 @@ if (client.isEnabled("new-checkout")) {
           </div>
 
           {/* AI Logo Prompt */}
-          <div className="bg-card border border-border rounded-xl p-6">
+          <div className="bg-card border border-border p-6">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="font-semibold text-foreground">
                 AI Logo Generator Prompt
@@ -665,7 +664,7 @@ if (client.isEnabled("new-checkout")) {
                   setPromptCopied(true);
                   setTimeout(() => setPromptCopied(false), 2000);
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
                 {promptCopied ? (
                   <Check className="w-3.5 h-3.5 text-primary" />
@@ -677,7 +676,7 @@ if (client.isEnabled("new-checkout")) {
             </div>
             <pre
               ref={promptRef}
-              className="text-sm text-foreground/80 font-mono leading-relaxed whitespace-pre-wrap bg-muted/30 rounded-lg p-4 border border-border"
+              className="text-sm text-foreground/80 font-mono leading-relaxed whitespace-pre-wrap bg-muted/30 p-4 border border-border"
             >
               {logoPrompt}
             </pre>
@@ -688,7 +687,7 @@ if (client.isEnabled("new-checkout")) {
       {/* Footer */}
       <footer className="border-t border-border py-8 px-4 text-center bg-background">
         <p className="text-xs text-muted-foreground">
-          Bandeira — Open source feature flag management
+          // bandeira — open source feature flag management
         </p>
       </footer>
     </PublicLayout>

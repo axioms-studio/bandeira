@@ -26,14 +26,12 @@ import {
   X,
   Crosshair,
   Shield,
-  FlaskConical,
   ChevronDown,
   Users,
   Percent,
   Globe,
   ToggleRight,
   Zap,
-  Terminal,
   ExternalLink,
 } from "lucide-react";
 
@@ -118,24 +116,19 @@ const PRESETS: Preset[] = [
 // ── Helpers ───────────────────────────────────────────────────────────────
 
 function SectionCard({
-  icon: Icon,
   title,
   id,
   children,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
   title: string;
   id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="bg-card border border-border rounded-xl shadow-sm p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
-          <Icon className="w-4.5 h-4.5 text-primary" />
-        </div>
-        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-      </div>
+    <section id={id} className="bg-card border border-border p-6">
+      <h2 className="text-sm font-semibold text-foreground mb-4">
+        // {title.toLowerCase().replace(/\s+/g, "_")}
+      </h2>
       {children}
     </section>
   );
@@ -190,7 +183,7 @@ function EvaluationFlow() {
               </div>
             </div>
           )}
-          <div className="border border-border rounded-lg p-4 bg-muted/30">
+          <div className="border border-border p-4 bg-muted/30">
             <p className="text-sm font-semibold text-foreground">{step.label}</p>
             <p className="text-sm text-muted-foreground mt-1">{step.desc}</p>
             {step.yes && (
@@ -214,15 +207,15 @@ function EvaluationFlow() {
         </div>
       </div>
       <div className="flex gap-4">
-        <div className="flex-1 rounded-lg p-3 bg-green-500/10 border border-green-500/20 text-center">
+        <div className="flex-1 p-3 bg-green-500/10 border border-green-500/20 text-center">
           <p className="text-sm font-medium text-green-600">Enabled</p>
         </div>
-        <div className="flex-1 rounded-lg p-3 bg-red-500/10 border border-red-500/20 text-center">
+        <div className="flex-1 p-3 bg-red-500/10 border border-red-500/20 text-center">
           <p className="text-sm font-medium text-red-500">Disabled</p>
         </div>
       </div>
 
-      <div className="mt-4 bg-muted rounded-lg p-3">
+      <div className="mt-4 bg-muted p-3">
         <p className="text-sm text-muted-foreground">
           <strong className="text-foreground">Key rule:</strong>{" "}
           Constraints within a strategy use{" "}
@@ -292,10 +285,10 @@ function StrategyDocs() {
       {strategies.map((s) => (
         <div
           key={s.name}
-          className="border border-border rounded-lg overflow-hidden"
+          className="border border-border overflow-hidden"
         >
           <div className="flex items-center gap-3 px-4 py-3 bg-muted/40 border-b border-border">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${s.color}`}>
+            <div className={`flex items-center justify-center w-8 h-8 ${s.color}`}>
               <s.icon className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
@@ -307,7 +300,7 @@ function StrategyDocs() {
             </div>
           </div>
           <div className="px-4 py-3 space-y-3">
-            <div className="bg-primary/5 rounded-lg p-3 border border-primary/10">
+            <div className="bg-primary/5 p-3 border border-primary/10">
               <p className="text-xs text-muted-foreground">
                 <strong className="text-foreground">Example:</strong> {s.example}
               </p>
@@ -318,7 +311,7 @@ function StrategyDocs() {
                 <div className="space-y-1">
                   {s.params.map((p) => (
                     <div key={p.name} className="flex items-baseline gap-2 text-xs">
-                      <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-medium shrink-0">{p.name}</code>
+                      <code className="bg-muted px-1.5 py-0.5 text-foreground font-medium shrink-0">{p.name}</code>
                       <span className="text-muted-foreground">{p.desc}</span>
                     </div>
                   ))}
@@ -328,7 +321,7 @@ function StrategyDocs() {
             {"formula" in s && s.formula && (
               <div>
                 <p className="text-xs font-medium text-foreground mb-1">Formula</p>
-                <pre className="bg-muted rounded-lg px-3 py-2 text-xs overflow-x-auto">
+                <pre className="bg-muted px-3 py-2 text-xs overflow-x-auto">
                   <code>{s.formula}</code>
                 </pre>
               </div>
@@ -390,10 +383,10 @@ function ConstraintsReference() {
             <h3 className="text-sm font-semibold text-foreground">{g.category}</h3>
             <span className="text-xs text-muted-foreground">{g.desc}</span>
           </div>
-          <div className="border border-border rounded-lg divide-y divide-border overflow-hidden">
+          <div className="border border-border divide-y divide-border overflow-hidden">
             {g.operators.map((o) => (
               <div key={o.op} className="flex items-start gap-3 px-3 py-2.5 text-xs">
-                <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-medium shrink-0 mt-px">{o.op}</code>
+                <code className="bg-muted px-1.5 py-0.5 text-foreground font-medium shrink-0 mt-px">{o.op}</code>
                 <div className="flex-1 min-w-0">
                   <p className="text-muted-foreground">{o.desc}</p>
                   <p className="text-muted-foreground/60 mt-0.5 font-mono text-[11px]">{o.example}</p>
@@ -404,15 +397,15 @@ function ConstraintsReference() {
         </div>
       ))}
 
-      <div className="border border-border rounded-lg p-4 bg-muted/30">
+      <div className="border border-border p-4 bg-muted/30">
         <p className="text-sm font-medium text-foreground mb-2">Modifier flags</p>
         <div className="space-y-2 text-xs text-muted-foreground">
           <p>
-            <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-medium">inverted</code>{" "}
+            <code className="bg-muted px-1.5 py-0.5 text-foreground font-medium">inverted</code>{" "}
             — Flips the result. Example: <code className="text-foreground">IN</code> + inverted = "NOT in the list" without using <code className="text-foreground">NOT_IN</code>.
           </p>
           <p>
-            <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-medium">case_insensitive</code>{" "}
+            <code className="bg-muted px-1.5 py-0.5 text-foreground font-medium">case_insensitive</code>{" "}
             — Lowercases both sides before comparing. Works with Set and String operators. Example: <code className="text-foreground">"brazil"</code> matches <code className="text-foreground">"Brazil"</code>.
           </p>
         </div>
@@ -520,7 +513,7 @@ function Playground() {
               <button
                 key={preset.label}
                 onClick={() => applyPreset(preset)}
-                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left group ${
+                className={`inline-flex items-center gap-2 px-3 py-2 border transition-all text-left group ${
                   isActive
                     ? "border-primary bg-primary/10"
                     : "border-border bg-muted/30 hover:bg-muted hover:border-primary/30"
@@ -541,20 +534,15 @@ function Playground() {
 
       {/* Result banner — always visible */}
       <div
-        className={`rounded-xl p-4 flex items-center gap-3 transition-colors ${
+        className={`p-4 flex items-center gap-3 transition-colors border ${
           trace.finalResult
-            ? "bg-green-500/10 border-2 border-green-500/30"
-            : "bg-red-500/10 border-2 border-red-500/30"
+            ? "bg-green-500/10 border-green-500/30"
+            : "bg-red-500/10 border-red-500/30"
         }`}
       >
-        {trace.finalResult ? (
-          <CheckCircle2 className="w-6 h-6 text-green-600 shrink-0" />
-        ) : (
-          <XCircle className="w-6 h-6 text-red-600 shrink-0" />
-        )}
         <div>
-          <p className={`text-lg font-bold ${trace.finalResult ? "text-green-600" : "text-red-600"}`}>
-            {trace.finalResult ? "Enabled" : "Disabled"}
+          <p className={`text-sm font-bold ${trace.finalResult ? "text-green-600" : "text-red-600"}`}>
+            {trace.finalResult ? "[ENABLED]" : "[DISABLED]"}
           </p>
           <p className="text-xs text-muted-foreground">
             {trace.strategyReason}
@@ -567,7 +555,7 @@ function Playground() {
         {/* Left: Configuration (3 cols) */}
         <div className="lg:col-span-3 space-y-5">
           {/* Strategy */}
-          <div className="border border-border rounded-lg p-4 space-y-4">
+          <div className="border border-border p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Crosshair className="w-4 h-4 text-primary" />
               Strategy
@@ -595,7 +583,7 @@ function Playground() {
           </div>
 
           {/* Context */}
-          <div className="border border-border rounded-lg p-4 space-y-4">
+          <div className="border border-border p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" />
               Context
@@ -679,7 +667,7 @@ function Playground() {
           </div>
 
           {/* Constraints */}
-          <div className="border border-border rounded-lg p-4 space-y-3">
+          <div className="border border-border p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Shield className="w-4 h-4 text-primary" />
@@ -705,7 +693,7 @@ function Playground() {
             {constraints.map((c, i) => (
               <div
                 key={i}
-                className="border border-border rounded-lg p-3 space-y-3 bg-muted/30"
+                className="border border-border p-3 space-y-3 bg-muted/30"
               >
                 <div className="flex items-start gap-2">
                   <div className="flex-1 space-y-2">
@@ -880,30 +868,28 @@ export default function Strategies() {
         <div className="mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              How Strategies Work
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+              {">"} strategies
             </h1>
-            <p className="text-muted-foreground mt-2 max-w-2xl">
-              Strategies control who sees a feature flag. Each flag can have
-              multiple strategies — if <strong className="text-foreground">any one</strong> passes,
-              the flag is enabled for that user.
+            <p className="text-muted-foreground mt-1 text-sm max-w-2xl">
+              # how strategies work
             </p>
 
             {/* Quick nav */}
             <div className="flex flex-wrap gap-2 mt-4">
               {[
-                { label: "Playground", href: "#playground" },
-                { label: "Evaluation Flow", href: "#flow" },
-                { label: "Strategy Types", href: "#types" },
-                { label: "Constraints", href: "#constraints" },
-                { label: "Go SDK", href: "#sdk" },
+                { label: "playground", href: "#playground" },
+                { label: "evaluation_flow", href: "#flow" },
+                { label: "strategy_types", href: "#types" },
+                { label: "constraints", href: "#constraints" },
+                { label: "go_sdk", href: "#sdk" },
               ].map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                  className="text-xs px-3 py-1.5 border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                 >
-                  {link.label}
+                  [{link.label}]
                 </a>
               ))}
             </div>
@@ -911,7 +897,7 @@ export default function Strategies() {
 
           <div className="space-y-8">
             {/* Playground FIRST — let users play immediately */}
-            <SectionCard id="playground" icon={FlaskConical} title="Interactive Playground">
+            <SectionCard id="playground" title="Interactive Playground">
               <p className="text-sm text-muted-foreground mb-4">
                 Pick an example below or build your own — the result updates live as you change any value.
               </p>
@@ -919,16 +905,16 @@ export default function Strategies() {
             </SectionCard>
 
             {/* Evaluation Flow */}
-            <SectionCard id="flow" icon={ChevronDown} title="Evaluation Flow">
+            <SectionCard id="flow" title="Evaluation Flow">
               <p className="text-sm text-muted-foreground mb-4">
-                When your app calls <code className="bg-muted px-1.5 py-0.5 rounded text-foreground text-xs">client.IsEnabled("flag-name", context)</code>,
+                When your app calls <code className="bg-muted px-1.5 py-0.5 text-foreground text-xs">client.IsEnabled("flag-name", context)</code>,
                 the SDK runs through these steps:
               </p>
               <EvaluationFlow />
             </SectionCard>
 
             {/* Strategy Types */}
-            <SectionCard id="types" icon={Crosshair} title="Strategy Types">
+            <SectionCard id="types" title="Strategy Types">
               <p className="text-sm text-muted-foreground mb-4">
                 Each strategy answers: <em>"Should this flag be on for this user?"</em>
               </p>
@@ -936,7 +922,7 @@ export default function Strategies() {
             </SectionCard>
 
             {/* Constraints */}
-            <SectionCard id="constraints" icon={Shield} title="Constraints Reference">
+            <SectionCard id="constraints" title="Constraints Reference">
               <p className="text-sm text-muted-foreground mb-4">
                 Constraints are filters that run <em>before</em> the strategy logic.
                 All constraints must pass (AND) for the strategy to be evaluated.
@@ -945,24 +931,24 @@ export default function Strategies() {
             </SectionCard>
 
             {/* Go SDK */}
-            <SectionCard id="sdk" icon={Terminal} title="Using Strategies in the Go SDK">
+            <SectionCard id="sdk" title="Using Strategies in the Go SDK">
               <p className="text-sm text-muted-foreground mb-4">
                 The Go SDK evaluates strategies locally — your app polls the server for flag definitions, then all{" "}
-                <code className="bg-muted px-1.5 py-0.5 rounded text-foreground text-xs">IsEnabled</code> checks
+                <code className="bg-muted px-1.5 py-0.5 text-foreground text-xs">IsEnabled</code> checks
                 run in-memory with zero network latency.
               </p>
 
               <div className="space-y-4">
                 <div>
                   <p className="text-xs font-medium text-foreground mb-2">Install</p>
-                  <pre className="bg-muted rounded-lg px-4 py-3 text-sm overflow-x-auto">
+                  <pre className="bg-muted px-4 py-3 text-sm overflow-x-auto">
                     <code>go get github.com/felipekafuri/bandeira-sdks/go</code>
                   </pre>
                 </div>
 
                 <div>
                   <p className="text-xs font-medium text-foreground mb-2">Simple check</p>
-                  <pre className="bg-muted rounded-lg px-4 py-3 text-sm overflow-x-auto leading-relaxed">
+                  <pre className="bg-muted px-4 py-3 text-sm overflow-x-auto leading-relaxed">
                     <code>{`client, _ := bandeira.New(bandeira.Config{
     URL:   "http://localhost:8080",
     Token: "your-client-token",
@@ -977,7 +963,7 @@ if client.IsEnabled("new-checkout") {
 
                 <div>
                   <p className="text-xs font-medium text-foreground mb-2">With context for strategy evaluation</p>
-                  <pre className="bg-muted rounded-lg px-4 py-3 text-sm overflow-x-auto leading-relaxed">
+                  <pre className="bg-muted px-4 py-3 text-sm overflow-x-auto leading-relaxed">
                     <code>{`if client.IsEnabled("premium-feature", bandeira.Context{
     UserID:    "42",
     SessionID: "sess_abc",
@@ -996,14 +982,14 @@ if client.IsEnabled("new-checkout") {
                   </pre>
                 </div>
 
-                <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                <div className="bg-primary/5 p-4 border border-primary/10">
                   <p className="text-sm text-muted-foreground">
                     <strong className="text-foreground">How it connects:</strong>{" "}
-                    The context fields you tested in the playground above (<code className="bg-muted px-1 py-0.5 rounded text-foreground text-xs">userId</code>,{" "}
-                    <code className="bg-muted px-1 py-0.5 rounded text-foreground text-xs">sessionId</code>,{" "}
-                    <code className="bg-muted px-1 py-0.5 rounded text-foreground text-xs">remoteAddress</code>,{" "}
+                    The context fields you tested in the playground above (<code className="bg-muted px-1 py-0.5 text-foreground text-xs">userId</code>,{" "}
+                    <code className="bg-muted px-1 py-0.5 text-foreground text-xs">sessionId</code>,{" "}
+                    <code className="bg-muted px-1 py-0.5 text-foreground text-xs">remoteAddress</code>,{" "}
                     and custom properties) map directly to the{" "}
-                    <code className="bg-muted px-1 py-0.5 rounded text-foreground text-xs">bandeira.Context</code> struct in Go.
+                    <code className="bg-muted px-1 py-0.5 text-foreground text-xs">bandeira.Context</code> struct in Go.
                     The SDK runs the exact same evaluation logic.
                   </p>
                 </div>
@@ -1013,14 +999,14 @@ if client.IsEnabled("new-checkout") {
                     href="https://github.com/felipekafuri/bandeira-sdks"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Go SDK on GitHub
                   </a>
                   <a
                     href="/docs"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                   >
                     Full API Docs
                   </a>
@@ -1034,7 +1020,7 @@ if client.IsEnabled("new-checkout") {
       {/* Footer */}
       <footer className="border-t border-border py-8 px-4 text-center bg-background">
         <p className="text-xs text-muted-foreground">
-          Bandeira — Open source feature flag management
+          // bandeira — open source feature flag management
         </p>
       </footer>
     </PublicLayout>

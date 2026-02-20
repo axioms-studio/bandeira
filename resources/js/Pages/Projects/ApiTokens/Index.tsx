@@ -1,10 +1,9 @@
 import { Link, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
 import { SharedProps } from "@/types/global";
-import PublicLayout from "@/Layouts/PublicLayout";
+import TerminalLayout from "@/Layouts/TerminalLayout";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
   Plus,
   Trash2,
   Key,
@@ -52,49 +51,60 @@ export default function Index() {
   };
 
   return (
-    <PublicLayout activePage="projects">
-      <div className="mx-auto max-w-7xl px-6 py-8 w-full">
-          <Link
-            href={`/projects/${project.id}`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to {project.name}
-          </Link>
+    <TerminalLayout activePage="projects">
+      <div className="max-w-5xl">
+          <div className="mb-6">
+            <Link
+              href="/projects"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              projects
+            </Link>
+            <span className="text-sm text-muted-foreground mx-1">/</span>
+            <Link
+              href={`/projects/${project.id}`}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {project.name}
+            </Link>
+            <span className="text-sm text-muted-foreground mx-1">/</span>
+            <span className="text-sm text-foreground">api tokens</span>
+          </div>
 
           <div className="flex items-start justify-between mb-8">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                API Tokens
+                {">"} api_tokens
               </h1>
               <p className="text-muted-foreground mt-1 text-sm">
-                Manage API tokens for {project.name}.
+                # manage api tokens for {project.name}.
               </p>
             </div>
             {canMutate && (
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/projects/${project.id}/api-tokens/create`}>
-                  <Plus className="w-4 h-4" />
-                  Add Token
-                </Link>
-              </Button>
+              <Link
+                href={`/projects/${project.id}/api-tokens/create`}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                [add token]
+              </Link>
             )}
           </div>
 
           {/* Token list */}
-          <div className="bg-card border border-border rounded-xl shadow-sm">
+          <div className="bg-card border border-border">
             {tokens.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-                <Key className="w-8 h-8 text-muted-foreground mb-3" />
                 <p className="text-sm text-muted-foreground mb-4">
-                  No API tokens yet.
+                  no api tokens yet.
                 </p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={`/projects/${project.id}/api-tokens/create`}>
-                    <Plus className="w-4 h-4" />
-                    Create your first token
-                  </Link>
-                </Button>
+                <Link
+                  href={`/projects/${project.id}/api-tokens/create`}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  [create your first token]
+                </Link>
               </div>
             ) : (
               <div className="divide-y divide-border">
@@ -108,11 +118,11 @@ export default function Index() {
                             <span className="font-medium text-foreground text-sm">
                               {tok.name}
                             </span>
-                            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5">
                               {tok.tokenType}
                             </span>
                             {tok.environment && (
-                              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5">
                                 {tok.environment}
                               </span>
                             )}
@@ -163,7 +173,7 @@ export default function Index() {
                       </div>
                     </div>
                     {visibleTokens[tok.id] && (
-                      <code className="block bg-muted text-foreground px-3 py-2 rounded-lg text-xs font-mono break-all select-all">
+                      <code className="block bg-muted text-foreground px-3 py-2 text-xs font-mono break-all select-all">
                         {tok.plainToken}
                       </code>
                     )}
@@ -173,6 +183,6 @@ export default function Index() {
             )}
           </div>
       </div>
-    </PublicLayout>
+    </TerminalLayout>
   );
 }
