@@ -182,4 +182,15 @@
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
   }
+  a,
+  button,
+  [role="button"],
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  select,
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
 }
