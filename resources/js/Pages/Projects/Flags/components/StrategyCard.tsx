@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Shield } from "lucide-react";
-
 export interface StrategyData {
   id: number;
   name: string;
@@ -35,10 +32,10 @@ function paramSummary(name: string, params: Record<string, any> | null): string 
 }
 
 const STRATEGY_LABELS: Record<string, string> = {
-  default: "Default",
-  gradualRollout: "Gradual Rollout",
-  userWithId: "User Targeting",
-  remoteAddress: "IP Filtering",
+  default: "default",
+  gradualRollout: "gradual_rollout",
+  userWithId: "user_targeting",
+  remoteAddress: "ip_filtering",
 };
 
 interface Props {
@@ -51,12 +48,12 @@ export default function StrategyCard({ strategy, onEdit, onDelete }: Props) {
   const summary = paramSummary(strategy.name, strategy.parameters);
 
   return (
-    <div className="border border-border rounded-lg p-4 bg-card">
+    <div className="border border-border p-4 bg-card">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">
-              {STRATEGY_LABELS[strategy.name] ?? strategy.name}
+            <span className="text-xs font-medium text-primary border border-primary/30 px-1.5 py-0.5">
+              [{STRATEGY_LABELS[strategy.name] ?? strategy.name}]
             </span>
             <span className="text-xs text-muted-foreground">
               #{strategy.sort_order}
@@ -67,29 +64,26 @@ export default function StrategyCard({ strategy, onEdit, onDelete }: Props) {
           )}
           {strategy.constraints.length > 0 && (
             <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
-              <Shield className="w-3 h-3" />
               {strategy.constraints.length} constraint
               {strategy.constraints.length !== 1 ? "s" : ""}
             </div>
           )}
         </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
             onClick={onEdit}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            <Pencil className="w-3.5 h-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+            [edit]
+          </button>
+          <button
+            type="button"
             onClick={onDelete}
+            className="text-xs text-destructive hover:text-destructive/80 transition-colors"
           >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
+            [x]
+          </button>
         </div>
       </div>
     </div>

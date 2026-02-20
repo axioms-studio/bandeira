@@ -1,8 +1,7 @@
 import { Link, useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 import { SharedProps } from "@/types/global";
-import PublicLayout from "@/Layouts/PublicLayout";
-import { Button } from "@/components/ui/button";
+import TerminalLayout from "@/Layouts/TerminalLayout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import InputError from "@/components/InputError";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   project: { id: number; name: string };
@@ -41,29 +40,39 @@ export default function Edit() {
   };
 
   return (
-    <PublicLayout activePage="projects">
-      <div className="mx-auto max-w-2xl px-6 py-8 w-full">
-          <Link
-            href={`/projects/${project.id}`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to {project.name}
-          </Link>
+    <TerminalLayout activePage="projects">
+      <div className="max-w-2xl">
+          <div className="mb-6">
+            <Link
+              href="/projects"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              projects
+            </Link>
+            <span className="text-sm text-muted-foreground mx-1">/</span>
+            <Link
+              href={`/projects/${project.id}`}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {project.name}
+            </Link>
+            <span className="text-sm text-muted-foreground mx-1">/</span>
+            <span className="text-sm text-foreground">edit environment</span>
+          </div>
 
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Edit Environment
+              {">"} edit_environment
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              Update environment details for {project.name}.
+              # update environment details for {project.name}.
             </p>
           </div>
 
-          <div className="bg-card border border-border rounded-xl shadow-sm p-6">
+          <div className="bg-card border border-border p-6">
             <form onSubmit={submit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">name</Label>
                 <Input
                   id="name"
                   name="name"
@@ -79,7 +88,7 @@ export default function Edit() {
               </div>
 
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label>type</Label>
                 <Select
                   value={data.type}
                   onValueChange={(value) => setData("type", value)}
@@ -100,7 +109,7 @@ export default function Edit() {
 
               <div className="space-y-2">
                 <Label htmlFor="sort_order">
-                  Sort Order{" "}
+                  sort order{" "}
                   <span className="text-muted-foreground font-normal">
                     (optional)
                   </span>
@@ -117,26 +126,30 @@ export default function Edit() {
               </div>
 
               <div className="flex items-center gap-3 pt-2">
-                <Button type="submit" disabled={processing}>
+                <button
+                  type="submit"
+                  disabled={processing}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
                   {processing ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Saving...
+                      saving...
                     </>
                   ) : (
-                    "Save Changes"
+                    "[save]"
                   )}
-                </Button>
+                </button>
                 <Link
                   href={`/projects/${project.id}`}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Cancel
+                  [cancel]
                 </Link>
               </div>
             </form>
           </div>
       </div>
-    </PublicLayout>
+    </TerminalLayout>
   );
 }

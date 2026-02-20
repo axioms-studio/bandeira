@@ -3,22 +3,7 @@ import { ReactNode, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SharedProps } from "@/types/global";
 import { useFlashToasts } from "@/hooks/useFlashToast";
-import { Button } from "@/components/ui/button";
-import {
-  LayoutDashboard,
-  FolderOpen,
-  BookOpen,
-  Crosshair,
-  Palette,
-  Users,
-  LogOut,
-  Sun,
-  Moon,
-  Menu,
-  X,
-} from "lucide-react";
-import Logo from "@/components/Logo";
-import { useAppearance } from "@/hooks/useAppearance";
+import { Menu, X } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -44,14 +29,10 @@ export default function PublicLayout({
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const { appearance, updateAppearance } = useAppearance();
-  const isDark = appearance === "dark" || (appearance === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const toggleTheme = () => updateAppearance(isDark ? "light" : "dark");
-
   const navLinkClass = (page?: string) =>
     page === activePage
-      ? "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-accent text-accent-foreground"
-      : "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors";
+      ? "flex items-center gap-2 px-3 py-2 text-sm font-medium bg-muted text-foreground"
+      : "flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors";
 
   const header = (
     <header
@@ -61,12 +42,11 @@ export default function PublicLayout({
           : "border-b border-border bg-card"
       }
     >
-      <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-16">
+      <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-14">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <Logo size={32} />
-            <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
-              Bandeira
+          <Link href="/" className="group">
+            <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+              {">"} bandeira
             </span>
           </Link>
 
@@ -74,65 +54,45 @@ export default function PublicLayout({
             {auth?.user && (
               <>
                 <Link href="/dashboard" className={navLinkClass("dashboard")}>
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
+                  dashboard
                 </Link>
                 <Link href="/projects" className={navLinkClass("projects")}>
-                  <FolderOpen className="w-4 h-4" />
-                  Projects
+                  projects
                 </Link>
                 {auth.user.role === "admin" && (
                   <Link href="/users" className={navLinkClass("users")}>
-                    <Users className="w-4 h-4" />
-                    Users
+                    users
                   </Link>
                 )}
               </>
             )}
             <Link href="/strategies" className={navLinkClass("strategies")}>
-              <Crosshair className="w-4 h-4" />
-              Strategies
+              strategies
             </Link>
             <Link href="/docs" className={navLinkClass("docs")}>
-              <BookOpen className="w-4 h-4" />
-              Docs
+              docs
             </Link>
             <Link href="/brand" className={navLinkClass("brand")}>
-              <Palette className="w-4 h-4" />
-              Brand
+              brand
             </Link>
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="text-muted-foreground hover:text-foreground h-8 w-8"
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
+        <div className="flex items-center gap-3">
           {auth?.user ? (
             <>
               <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-xs font-semibold text-primary">
-                    {auth.user.name?.charAt(0)?.toUpperCase() ?? "U"}
-                  </span>
-                </div>
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" />
                 <span>{auth.user.name}</span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                type="button"
                 onClick={handleLogout}
                 disabled={processing}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign out</span>
-              </Button>
+                [sign_out]
+              </button>
             </>
           ) : (
             !isBandeiraApp && (
@@ -140,18 +100,17 @@ export default function PublicLayout({
                 href="/user/login"
                 className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
               >
-                Sign in
+                [sign_in]
               </Link>
             )
           )}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-muted-foreground hover:text-foreground h-8 w-8"
+            className="md:hidden text-muted-foreground hover:text-foreground"
           >
-            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </Button>
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
 
@@ -165,16 +124,14 @@ export default function PublicLayout({
                 className={navLinkClass("dashboard")}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
+                dashboard
               </Link>
               <Link
                 href="/projects"
                 className={navLinkClass("projects")}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <FolderOpen className="w-4 h-4" />
-                Projects
+                projects
               </Link>
               {auth.user.role === "admin" && (
                 <Link
@@ -182,8 +139,7 @@ export default function PublicLayout({
                   className={navLinkClass("users")}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Users className="w-4 h-4" />
-                  Users
+                  users
                 </Link>
               )}
             </>
@@ -193,24 +149,21 @@ export default function PublicLayout({
             className={navLinkClass("strategies")}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <Crosshair className="w-4 h-4" />
-            Strategies
+            strategies
           </Link>
           <Link
             href="/docs"
             className={navLinkClass("docs")}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <BookOpen className="w-4 h-4" />
-            Docs
+            docs
           </Link>
           <Link
             href="/brand"
             className={navLinkClass("brand")}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <Palette className="w-4 h-4" />
-            Brand
+            brand
           </Link>
         </nav>
       )}

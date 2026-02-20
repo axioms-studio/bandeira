@@ -1,44 +1,69 @@
 import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { SharedProps } from "@/types/global";
-import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 import { FeatureFlagToggle } from "@/components/ui/feature-flag-toggle";
 import { AnimateInView, AnimateChild } from "@/components/ui/animate-in-view";
 import PublicLayout from "@/Layouts/PublicLayout";
 import { motion } from "framer-motion";
-import {
-  ToggleRight,
-  Users,
-  Shield,
-  Zap,
-  Github,
-  ArrowRight,
-} from "lucide-react";
+import { Github, ArrowRight } from "lucide-react";
+
+function FloatingShape({
+  className,
+  delay = 0,
+  width = 400,
+  height = 100,
+  rotate = 0,
+}: {
+  className?: string;
+  delay?: number;
+  width?: number;
+  height?: number;
+  rotate?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -150, rotate: rotate - 15 }}
+      animate={{ opacity: 1, y: 0, rotate }}
+      transition={{
+        duration: 2.4,
+        delay,
+        ease: [0.23, 0.86, 0.39, 0.96],
+        opacity: { duration: 1.2 },
+      }}
+      className={`absolute ${className ?? ""}`}
+    >
+      <motion.div
+        animate={{ y: [0, 15, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        style={{ width, height }}
+        className="relative"
+      >
+        <div className="absolute inset-0 border border-primary/[0.12] bg-primary/[0.04]" />
+      </motion.div>
+    </motion.div>
+  );
+}
 
 const features = [
   {
-    icon: ToggleRight,
-    title: "Per-Environment Toggles",
+    title: "per_environment_toggles",
     description:
       "Enable flags independently across development, staging, and production.",
   },
   {
-    icon: Users,
-    title: "Targeting Strategies",
+    title: "targeting_strategies",
     description:
       "Roll out to specific users, percentages, or IP ranges with built-in strategies.",
     href: "/strategies",
   },
   {
-    icon: Shield,
-    title: "Constraint Engine",
+    title: "constraint_engine",
     description:
       "AND/OR logic with operators like IN, STR_CONTAINS, NUM_GT, and date comparisons.",
     href: "/strategies",
   },
   {
-    icon: Zap,
-    title: "Zero-Latency SDKs",
+    title: "zero_latency_sdks",
     description:
       "SDKs for Go, JS/TS, Python, PHP, Dart, and Elixir poll and cache locally — flag checks are pure in-memory lookups.",
   },
@@ -47,17 +72,17 @@ const features = [
 const steps = [
   {
     number: 1,
-    title: "Create a Project",
+    title: "create_project",
     description: "Set up environments like staging and production.",
   },
   {
     number: 2,
-    title: "Define Flags",
+    title: "define_flags",
     description: "Add feature flags with strategies and constraints.",
   },
   {
     number: 3,
-    title: "Evaluate Anywhere",
+    title: "evaluate_anywhere",
     description: "Use any of our 6 SDKs to check flags at runtime.",
   },
 ];
@@ -149,15 +174,15 @@ function CodeTabs() {
   const current = sdkTabs.find((t) => t.key === active)!;
 
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+    <div className="bg-card border border-border overflow-hidden">
       <div className="px-4 py-2.5 border-b border-border flex items-center gap-1">
         {sdkTabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActive(tab.key)}
-            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+            className={`px-3 py-1 text-xs font-medium transition-colors ${
               active === tab.key
-                ? "bg-primary/10 text-primary"
+                ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -173,8 +198,6 @@ function CodeTabs() {
 }
 
 function ConnectorLine() {
-  // In a 3-col grid, centers are at 16.67% and 83.33%.
-  // We position the SVG to span between them.
   return (
     <svg
       className="hidden md:block absolute top-6 h-[2px] overflow-visible"
@@ -203,19 +226,96 @@ export default function Home() {
   const { auth } = usePage<SharedProps>().props;
 
   return (
-    <PublicLayout overlay>
-      <HeroGeometric
-        badge="Open Source"
-        title1="Feature Flags"
-        title2="Made Simple"
-        subtitle="Self-hosted feature flag management with per-environment toggles, gradual rollouts, and SDKs for Go, JS/TS, Python, PHP, Dart, and Elixir — deploy with Docker in 60 seconds."
-        cta={{
-          label: auth?.user ? "Go to Dashboard" : "View on GitHub",
-          href: auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira",
-        }}
-      >
-        <FeatureFlagToggle />
-      </HeroGeometric>
+    <PublicLayout>
+      {/* Terminal Hero */}
+      <section className="relative py-24 md:py-32 px-4 md:px-6 bg-background overflow-hidden">
+        {/* Floating shapes */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <FloatingShape
+            delay={0.3}
+            width={600}
+            height={140}
+            rotate={12}
+            className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
+          />
+          <FloatingShape
+            delay={0.5}
+            width={500}
+            height={120}
+            rotate={-15}
+            className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
+          />
+          <FloatingShape
+            delay={0.4}
+            width={300}
+            height={80}
+            rotate={-8}
+            className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
+          />
+          <FloatingShape
+            delay={0.6}
+            width={200}
+            height={60}
+            rotate={20}
+            className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
+          />
+          <FloatingShape
+            delay={0.7}
+            width={150}
+            height={40}
+            rotate={-25}
+            className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
+          />
+        </div>
+
+        <div className="max-w-5xl mx-auto relative z-10">
+          <AnimateInView preset="fade-up" staggerChildren={0.1}>
+            <AnimateChild>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-xs text-primary border border-primary/30 px-2 py-1">
+                  [open_source]
+                </span>
+              </div>
+            </AnimateChild>
+            <AnimateChild>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-2">
+                {">"} feature_flags
+              </h1>
+            </AnimateChild>
+            <AnimateChild>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-primary mb-6">
+                made_simple
+              </h2>
+            </AnimateChild>
+            <AnimateChild>
+              <p className="text-muted-foreground max-w-2xl mb-8 text-sm md:text-base">
+                Self-hosted feature flag management with per-environment toggles,
+                gradual rollouts, and SDKs for Go, JS/TS, Python, PHP, Dart, and
+                Elixir — deploy with Docker in 60 seconds.
+              </p>
+            </AnimateChild>
+            <AnimateChild>
+              <div className="flex items-center gap-3 mb-12">
+                <Link
+                  href={auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira"}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  {auth?.user ? "[go_to_dashboard]" : "[get_started]"}
+                </Link>
+                <Link
+                  href="/docs"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors border border-border px-5 py-2.5"
+                >
+                  [read_docs]
+                </Link>
+              </div>
+            </AnimateChild>
+            <AnimateChild>
+              <FeatureFlagToggle />
+            </AnimateChild>
+          </AnimateInView>
+        </div>
+      </section>
 
       {/* Features Grid */}
       <AnimateInView
@@ -226,30 +326,22 @@ export default function Home() {
       >
         <div className="max-w-5xl mx-auto">
           <AnimateChild>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
-              Everything you need to ship with confidence
+            <h2 className="text-xl sm:text-2xl font-bold text-center mb-2 tracking-tight text-foreground">
+              // capabilities
             </h2>
           </AnimateChild>
           <AnimateChild>
-            <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-              Bandeira gives you fine-grained control over feature rollouts with
-              a self-hosted server and local-evaluation SDKs.
+            <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto text-sm">
+              Everything you need to ship with confidence
             </p>
           </AnimateChild>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {features.map((feature) => (
               <AnimateChild key={feature.title} className="h-full">
-                <motion.div
-                  whileHover={{ y: -2, scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="h-full flex flex-col bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary/30 transition-[box-shadow,border-color]"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
-                      <feature.icon className="w-4.5 h-4.5 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground">{feature.title}</h3>
-                  </div>
+                <div className="h-full flex flex-col bg-card border border-border p-6 hover:border-primary/50 transition-colors">
+                  <h3 className="font-semibold text-foreground mb-2">
+                    {">"} {feature.title}
+                  </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1">
                     {feature.description}
                   </p>
@@ -258,10 +350,10 @@ export default function Home() {
                       href={feature.href}
                       className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-3"
                     >
-                      Learn more <ArrowRight className="w-3 h-3" />
+                      [learn_more] <ArrowRight className="w-3 h-3" />
                     </Link>
                   )}
-                </motion.div>
+                </div>
               </AnimateChild>
             ))}
           </div>
@@ -277,13 +369,13 @@ export default function Home() {
       >
         <div className="max-w-4xl mx-auto">
           <AnimateChild>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
-              How it works
+            <h2 className="text-xl sm:text-2xl font-bold text-center mb-2 tracking-tight text-foreground">
+              // how_it_works
             </h2>
           </AnimateChild>
           <AnimateChild>
-            <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
-              Three steps from zero to feature flags in production.
+            <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto text-sm">
+              Three steps from zero to feature flags in production
             </p>
           </AnimateChild>
           <AnimateChild>
@@ -303,10 +395,12 @@ export default function Home() {
                   }}
                   className="text-center relative"
                 >
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-lg mb-4 relative z-10">
-                    {step.number}
+                  <div className="inline-flex items-center justify-center w-12 h-12 border border-primary/30 text-primary font-bold text-lg mb-4 relative z-10">
+                    [{step.number}]
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">{step.title}</h3>
+                  <h3 className="font-semibold text-foreground mb-2">
+                    {">"} {step.title}
+                  </h3>
                   <p className="text-sm text-muted-foreground">{step.description}</p>
                 </motion.div>
               ))}
@@ -324,14 +418,14 @@ export default function Home() {
       >
         <div className="max-w-5xl mx-auto">
           <AnimateChild>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 tracking-tight text-foreground">
-              Integrate in minutes
+            <h2 className="text-xl sm:text-2xl font-bold text-center mb-2 tracking-tight text-foreground">
+              // integrate_in_minutes
             </h2>
           </AnimateChild>
           <AnimateChild>
-            <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
+            <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto text-sm">
               Pick your language — all SDKs evaluate flags locally with zero network
-              latency. Or use the REST API for scripts and automation.
+              latency
             </p>
           </AnimateChild>
           <CodeTabs />
@@ -346,16 +440,16 @@ export default function Home() {
         className="relative py-24 px-4 md:px-6 bg-background"
       >
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4 tracking-tight text-foreground">
-            Self-host in 60 seconds
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 tracking-tight text-foreground">
+            // self_host_in_60_seconds
           </h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto text-sm">
             Bandeira is open source and runs anywhere Docker does. No cloud
             account, no vendor lock-in.
           </p>
-          <div className="bg-card border border-border rounded-xl p-4 mb-8 inline-block shadow-sm">
-            <code className="text-sm text-foreground font-mono">
-              docker compose up -d
+          <div className="bg-card border border-border p-4 mb-8 inline-block">
+            <code className="text-sm text-foreground">
+              $ docker compose up -d
             </code>
           </div>
           <div className="flex items-center justify-center gap-3">
@@ -363,19 +457,18 @@ export default function Home() {
               href="https://github.com/felipekafuri/bandeira"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
             >
               <Github className="w-4 h-4" />
-              GitHub
+              [github]
             </a>
-            <a
+            <Link
               href={auth?.user ? "/dashboard" : "https://github.com/felipekafuri/bandeira"}
-              {...(!auth?.user && { target: "_blank", rel: "noopener noreferrer" })}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
             >
-              {auth?.user ? "Go to Dashboard" : "Get Started"}
+              {auth?.user ? "[dashboard]" : "[get_started]"}
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </AnimateInView>
@@ -390,13 +483,13 @@ export default function Home() {
       >
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
-            Bandeira — Open source feature flag management
+            // bandeira — open source feature flag management
           </p>
           <Link
             href="/brand"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            Brand
+            [brand]
           </Link>
         </div>
       </AnimateInView>

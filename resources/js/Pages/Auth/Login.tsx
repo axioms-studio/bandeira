@@ -4,12 +4,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { SharedProps } from "@/types/global";
 import { usePage } from "@inertiajs/react";
 import { useFlashToasts } from "@/hooks/useFlashToast";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InputError from "@/components/InputError";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Logo from "@/components/Logo";
 import { useState } from "react";
 
 export default function Login() {
@@ -49,10 +47,9 @@ export default function Login() {
 
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 group">
-          <Logo size={32} />
-          <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
-            Bandeira
+        <Link href="/" className="group">
+          <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+            {">"} bandeira
           </span>
         </Link>
       </header>
@@ -62,22 +59,19 @@ export default function Login() {
         <div className="w-full max-w-sm">
           {/* Logo & heading */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6">
-              <Logo size={56} />
-            </div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Welcome back
+            <h1 className="text-xl font-semibold text-foreground">
+              {">"} bandeira
             </h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              Sign in to your account
+              # authenticate to continue
             </p>
           </div>
 
           {/* Form card */}
-          <div className="bg-card border border-border rounded-xl shadow-md p-6">
+          <div className="bg-card border border-border p-6">
             <form onSubmit={submit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">$ email</Label>
                 <Input
                   ref={emailRef}
                   id="email"
@@ -95,7 +89,7 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">$ password</Label>
                 <div className="relative">
                   <Input
                     ref={passwordRef}
@@ -126,30 +120,33 @@ export default function Login() {
                 ))}
               </div>
 
-              <Button
+              <button
                 type="submit"
-                className="w-full h-11 font-medium"
+                className="w-full h-11 font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm disabled:opacity-50 flex items-center justify-center"
                 disabled={processing}
               >
                 {processing ? (
-                  <>
+                  <span className="inline-flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Signing in...
-                  </>
+                    authenticating...
+                  </span>
                 ) : (
-                  "Sign in"
+                  "[authenticate]"
                 )}
-              </Button>
+              </button>
             </form>
           </div>
 
-          {/* Footer link */}
-          <p className="text-center text-sm text-muted-foreground mt-6">
+          {/* Footer */}
+          <p className="text-center text-xs text-muted-foreground mt-6">
+            // powered by bandeira v1.0.0
+          </p>
+          <p className="text-center text-sm text-muted-foreground mt-2">
             <Link
               href="/"
-              className="hover:text-foreground transition-colors underline underline-offset-4"
+              className="hover:text-foreground transition-colors"
             >
-              Back to home
+              [back_to_home]
             </Link>
           </p>
         </div>

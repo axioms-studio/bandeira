@@ -14,19 +14,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import StrategyParams from "./StrategyParams";
 import ConstraintRow, { type ConstraintData } from "./ConstraintRow";
 import type { StrategyData } from "./StrategyCard";
 
 const STRATEGY_TYPES = [
-  { value: "default", label: "Default (always on)" },
-  { value: "gradualRollout", label: "Gradual Rollout" },
-  { value: "userWithId", label: "User Targeting" },
-  { value: "remoteAddress", label: "IP Filtering" },
+  { value: "default", label: "default (always on)" },
+  { value: "gradualRollout", label: "gradual_rollout" },
+  { value: "userWithId", label: "user_targeting" },
+  { value: "remoteAddress", label: "ip_filtering" },
 ];
 
 interface Props {
@@ -108,16 +107,16 @@ export default function StrategySheet({
       <SheetContent side="right" className="sm:max-w-lg overflow-y-auto">
         <SheetHeader>
           <SheetTitle>
-            {strategy ? "Edit Strategy" : "Add Strategy"}
+            {">"} {strategy ? "edit_strategy" : "add_strategy"}
           </SheetTitle>
           <SheetDescription>
-            Configure how this flag is evaluated for the selected environment.
+            // configure how this flag is evaluated
           </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-5 px-4">
           <div className="space-y-1.5">
-            <Label className="text-sm">Strategy type</Label>
+            <Label className="text-sm">strategy_type</Label>
             <Select value={name} onValueChange={setName}>
               <SelectTrigger className="h-10">
                 <SelectValue />
@@ -133,7 +132,7 @@ export default function StrategySheet({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-sm">Sort order</Label>
+            <Label className="text-sm">sort_order</Label>
             <Input
               type="number"
               min={0}
@@ -151,22 +150,20 @@ export default function StrategySheet({
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">Constraints</Label>
-              <Button
-                variant="outline"
-                size="sm"
+              <Label className="text-sm">// constraints</Label>
+              <button
+                type="button"
                 onClick={() =>
                   setConstraints((prev) => [...prev, emptyConstraint()])
                 }
-                type="button"
+                className="inline-flex items-center justify-center text-xs text-muted-foreground hover:text-foreground transition-colors border border-border px-2 py-1"
               >
-                <Plus className="w-3.5 h-3.5" />
-                Add
-              </Button>
+                [+ add]
+              </button>
             </div>
             {constraints.length === 0 && (
               <p className="text-xs text-muted-foreground">
-                No constraints. Strategy applies to all users.
+                No constraints — strategy applies to all users.
               </p>
             )}
             {constraints.map((c, i) => (
@@ -180,24 +177,30 @@ export default function StrategySheet({
           </div>
         </div>
 
-        <SheetFooter>
-          <Button
-            variant="outline"
+        <SheetFooter className="flex-row justify-end">
+          <button
+            type="button"
             onClick={() => onOpenChange(false)}
             disabled={saving}
+            className="inline-flex items-center justify-center text-sm text-muted-foreground hover:text-foreground transition-colors border border-border px-4 py-2"
           >
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={saving}>
+            [cancel]
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+          >
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
+                saving...
               </>
             ) : (
-              "Save"
+              "[save]"
             )}
-          </Button>
+          </button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

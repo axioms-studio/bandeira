@@ -2,9 +2,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const flags = [
-  { name: "dark-mode", label: "Dark Mode", iconOn: "\u{1f319}", iconOff: "\u{2600}\u{fe0f}" },
-  { name: "new-checkout", label: "New Checkout", iconOn: "\u{1f6d2}", iconOff: "\u{1f6d2}" },
-  { name: "beta-search", label: "Beta Search", iconOn: "\u{1f50d}", iconOff: "\u{1f50d}" },
+  { name: "dark-mode", label: "dark_mode" },
+  { name: "new-checkout", label: "new_checkout" },
+  { name: "beta-search", label: "beta_search" },
 ];
 
 export function FeatureFlagToggle() {
@@ -31,10 +31,14 @@ export function FeatureFlagToggle() {
       transition={{ duration: 0.8, delay: 1.8, ease: [0.25, 0.4, 0.25, 1] }}
       className="inline-flex flex-col items-center gap-3"
     >
-      <div className="relative bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-5 shadow-lg w-[220px]">
+      <div className="relative bg-card border border-border p-5 w-[260px]">
         {/* Flag name */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+          <span
+            className={`inline-block w-1.5 h-1.5 rounded-full transition-colors ${
+              enabled ? "bg-primary" : "bg-muted-foreground/40"
+            }`}
+          />
           <AnimatePresence mode="wait">
             <motion.span
               key={flag.name}
@@ -42,32 +46,15 @@ export function FeatureFlagToggle() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.25 }}
-              className="text-xs font-mono text-muted-foreground"
+              className="text-xs text-muted-foreground"
             >
-              {flag.name}
+              $ {flag.label}
             </motion.span>
           </AnimatePresence>
         </div>
 
-        {/* Toggle track */}
+        {/* Toggle display */}
         <div className="flex items-center justify-between gap-3">
-          <motion.div
-            className="relative w-12 h-7 rounded-full cursor-default flex items-center px-1"
-            animate={{
-              backgroundColor: enabled
-                ? "oklch(0.8871 0.2122 128.5041)"
-                : "oklch(0.7 0.02 260)",
-            }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-          >
-            <motion.div
-              className="w-5 h-5 rounded-full bg-white shadow-md"
-              animate={{ x: enabled ? 18 : 0 }}
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-          </motion.div>
-
-          {/* Status text */}
           <AnimatePresence mode="wait">
             <motion.div
               key={enabled ? "on" : "off"}
@@ -75,30 +62,24 @@ export function FeatureFlagToggle() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-1.5"
+              className="flex items-center gap-2"
             >
-              <span className="text-sm">{enabled ? flag.iconOn : flag.iconOff}</span>
-              <span
-                className={`text-xs font-semibold tracking-wide uppercase ${
-                  enabled ? "text-primary" : "text-muted-foreground"
-                }`}
-              >
-                {enabled ? "ON" : "OFF"}
-              </span>
+              {enabled ? (
+                <span className="text-primary font-semibold text-sm">
+                  ● [ON]
+                </span>
+              ) : (
+                <span className="text-muted-foreground font-semibold text-sm">
+                  ○ [OFF]
+                </span>
+              )}
             </motion.div>
           </AnimatePresence>
-        </div>
 
-        {/* Subtle glow when active */}
-        <motion.div
-          className="absolute inset-0 rounded-2xl pointer-events-none"
-          animate={{
-            boxShadow: enabled
-              ? "0 0 30px oklch(0.8871 0.2122 128.5041 / 0.15)"
-              : "0 0 0px transparent",
-          }}
-          transition={{ duration: 0.5 }}
-        />
+          <span className="text-xs text-muted-foreground">
+            // {enabled ? "enabled" : "disabled"}
+          </span>
+        </div>
       </div>
     </motion.div>
   );

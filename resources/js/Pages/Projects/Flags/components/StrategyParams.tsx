@@ -80,7 +80,7 @@ export default function StrategyParams({
       <div className="space-y-1.5">
         <Label className="text-xs">User IDs (one per line)</Label>
         <textarea
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[80px] resize-y"
+          className="flex w-full border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[80px] resize-y"
           placeholder={"user-1\nuser-2\nuser-3"}
           value={parameters.userIds ?? ""}
           onChange={(e) =>
@@ -96,7 +96,7 @@ export default function StrategyParams({
       <div className="space-y-1.5">
         <Label className="text-xs">IP addresses (one per line)</Label>
         <textarea
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[80px] resize-y"
+          className="flex w-full border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[80px] resize-y"
           placeholder={"192.168.1.0/24\n10.0.0.1"}
           value={parameters.ips ?? ""}
           onChange={(e) => onChange({ ...parameters, ips: e.target.value })}

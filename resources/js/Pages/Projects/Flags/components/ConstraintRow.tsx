@@ -41,7 +41,7 @@ interface Props {
 
 export default function ConstraintRow({ constraint, onChange, onRemove }: Props) {
   return (
-    <div className="border border-border rounded-lg p-3 space-y-3 bg-muted/30">
+    <div className="border border-border p-3 space-y-3 bg-muted/30">
       <div className="flex items-start gap-2">
         <div className="flex-1 space-y-2">
           <Input
