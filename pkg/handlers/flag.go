@@ -25,6 +25,7 @@ import (
 type FlagHandler struct {
 	Inertia *inertia.Inertia
 	ORM     *ent.Client
+	Hub     *services.Hub
 }
 
 type FlagForm struct {
@@ -58,6 +59,7 @@ func init() {
 func (h *FlagHandler) Init(c *services.Container) error {
 	h.Inertia = c.Inertia
 	h.ORM = c.ORM
+	h.Hub = c.Hub
 	return nil
 }
 
@@ -126,6 +128,8 @@ func (h *FlagHandler) Store(ctx echo.Context) error {
 	if err != nil {
 		return fail(err, "failed to create flag", h.Inertia, ctx)
 	}
+
+	h.Hub.NotifyProject(projectID)
 
 	msg.Success(ctx, "Flag created successfully.")
 	return ctx.Redirect(http.StatusSeeOther, fmt.Sprintf("/projects/%d", projectID))
@@ -259,6 +263,8 @@ func (h *FlagHandler) Delete(ctx echo.Context) error {
 		return fail(err, "failed to delete flag", h.Inertia, ctx)
 	}
 
+	h.Hub.NotifyProject(projectID)
+
 	msg.Success(ctx, "Flag deleted successfully.")
 	return ctx.Redirect(http.StatusSeeOther, fmt.Sprintf("/projects/%d", projectID))
 }
@@ -295,7 +301,10 @@ func (h *FlagHandler) Toggle(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, map[string]any{"error": "failed to toggle flag"})
 	}
 
-	_ = projectID // validated above
+	if env, err := h.ORM.Environment.Get(reqCtx, body.EnvironmentID); err == nil {
+		h.Hub.Notify(projectID, env.Name)
+	}
+
 	return ctx.JSON(http.StatusOK, map[string]any{"enabled": body.Enabled})
 }
 
@@ -455,6 +464,11 @@ func (h *FlagHandler) StoreStrategy(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, map[string]any{"error": "failed to commit"})
 	}
 
+	if env, err := h.ORM.Environment.Get(reqCtx, input.EnvironmentID); err == nil {
+		projectID, _ := strconv.Atoi(ctx.Param("projectId"))
+		h.Hub.Notify(projectID, env.Name)
+	}
+
 	return ctx.JSON(http.StatusCreated, map[string]any{
 		"id":          s.ID,
 		"name":        s.Name,
@@ -481,6 +495,9 @@ func (h *FlagHandler) UpdateStrategy(ctx echo.Context) error {
 	}
 
 	reqCtx := ctx.Request().Context()
+
+	// Capture env info for notification before the transaction.
+	envName := resolveEnvNameFromStrategy(reqCtx, h.ORM, strategyID)
 
 	tx, err := h.ORM.Tx(reqCtx)
 	if err != nil {
@@ -540,6 +557,11 @@ func (h *FlagHandler) UpdateStrategy(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, map[string]any{"error": "failed to commit"})
 	}
 
+	if envName != "" {
+		projectID, _ := strconv.Atoi(ctx.Param("projectId"))
+		h.Hub.Notify(projectID, envName)
+	}
+
 	return ctx.JSON(http.StatusOK, map[string]any{
 		"id":          s.ID,
 		"name":        s.Name,
@@ -558,6 +580,9 @@ func (h *FlagHandler) DeleteStrategy(ctx echo.Context) error {
 
 	reqCtx := ctx.Request().Context()
 
+	// Capture env info for notification before deletion.
+	envName := resolveEnvNameFromStrategy(reqCtx, h.ORM, strategyID)
+
 	// Delete constraints first (SQLite has no FK cascade).
 	_, err = h.ORM.Constraint.Delete().
 		Where(entconstraint.StrategyID(strategyID)).
@@ -574,5 +599,28 @@ func (h *FlagHandler) DeleteStrategy(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, map[string]any{"error": "failed to delete strategy"})
 	}
 
+	if envName != "" {
+		projectID, _ := strconv.Atoi(ctx.Param("projectId"))
+		h.Hub.Notify(projectID, envName)
+	}
+
 	return ctx.JSON(http.StatusOK, map[string]any{"ok": true})
+}
+
+// resolveEnvNameFromStrategy looks up a strategy's FlagEnvironment → Environment
+// to get the environment name. Returns "" if lookup fails (best-effort for notifications).
+func resolveEnvNameFromStrategy(ctx context.Context, orm *ent.Client, strategyID int) string {
+	s, err := orm.Strategy.Get(ctx, strategyID)
+	if err != nil {
+		return ""
+	}
+	fe, err := orm.FlagEnvironment.Get(ctx, s.FlagEnvironmentID)
+	if err != nil {
+		return ""
+	}
+	env, err := orm.Environment.Get(ctx, fe.EnvironmentID)
+	if err != nil {
+		return ""
+	}
+	return env.Name
 }

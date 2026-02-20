@@ -35,7 +35,8 @@ const (
 	StrategyUpdate = "flags.strategies.update"
 	StrategyDelete = "flags.strategies.delete"
 
-	APIGetFlags = "api.flags"
+	APIGetFlags    = "api.flags"
+	APIStreamFlags = "api.flags.stream"
 
 	ApiTokenIndex  = "api_tokens.index"
 	ApiTokenCreate = "api_tokens.create"

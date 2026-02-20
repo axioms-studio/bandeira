@@ -28,11 +28,12 @@ func main() {
 	// Start the server.
 	go func() {
 		srv := http.Server{
-			Addr:         fmt.Sprintf("%s:%d", c.Config.HTTP.Hostname, c.Config.HTTP.Port),
-			Handler:      c.Web,
-			ReadTimeout:  c.Config.HTTP.ReadTimeout,
-			WriteTimeout: c.Config.HTTP.WriteTimeout,
-			IdleTimeout:  c.Config.HTTP.IdleTimeout,
+			Addr:        fmt.Sprintf("%s:%d", c.Config.HTTP.Hostname, c.Config.HTTP.Port),
+			Handler:     c.Web,
+			ReadTimeout: c.Config.HTTP.ReadTimeout,
+			// WriteTimeout is 0 (disabled) to support SSE streaming.
+			// Per-request timeouts are enforced by the Echo timeout middleware.
+			IdleTimeout: c.Config.HTTP.IdleTimeout,
 		}
 
 		if c.Config.HTTP.TLS.Enabled {

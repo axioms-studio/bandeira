@@ -6,6 +6,7 @@ import {
   Rocket,
   Server,
   Shield,
+  Radio,
   ChevronRight,
 } from "lucide-react";
 import PublicLayout from "@/Layouts/PublicLayout";
@@ -295,7 +296,8 @@ Client.close(client)`}
 
               <p className="text-sm text-muted-foreground px-1">
                 All SDKs poll the server every 15 seconds (configurable) and
-                cache flags locally. Evaluation calls are pure in-memory
+                cache flags locally. The Go SDK also supports real-time
+                streaming via SSE. Evaluation calls are pure in-memory
                 lookups with zero network latency. See the full documentation at{" "}
                 <a
                   href="https://github.com/felipekafuri/bandeira-sdks"
@@ -413,6 +415,92 @@ Client.close(client)`}
   ]
 }`}
               </CodeBlock>
+            </section>
+
+            {/* Real-Time Streaming (SSE) */}
+            <section className="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-lg">
+                  <Radio className="w-4.5 h-4.5 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Real-Time Streaming (SSE)
+                </h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Instead of polling every 15 seconds, you can use Server-Sent
+                Events (SSE) to receive flag updates instantly when they change.
+                The stream endpoint pushes the full flag state as a JSON event
+                whenever a flag is toggled, created, deleted, or its strategies
+                are modified.
+              </p>
+
+              <h3 className="text-sm font-semibold text-foreground mb-2">
+                GET /api/v1/stream
+              </h3>
+              <p className="text-sm text-muted-foreground mb-2">
+                Requires a client token (same as <code className="bg-muted px-1.5 py-0.5 rounded text-foreground text-xs">/api/v1/flags</code>).
+              </p>
+              <CodeBlock>
+                {`curl -N http://localhost:8080/api/v1/stream \\
+  -H "Authorization: Bearer <client-token>"`}
+              </CodeBlock>
+
+              <p className="text-sm text-muted-foreground mt-4 mb-2">
+                Event format:
+              </p>
+              <CodeBlock>
+                {`event: flags
+data: {"flags":[{"name":"new-dashboard","enabled":true,"strategies":[]}]}
+
+:heartbeat`}
+              </CodeBlock>
+
+              <div className="bg-muted rounded-lg p-3 sm:p-4 mt-4 space-y-2 text-sm text-muted-foreground">
+                <p>
+                  <strong className="text-foreground">Initial state</strong> — On
+                  connect, the full flag payload is sent immediately.
+                </p>
+                <p>
+                  <strong className="text-foreground">Updates</strong> — When a
+                  flag changes, a new <code className="bg-background px-1 py-0.5 rounded text-foreground text-xs">event: flags</code> is
+                  sent with the complete payload.
+                </p>
+                <p>
+                  <strong className="text-foreground">Heartbeat</strong> — A{" "}
+                  <code className="bg-background px-1 py-0.5 rounded text-foreground text-xs">:heartbeat</code> comment is
+                  sent every 30 seconds to keep the connection alive.
+                </p>
+              </div>
+
+              <h3 className="text-sm font-semibold text-foreground mt-6 mb-2">
+                Go SDK Streaming
+              </h3>
+              <p className="text-sm text-muted-foreground mb-2">
+                The Go SDK supports streaming mode. Set{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-foreground text-xs">Streaming: true</code>{" "}
+                in the config:
+              </p>
+              <CodeBlock>
+                {`client, err := bandeira.New(bandeira.Config{
+    URL:       "http://localhost:8080",
+    Token:     "your-client-token",
+    Streaming: true,  // use SSE instead of polling
+})
+if err != nil {
+    log.Fatal(err)
+}
+defer client.Close()
+
+// Flags are updated in real-time via SSE
+if client.IsEnabled("new-dashboard") {
+    // show new dashboard
+}`}
+              </CodeBlock>
+              <p className="text-sm text-muted-foreground mt-3">
+                Other SDKs currently use polling. Streaming support will be added
+                in future releases.
+              </p>
             </section>
 
             {/* Admin API */}

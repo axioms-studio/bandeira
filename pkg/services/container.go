@@ -44,6 +44,9 @@ type Container struct {
 	// ORM stores the Ent ORM client.
 	ORM *ent.Client
 
+	// Hub manages SSE subscribers for real-time flag change notifications.
+	Hub *Hub
+
 	// Inertia for React
 	Inertia *inertia.Inertia
 }
@@ -57,6 +60,7 @@ func NewContainer() *Container {
 	c.initCache()
 	c.initDatabase()
 	c.initORM()
+	c.initHub()
 	c.seedAdminUser()
 	c.initInertia()
 	return c
@@ -70,6 +74,9 @@ func (c *Container) Shutdown() error {
 	if err := c.Web.Shutdown(webCtx); err != nil {
 		return err
 	}
+
+	// Shutdown the hub (close all SSE subscriber channels).
+	c.Hub.Close()
 
 	// Shutdown the ORM (also closes the underlying database connection).
 	if err := c.ORM.Close(); err != nil {
@@ -265,6 +272,11 @@ func (c *Container) getInertia() *inertia.Inertia {
 	i.ShareTemplateFunc("viteReactRefresh", viteReactRefresh(url))
 
 	return i
+}
+
+// initHub initializes the SSE event hub.
+func (c *Container) initHub() {
+	c.Hub = NewHub()
 }
 
 func (c *Container) initInertia() {
