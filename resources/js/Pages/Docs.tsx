@@ -280,9 +280,10 @@ Client.close(client)`}
 
               <p className="text-sm text-muted-foreground px-1">
                 All SDKs poll the server every 15 seconds (configurable) and
-                cache flags locally. The Go SDK also supports real-time
-                streaming via SSE. Evaluation calls are pure in-memory
-                lookups with zero network latency. See the full documentation at{" "}
+                cache flags locally. All SDKs (except PHP) also support
+                real-time streaming via SSE. Evaluation calls are pure
+                in-memory lookups with zero network latency. See the full
+                documentation at{" "}
                 <a
                   href="https://github.com/felipekafuri/bandeira-sdks"
                   target="_blank"
@@ -443,32 +444,79 @@ data: {"flags":[{"name":"new-dashboard","enabled":true,"strategies":[]}]}
               </div>
 
               <h3 className="text-sm font-semibold text-foreground mt-6 mb-2">
-                Go SDK Streaming
+                SDK Streaming Support
               </h3>
               <p className="text-sm text-muted-foreground mb-2">
-                The Go SDK supports streaming mode. Set{" "}
-                <code className="bg-muted px-1.5 py-0.5 rounded text-foreground text-xs">Streaming: true</code>{" "}
-                in the config:
+                All SDKs (except PHP) support streaming. Set the streaming option
+                in your config:
               </p>
-              <CodeBlock>
-                {`client, err := bandeira.New(bandeira.Config{
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1 font-semibold">Go</p>
+                  <CodeBlock>
+                    {`client, err := bandeira.New(bandeira.Config{
     URL:       "http://localhost:8080",
     Token:     "your-client-token",
-    Streaming: true,  // use SSE instead of polling
-})
-if err != nil {
-    log.Fatal(err)
-}
-defer client.Close()
+    Streaming: true,
+})`}
+                  </CodeBlock>
+                </div>
 
-// Flags are updated in real-time via SSE
-if client.IsEnabled("new-dashboard") {
-    // show new dashboard
-}`}
-              </CodeBlock>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1 font-semibold">JavaScript / TypeScript</p>
+                  <CodeBlock>
+                    {`const client = new BandeiraClient({
+  url: "http://localhost:8080",
+  token: "your-client-token",
+  streaming: true,
+});
+await client.start();`}
+                  </CodeBlock>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1 font-semibold">Python</p>
+                  <CodeBlock>
+                    {`client = BandeiraClient(Config(
+    url="http://localhost:8080",
+    token="your-client-token",
+    streaming=True,
+))
+client.start()`}
+                  </CodeBlock>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1 font-semibold">Dart / Flutter</p>
+                  <CodeBlock>
+                    {`final client = await BandeiraClient.create(
+  const BandeiraConfig(
+    url: "http://localhost:8080",
+    token: "your-client-token",
+    streaming: true,
+  ),
+);`}
+                  </CodeBlock>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1 font-semibold">Elixir</p>
+                  <CodeBlock>
+                    {`{:ok, client} = Client.start_link(
+  url: "http://localhost:8080",
+  token: "your-client-token",
+  streaming: true
+)`}
+                  </CodeBlock>
+                </div>
+              </div>
+
               <p className="text-sm text-muted-foreground mt-3">
-                Other SDKs currently use polling. Streaming support will be added
-                in future releases.
+                PHP is request-scoped so streaming is not applicable — it uses
+                the standard polling approach which is correct for its model.
+                All streaming implementations include automatic reconnection
+                with exponential backoff.
               </p>
             </section>
 
