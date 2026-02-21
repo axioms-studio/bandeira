@@ -3,6 +3,9 @@ import { Link, usePage } from "@inertiajs/react";
 import { SharedProps } from "@/types/global";
 import { FeatureFlagToggle } from "@/components/ui/feature-flag-toggle";
 import { AnimateInView, AnimateChild } from "@/components/ui/animate-in-view";
+import { SSEStreamDemo } from "@/components/ui/sse-stream-demo";
+import { FlagEvaluationDemo } from "@/components/ui/flag-evaluation-demo";
+import { LiveMetricsPulse } from "@/components/ui/live-metrics-pulse";
 import PublicLayout from "@/Layouts/PublicLayout";
 import { motion } from "framer-motion";
 import { Github, ArrowRight } from "lucide-react";
@@ -357,6 +360,37 @@ export default function Home() {
               </AnimateChild>
             ))}
           </div>
+        </div>
+      </AnimateInView>
+
+      {/* Real-time Demos */}
+      <AnimateInView
+        as="section"
+        preset="fade-up"
+        staggerChildren={0.12}
+        className="relative py-24 px-4 md:px-6 bg-background"
+      >
+        <div className="max-w-5xl mx-auto">
+          <AnimateChild>
+            <h2 className="text-xl sm:text-2xl font-bold text-center mb-2 tracking-tight text-foreground">
+              // real_time_by_design
+            </h2>
+          </AnimateChild>
+          <AnimateChild>
+            <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto text-sm">
+              SDKs stream flag updates via SSE and evaluate locally — zero
+              network latency, instant rollouts
+            </p>
+          </AnimateChild>
+          <AnimateChild>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl mx-auto">
+              <SSEStreamDemo />
+              <FlagEvaluationDemo />
+              <div className="sm:col-span-2 lg:col-span-1">
+                <LiveMetricsPulse />
+              </div>
+            </div>
+          </AnimateChild>
         </div>
       </AnimateInView>
 

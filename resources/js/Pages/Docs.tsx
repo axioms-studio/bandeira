@@ -259,7 +259,7 @@ client.close();`}
                 </CodeBlock>
               </SdkSection>
 
-              <SdkSection title="Elixir" install='{:bandeira, "~> 0.1.0"}'>
+              <SdkSection title="Elixir" install='{:bandeira, "~> 0.2.0"}'>
                 <CodeBlock>
                   {`alias Bandeira.{Client, Config, Context}
 
